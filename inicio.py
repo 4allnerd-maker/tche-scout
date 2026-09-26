@@ -65,19 +65,27 @@ with col_b:
 
 st.markdown("## O que você encontra aqui")
 cards = [
-    ("📅", "Calendário", "Resultados de todos os jogos e a agenda das próximas rodadas, com filtro por competição, ano e time. "
-                          "W.O. e jogos cancelados aparecem identificados."),
-    ("🏆", "Classificações", "Tabela por competição, ano e fase, com o perfil de cada time: média de gols feitos e sofridos, "
-                              "casa × fora, disciplina e em quais minutos o time marca e sofre gols."),
-    ("🎯", "Jogadores", "Painel de atletas com nomes padronizados: jogos, titular, reserva, entradas, substituições, "
-                         "minutos, gols e cartões — filtrável por ano, competição e time."),
-    ("📣", "Anuncie", "Quer colocar sua marca diante de quem vive o futebol gaúcho? Veja como apoiar e anunciar."),
+    ("📅", "Calendário", "pages/1_📅_Calendário.py",
+     "Resultados de todos os jogos e a agenda das próximas rodadas, com filtro por competição, ano e time. "
+     "W.O. e jogos cancelados aparecem identificados."),
+    ("🏆", "Classificações", "pages/2_🏆_Classificações.py",
+     "Tabela por competição, ano e fase, com o perfil de cada time: média de gols feitos e sofridos, "
+     "casa × fora, disciplina e em quais minutos o time marca e sofre gols."),
+    ("🎯", "Jogadores", "pages/3_🎯_Jogadores.py",
+     "Painel de atletas com nomes padronizados: jogos, titular, reserva, entradas, substituições, "
+     "minutos, gols e cartões — filtrável por ano, competição e time."),
+    ("🔬", "Análise", "pages/5_🔬_Análise.py",
+     "Escolha um time e veja um painel completo: forma, gols por minuto, 1º × 2º tempo, quem abre o placar, "
+     "disciplina, elenco e insights prontos para relatório."),
+    ("📣", "Anuncie", "pages/4_📣_Anuncie.py",
+     "Quer colocar sua marca diante de quem vive o futebol gaúcho? Veja como apoiar e anunciar."),
 ]
 cols = st.columns(len(cards))
-for col, (ico, titulo, texto) in zip(cols, cards):
+for col, (ico, titulo, pagina, texto) in zip(cols, cards):
     col.markdown(f'<div class="ts-card"><div class="ico">{ico}</div><h4>{titulo}</h4><p>{texto}</p></div>',
                  unsafe_allow_html=True)
-st.caption("Use o menu à esquerda para navegar entre as abas.")
+    col.page_link(pagina, label=f"Abrir {titulo} →", width="stretch")
+st.caption("Clique em “Abrir” em qualquer cartão ou use o menu à esquerda.")
 
 st.markdown("## Como funciona")
 st.markdown(

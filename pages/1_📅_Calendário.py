@@ -3,6 +3,7 @@ import streamlit as st
 
 import data_loader as dl
 from theme import cabecalho, rodape
+from ui import tabela
 
 cabecalho("📅 Calendário", "Resultados e próximos jogos dos campeonatos gaúchos.")
 
@@ -47,11 +48,11 @@ with tab_res:
             lambda r: "—" if pd.isna(r["gols_mandante"]) else f"{int(r['gols_mandante'])} x {int(r['gols_visitante'])}", axis=1)
         v["Obs."] = v["situacao"].map({"W.O.": "W.O. (3x0)", "Cancelado": "Cancelado",
                                         "Realizado (sem súmula)": "Sem súmula"}).fillna("")
-        v["Data"] = v["data"].dt.strftime("%d/%m/%Y")
+        v["Data"] = v["data"]  # datetime: ordena de verdade (o formato dd/mm/aaaa vem da coluna)
         out = v[["Data", "competicao_nome", "fase_nome", "rodada", "time_mandante", "Placar", "time_visitante",
                  "estadio", "Obs."]]
         out.columns = ["Data", "Competição", "Fase", "Rodada", "Mandante", "Placar", "Visitante", "Estádio", "Obs."]
-        st.dataframe(out, hide_index=True, width="stretch")
+        tabela(out, "cal_res", ordenar_por="Data", exportar="tche-scout-resultados")
         st.caption("W.O.: o adversário não compareceu e o time presente recebe a vitória por 3 a 0 (conta na classificação).")
 
 with tab_prox:
@@ -59,9 +60,9 @@ with tab_prox:
         st.info("Nenhum jogo agendado para essa seleção.")
     else:
         p = proximos.sort_values("data").copy()
-        p["Data"] = p["data"].dt.strftime("%d/%m/%Y").fillna("A definir")
+        p["Data"] = p["data"]
         out = p[["Data", "hora", "competicao_nome", "fase_nome", "time_mandante", "time_visitante", "estadio"]]
         out.columns = ["Data", "Hora", "Competição", "Fase", "Mandante", "Visitante", "Estádio"]
-        st.dataframe(out, hide_index=True, width="stretch")
+        tabela(out, "cal_prox", ordenar_por="Data", crescente=True)
 
 rodape()

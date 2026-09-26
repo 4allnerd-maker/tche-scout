@@ -4,6 +4,7 @@ import streamlit as st
 import data_loader as dl
 import stats
 from theme import COR, cabecalho, rodape
+from ui import tabela
 
 cabecalho("🎯 Jogadores", "Base de atletas dos campeonatos gaúchos, com nomes padronizados a partir das súmulas.")
 
@@ -62,20 +63,13 @@ tab_tab, tab_graf, tab_ficha = st.tabs(["Tabela de atletas", "Gráficos", "Ficha
 with tab_tab:
     cols = ["Atleta", "Nome completo", "Time", "Times", "Posição", "Relacionado", "Jogos", "Titular", "Entrou", "Banco", "Substituído",
             "Minutos", "Gols", "G.C.", "Min/gol", "Amarelos", "Vermelhos"]
-    st.dataframe(painel[cols], hide_index=True, width="stretch", height=520,
-                 column_config={
-                     "Times": st.column_config.NumberColumn("Nº times", help="Em quantos times o atleta atuou na seleção"),
-                     "Relacionado": st.column_config.NumberColumn("Relac.", help="Jogos em que constou na súmula"),
-                     "Jogos": st.column_config.NumberColumn("Jogos", help="Titular + entrou durante o jogo"),
-                     "Entrou": st.column_config.NumberColumn("Entrou", help="Entrou como substituto"),
-                     "Banco": st.column_config.NumberColumn("Banco", help="Relacionado e não utilizado"),
-                     "Substituído": st.column_config.NumberColumn("Subst.", help="Saiu por substituição"),
-                     "G.C.": st.column_config.NumberColumn("G.C.", help="Gols contra"),
-                 })
+    tabela(painel[cols], "atl", ordenar_por="Gols", fixar="Atleta", altura=520, exportar="tche-scout-atletas",
+           ajuda={"Times": "Em quantos times o atleta atuou na seleção", "Relacionado": "Jogos em que constou na súmula",
+                  "Jogos": "Titular + entrou durante o jogo", "Entrou": "Entrou como substituto",
+                  "Banco": "Relacionado e não utilizado", "Substituído": "Saiu por substituição",
+                  "G.C.": "Gols contra", "Min/gol": "Minutos jogados por gol marcado"})
     st.caption("Minutos calculados a partir de titularidade, substituições e expulsões (jogo de 90 min). "
                "Assistências não constam nas súmulas oficiais. Nomes completos podem aparecer cortados: é como a FGF os publica.")
-    st.download_button("⬇️ Baixar tabela (CSV)", painel[cols].to_csv(index=False, sep=";").encode("utf-8-sig"),
-                       file_name="tche-scout-atletas.csv", mime="text/csv")
 
 with tab_graf:
     top = painel.sort_values("Gols", ascending=False).head(15).iloc[::-1]
@@ -113,12 +107,12 @@ with tab_ficha:
         m5.metric("Gols", int(linha["Gols"]))
         m6.metric("🟨 / 🟥", f"{int(linha['Amarelos'])} / {int(linha['Vermelhos'])}")
         hist = p[p["atleta_id"] == escolhido].sort_values("data", ascending=False).copy()
-        hist["Data"] = hist["data"].dt.strftime("%d/%m/%Y")
+        hist["Data"] = hist["data"]
         hist["Confronto"] = (hist["time_mandante"] + " " + hist["gols_mandante"].astype(int).astype(str) + " x "
                              + hist["gols_visitante"].astype(int).astype(str) + " " + hist["time_visitante"])
         hist["Situação"] = hist.apply(lambda r: "Titular" if r["titular"] else ("Entrou" if r["entrou"] else "Banco"), axis=1)
         out = hist[["Data", "competicao_nome", "Confronto", "equipe", "Situação", "minutos", "gols", "amarelos", "vermelhos"]]
         out.columns = ["Data", "Competição", "Confronto", "Time", "Situação", "Min", "Gols", "🟨", "🟥"]
-        st.dataframe(out, hide_index=True, width="stretch")
+        tabela(out, "ficha", ordenar_por="Data", altura=360)
 
 rodape()

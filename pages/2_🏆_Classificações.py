@@ -4,6 +4,7 @@ import streamlit as st
 import data_loader as dl
 import stats
 from theme import COR, cabecalho, rodape
+from ui import tabela
 
 cabecalho("🏆 Classificações e scout dos times",
           "Tabela, perfil de cada time e em que momento do jogo os gols acontecem.")
@@ -39,10 +40,12 @@ tab_class, tab_perfil, tab_minutos, tab_art = st.tabs(
     ["Classificação", "Perfil dos times", "Gols por minuto", "Artilharia"])
 
 with tab_class:
-    tabela = stats.classificacao(j)
-    st.dataframe(tabela, hide_index=True, width="stretch",
-                 column_config={"WO": st.column_config.NumberColumn("W.O.", help="Jogos ganhos/perdidos por W.O. (3x0)")})
-    if "WO" in tabela and tabela["WO"].sum():
+    classif = stats.classificacao(j)
+    tabela_class = tabela(classif, "cls", ordenar_por="Pos", crescente=True, fixar="Time", exportar="tche-scout-classificacao",
+                          ajuda={"P": "Pontos", "J": "Jogos", "V": "Vitórias", "E": "Empates", "D": "Derrotas", "GP": "Gols pró",
+                                 "GC": "Gols contra", "SG": "Saldo de gols", "%": "Aproveitamento (%)",
+                                 "WO": "Jogos decididos por W.O. (3x0)"})
+    if "WO" in classif and classif["WO"].sum():
         st.caption("Critérios de ordenação: pontos, vitórias, saldo de gols e gols pró. "
                    "A coluna W.O. mostra jogos decididos por ausência do adversário.")
 
@@ -54,7 +57,8 @@ with tab_perfil:
         cols = ["Time", "J", "Gols pró/jogo", "Gols contra/jogo", "Pró/jogo (casa)", "Pró/jogo (fora)",
                 "Contra/jogo (casa)", "Contra/jogo (fora)", "Min/gol feito", "Min/gol sofrido",
                 "Jogos s/ sofrer", "Jogos s/ marcar", "Amarelos", "Vermelhos", "Amarelos/jogo"]
-        st.dataframe(perfil[[c for c in cols if c in perfil]], hide_index=True, width="stretch")
+        tabela(perfil[[c for c in cols if c in perfil]], "perfil", ordenar_por="Gols pró/jogo", fixar="Time",
+               exportar="tche-scout-perfil-times")
         st.caption("Médias calculadas só sobre jogos com súmula (W.O. não entra). "
                    "‘Min/gol’ = minutos de jogo (90 × jogos) por gol.")
         fig = go.Figure()
@@ -80,7 +84,7 @@ with tab_minutos:
                       xaxis_title="Minuto do jogo", yaxis_title="Gols", plot_bgcolor="white",
                       legend=dict(orientation="h", y=1.08))
     st.plotly_chart(fig, width="stretch")
-    st.dataframe(dist, hide_index=True, width="stretch")
+    tabela(dist, "faixas", ordenar_por="Faixa", crescente=True, com_controles=False)
     st.caption("Gols contra são creditados ao adversário. Acréscimos entram na última faixa de cada tempo.")
 
 with tab_art:
@@ -91,6 +95,6 @@ with tab_art:
         st.info("Ainda não há gols nesta seleção.")
     else:
         art.insert(0, "Pos", range(1, len(art) + 1))
-        st.dataframe(art, hide_index=True, width="stretch")
+        tabela(art, "art", ordenar_por="Pos", crescente=True, fixar="Atleta")
 
 rodape()

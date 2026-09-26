@@ -19,7 +19,7 @@ COR = {
 CSS = f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap');
-html, body, [class*="st-"], .stMarkdown {{ font-family: 'Inter', sans-serif; }}
+.stMarkdown, .stCaption, label {{ font-family: 'Inter', sans-serif; }}
 h1, h2, h3, .ts-hero h1 {{ font-family: 'Archivo Black', 'Inter', sans-serif !important; font-weight: 400; }}
 :root {{ --verde:{COR['verde']}; --verde-escuro:{COR['verde_escuro']}; --dourado:{COR['dourado']}; }}
 .block-container {{ padding-top: 2rem; max-width: 1250px; }}

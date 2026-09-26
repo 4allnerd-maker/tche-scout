@@ -26,4 +26,4 @@ reprocessa e faz commit dos dados. Publicando o repositório no **Streamlit Comm
 - `scraper/classificar_sem_sumula.py` — jogos sem súmula: **W.O.** (cancelado com 3x0), cancelado, futuro.
 - `scraper/build_dataset.py` — lê os PDFs (cache em `data/parsed/`), padroniza nomes (`scraper/nomes.py`) e gera `data/processed/*.json`.
 - `scraper/organizar_2026.py` — copia as súmulas com nomes legíveis (`2026-08-27 - Bra P x Bra F (R5).pdf`).
-- `app.py` + `pages/` — site (início, calendário, classificações, jogadores, anuncie). Contato/textos em `config.py`.
+- `app.py` + `pages/` — site (início, calendário, classificações, jogadores, análise de time, anuncie); `analise.py` = motor de métricas/insights; `ui.py` = tabelas com ordenação. Contato/textos em `config.py`.
