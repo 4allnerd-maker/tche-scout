@@ -1,4 +1,6 @@
-"""Carrega os datasets processados (data/processed/*.json) em DataFrames, com cache do Streamlit."""
+"""Carrega os datasets processados (data/processed/*.json) em DataFrames.
+O cache do Streamlit é chaveado pela data de modificação dos arquivos: quando o robô diário atualiza os
+dados, o site já mostra o novo conteúdo na próxima visita, sem esperar o cache expirar."""
 
 from __future__ import annotations
 
@@ -9,7 +11,13 @@ import pandas as pd
 import streamlit as st
 
 PROCESSED_DIR = Path(__file__).resolve().parent / "data" / "processed"
-TTL = 60 * 60  # 1h: o robo atualiza os JSONs, o app recarrega sozinho
+TTL = 6 * 60 * 60
+
+
+def _stamp() -> float:
+    """Versão dos dados = quando o meta.json foi gravado pela última vez."""
+    meta = PROCESSED_DIR / "meta.json"
+    return meta.stat().st_mtime if meta.exists() else 0.0
 
 
 def _json(nome: str):
@@ -30,40 +38,40 @@ def tem_dados() -> bool:
 
 
 @st.cache_data(ttl=TTL)
+def _carrega(nome: str, versao: float):
+    dados = _json(nome)
+    if nome == "meta":
+        return dados
+    return _datas(pd.DataFrame(dados))
+
+
 def meta() -> dict:
-    return _json("meta")
+    return _carrega("meta", _stamp())
 
 
-@st.cache_data(ttl=TTL)
 def jogos() -> pd.DataFrame:
-    return _datas(pd.DataFrame(_json("jogos")))
+    return _carrega("jogos", _stamp())
 
 
-@st.cache_data(ttl=TTL)
 def calendario() -> pd.DataFrame:
-    return _datas(pd.DataFrame(_json("calendario")))
+    return _carrega("calendario", _stamp())
 
 
-@st.cache_data(ttl=TTL)
 def partidas() -> pd.DataFrame:
-    return pd.DataFrame(_json("jogadores_partida"))
+    return _carrega("jogadores_partida", _stamp())
 
 
-@st.cache_data(ttl=TTL)
 def atletas() -> pd.DataFrame:
-    return pd.DataFrame(_json("atletas"))
+    return _carrega("atletas", _stamp())
 
 
-@st.cache_data(ttl=TTL)
 def gols() -> pd.DataFrame:
-    return pd.DataFrame(_json("gols"))
+    return _carrega("gols", _stamp())
 
 
-@st.cache_data(ttl=TTL)
 def cartoes() -> pd.DataFrame:
-    return pd.DataFrame(_json("cartoes"))
+    return _carrega("cartoes", _stamp())
 
 
-@st.cache_data(ttl=TTL)
 def substituicoes() -> pd.DataFrame:
-    return pd.DataFrame(_json("substituicoes"))
+    return _carrega("substituicoes", _stamp())
