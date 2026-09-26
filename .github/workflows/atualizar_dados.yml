@@ -1,0 +1,46 @@
+name: Atualizar dados da FGF
+
+on:
+  schedule:
+    # 09:00 UTC = 06:00 em Brasilia: rotina diaria
+    - cron: "0 9 * * *"
+    # Reforco nos dias de jogo (sabado/domingo), a cada 4h: pega as sumulas logo que a FGF publica
+    - cron: "0 15,19,23,3 * * 0,6"
+  workflow_dispatch: {}   # botao "Run workflow" na aba Actions
+
+permissions:
+  contents: write
+
+concurrency:
+  group: atualizar-dados
+  cancel-in-progress: false
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Atualizar (descobrir, baixar, classificar, reprocessar)
+        run: python scraper/atualizar.py
+
+      - name: Commitar dados novos
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/raw/games_index.json data/raw/sumulas data/parsed data/processed
+          if git diff --cached --quiet; then
+            echo "Sem mudancas."
+          else
+            git commit -m "Atualiza dados da FGF (automatico $(date -u +%Y-%m-%d))"
+            git push
+          fi

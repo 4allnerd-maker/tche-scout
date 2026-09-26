@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.pyc
+.streamlit/secrets.toml
+
+# Os PDFs das sumulas e o cache do parser (data/parsed) SAO versionados de proposito:
+# o robo diario (GitHub Actions) so baixa/processa as sumulas novas de cada rodada.
