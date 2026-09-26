@@ -88,3 +88,13 @@ def compativeis(curto: str, longo: str) -> bool:
     """O nome cortado ('Rodrigo Mi') e prefixo do completo ('Rodrigo Milani Souza')?"""
     a, b = _chave(curto), _chave(longo)
     return bool(a) and (b.startswith(a) or a in b)
+
+
+def pessoa(texto: str | None) -> tuple[str | None, str | None]:
+    """'Tiago Lucas Rodrigues (FD/RS)' -> ('Tiago Lucas Rodrigues', 'FD/RS'). Nomes de arbitragem vêm sem padronização."""
+    if not texto:
+        return None, None
+    m = re.match(r"^(.*?)\s*\(([^)]+)\)\s*$", texto.strip())
+    nome, vinc = (m.group(1), m.group(2)) if m else (texto, None)
+    nome = nome_proprio(nome)
+    return (nome or None), vinc

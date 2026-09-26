@@ -9,11 +9,14 @@ CRESC = "↑ Crescente"
 DECRESC = "↓ Decrescente"
 
 
-def _config_colunas(df: pd.DataFrame, fixar: str | None, ajuda: dict | None) -> dict:
+def _config_colunas(df: pd.DataFrame, fixar: str | None, ajuda: dict | None, ocultar: list | None = None) -> dict:
     """Largura fixa por coluna: evita cabeçalhos espremidos/sobrepostos ao clicar para ordenar."""
     ajuda = ajuda or {}
     cfg = {}
     for i, col in enumerate(df.columns):
+        if ocultar and col in ocultar:
+            cfg[col] = None
+            continue
         serie = df[col]
         comum = dict(help=ajuda.get(col), pinned=(col == fixar) or None)
         comum = {k: v for k, v in comum.items() if v is not None}
@@ -32,13 +35,14 @@ def _config_colunas(df: pd.DataFrame, fixar: str | None, ajuda: dict | None) -> 
 
 def tabela(df: pd.DataFrame, chave: str, ordenar_por: str | None = None, crescente: bool = False,
            altura: int | None = None, fixar: str | None = None, ajuda: dict | None = None,
-           exportar: str | None = None, com_controles: bool = True) -> pd.DataFrame:
+           exportar: str | None = None, com_controles: bool = True, selecionavel: bool = False,
+           ocultar: list | None = None) -> pd.DataFrame:
     """Mostra a tabela com seletores visíveis de 'Ordenar por' e 'Ordem'.
     `chave` precisa ser única na página. Retorna o DataFrame já ordenado."""
     if df is None or df.empty:
         st.info("Nada para mostrar com os filtros atuais.")
         return df
-    colunas = list(df.columns)
+    colunas = [c for c in df.columns if not (ocultar and c in ocultar)]
     if com_controles:
         c1, c2, c3 = st.columns([2, 2, 3])
         padrao = ordenar_por if ordenar_por in colunas else colunas[0]
@@ -49,7 +53,13 @@ def tabela(df: pd.DataFrame, chave: str, ordenar_por: str | None = None, crescen
         df = df.sort_values(col, ascending=(ordem or (CRESC if crescente else DECRESC)) == CRESC,
                             kind="stable", na_position="last")
     kwargs = {"height": altura} if altura else {}
-    st.dataframe(df, hide_index=True, width="stretch", column_config=_config_colunas(df, fixar, ajuda), **kwargs)
+    if selecionavel:
+        kwargs.update(on_select="rerun", selection_mode="single-row", key=f"{chave}_df")
+    evento = st.dataframe(df, hide_index=True, width="stretch",
+                          column_config=_config_colunas(df, fixar, ajuda, ocultar), **kwargs)
+    if selecionavel:
+        linhas = list(evento.selection.rows) if evento is not None and getattr(evento, "selection", None) else []
+        st.session_state[f"{chave}_linha"] = df.iloc[linhas[0]] if linhas else None
     if exportar:
         st.download_button("⬇️ Baixar tabela (CSV)", df.to_csv(index=False, sep=";").encode("utf-8-sig"),
                            file_name=f"{exportar}.csv", mime="text/csv", key=f"{chave}_csv")
@@ -65,3 +75,14 @@ def chips_forma(resultados: list[tuple[str, str]]) -> str:
         f'border-radius:50%;background:{cores[l]};color:{txt[l]};font-weight:800;margin-right:6px;font-size:.9rem">{l}</span>'
         for l, dica in resultados)
     return f'<div style="margin:.2rem 0 .6rem 0">{itens}</div>'
+
+
+def linha_selecionada(chave: str):
+    """Linha (Series) selecionada numa tabela criada com selecionavel=True, ou None."""
+    return st.session_state.get(f"{chave}_linha")
+
+
+def abrir_jogo(jogo_id: str) -> None:
+    """Leva para a aba Jogo & súmula já com o jogo escolhido."""
+    st.session_state["jogo_id"] = str(jogo_id)
+    st.switch_page("pages/8_🧾_Jogo.py")

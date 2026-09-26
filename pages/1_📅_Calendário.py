@@ -3,7 +3,7 @@ import streamlit as st
 
 import data_loader as dl
 from theme import cabecalho, rodape
-from ui import tabela
+from ui import abrir_jogo, linha_selecionada, tabela
 
 cabecalho("📅 Calendário", "Resultados e próximos jogos dos campeonatos gaúchos.")
 
@@ -50,9 +50,16 @@ with tab_res:
                                         "Realizado (sem súmula)": "Sem súmula"}).fillna("")
         v["Data"] = v["data"]  # datetime: ordena de verdade (o formato dd/mm/aaaa vem da coluna)
         out = v[["Data", "competicao_nome", "fase_nome", "rodada", "time_mandante", "Placar", "time_visitante",
-                 "estadio", "Obs."]]
-        out.columns = ["Data", "Competição", "Fase", "Rodada", "Mandante", "Placar", "Visitante", "Estádio", "Obs."]
-        tabela(out, "cal_res", ordenar_por="Data", exportar="tche-scout-resultados")
+                 "estadio", "Obs.", "jogo_id"]]
+        out.columns = ["Data", "Competição", "Fase", "Rodada", "Mandante", "Placar", "Visitante", "Estádio", "Obs.", "jogo_id"]
+        tabela(out, "cal_res", ordenar_por="Data", exportar="tche-scout-resultados", selecionavel=True, ocultar=["jogo_id"])
+        sel = linha_selecionada("cal_res")
+        ok = sel is not None and str(sel["jogo_id"]).isdigit()
+        b1, b2 = st.columns([1, 3])
+        if b1.button("🔎 Analisar o jogo selecionado", disabled=not ok, type="primary", key="cal_analisar"):
+            abrir_jogo(sel["jogo_id"])
+        b2.caption("Clique numa linha da tabela para selecioná-la — a análise abre a súmula com linha do tempo e numeração. "
+                   "Jogos W.O./cancelados não têm súmula.")
         st.caption("W.O.: o adversário não compareceu e o time presente recebe a vitória por 3 a 0 (conta na classificação).")
 
 with tab_prox:

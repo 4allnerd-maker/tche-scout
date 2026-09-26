@@ -2,6 +2,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 import data_loader as dl
+import camisas as cm
 import stats
 from theme import COR, cabecalho, rodape
 from ui import tabela
@@ -58,7 +59,7 @@ k2.metric("Gols", int(painel["Gols"].sum()))
 k3.metric("Cartões amarelos", int(painel["Amarelos"].sum()))
 k4.metric("Cartões vermelhos", int(painel["Vermelhos"].sum()))
 
-tab_tab, tab_graf, tab_ficha = st.tabs(["Tabela de atletas", "Gráficos", "Ficha do atleta"])
+tab_tab, tab_graf, tab_ficha, tab_cam = st.tabs(["Tabela de atletas", "Gráficos", "Ficha do atleta", "👕 Camisas"])
 
 with tab_tab:
     cols = ["Atleta", "Nome completo", "Time", "Times", "Posição", "Relacionado", "Jogos", "Titular", "Entrou", "Banco", "Substituído",
@@ -114,5 +115,37 @@ with tab_ficha:
         out = hist[["Data", "competicao_nome", "Confronto", "equipe", "Situação", "minutos", "gols", "amarelos", "vermelhos"]]
         out.columns = ["Data", "Competição", "Confronto", "Time", "Situação", "Min", "Gols", "🟨", "🟥"]
         tabela(out, "ficha", ordenar_por="Data", altura=360)
+
+with tab_cam:
+    st.markdown("#### O que cada número costuma significar")
+    st.caption("A súmula não traz a posição do atleta, mas a numeração no Brasil segue convenções fortes. "
+               "Aqui, a convenção é comparada com o que os dados mostram (gols, cartões, goleiros) na seleção de filtros acima.")
+    perfil = cm.perfil_camisas(p, minimo_jogos=15)
+    if perfil.empty:
+        st.info("Poucos dados para montar o perfil das camisas nessa seleção.")
+    else:
+        fig = go.Figure()
+        cores = perfil["Zona (convenção)"].map(cm.COR_ZONA)
+        fig.add_bar(x=perfil["Camisa"].astype(str), y=perfil["Gols/jogo"], marker_color=cores,
+                    text=perfil["Zona (convenção)"], hovertext=perfil["Função provável"])
+        fig.update_layout(height=340, margin=dict(l=0, r=0, t=30, b=0), plot_bgcolor="white",
+                          xaxis_title="Camisa", yaxis_title="Gols por jogo (atleta que atuou)", title="Gols por jogo de cada camisa")
+        st.plotly_chart(fig, width="stretch")
+        for t in cm.insights_camisas(perfil):
+            st.markdown(f"- {t}")
+        st.caption("Cores = zona pela convenção: goleiro, defesa (laterais e zagueiros), meio e ataque. "
+                   "Se a barra alta for mesmo das camisas de ataque (7, 9, 11...), a convenção se confirma nos dados.")
+        tabela(perfil, "camisas", ordenar_por="Camisa", crescente=True, fixar="Camisa", altura=460, exportar="tche-scout-camisas",
+               ajuda={"Leitura dos dados": "Zona sugerida pelo comportamento estatístico da camisa (gols, cartões, goleiro)",
+                      "Atletas": "Quantos atletas diferentes vestiram o número"})
+    fixos = cm.numeracao_dos_atletas(p)
+    if not fixos.empty:
+        st.markdown("#### Atletas de camisa fixa")
+        f = fixos.merge(painel[["atleta_id", "Atleta", "Time", "Jogos"]], on="atleta_id")
+        f = f[f["Jogos"] >= 5].rename(columns={"camisa_principal": "Camisa principal", "fixo_pct": "% dos jogos com essa camisa",
+                                                "numeros_usados": "Nº de camisas diferentes"})
+        f["Zona (convenção)"] = f["Camisa principal"].map(lambda n: cm.zona(n))
+        tabela(f[["Atleta", "Time", "Camisa principal", "% dos jogos com essa camisa", "Nº de camisas diferentes", "Zona (convenção)",
+                  "Jogos"]], "camfixa", ordenar_por="Jogos", fixar="Atleta", altura=360)
 
 rodape()

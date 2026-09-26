@@ -66,25 +66,30 @@ with col_b:
 st.markdown("## O que você encontra aqui")
 cards = [
     ("📅", "Calendário", "pages/1_📅_Calendário.py",
-     "Resultados de todos os jogos e a agenda das próximas rodadas, com filtro por competição, ano e time. "
-     "W.O. e jogos cancelados aparecem identificados."),
+     "Resultados e próximos jogos, com filtro por competição, ano e time. Selecione um jogo e abra a súmula com um clique."),
     ("🏆", "Classificações", "pages/2_🏆_Classificações.py",
-     "Tabela por competição, ano e fase, com o perfil de cada time: média de gols feitos e sofridos, "
-     "casa × fora, disciplina e em quais minutos o time marca e sofre gols."),
+     "Tabela por competição, ano e fase, perfil dos times, gols por minuto e artilharia."),
     ("🎯", "Jogadores", "pages/3_🎯_Jogadores.py",
-     "Painel de atletas com nomes padronizados: jogos, titular, reserva, entradas, substituições, "
-     "minutos, gols e cartões — filtrável por ano, competição e time."),
+     "Painel de atletas com nomes padronizados: jogos, titular, entradas, minutos, gols, cartões e o perfil de cada camisa."),
     ("🔬", "Análise", "pages/5_🔬_Análise.py",
-     "Escolha um time e veja um painel completo: forma, gols por minuto, 1º × 2º tempo, quem abre o placar, "
-     "disciplina, elenco e insights prontos para relatório."),
+     "Escolha um time e veja um painel completo: forma, gols por minuto, quem abre o placar, disciplina e insights prontos."),
+    ("🧾", "Jogo & súmula", "pages/8_🧾_Jogo.py",
+     "A súmula de uma partida explicada: linha do tempo, escalações por numeração, formação estimada e arbitragem."),
+    ("⚖️", "Arbitragem", "pages/7_⚖️_Arbitragem.py",
+     "Ranking e ficha dos árbitros: cartões por jogo, pênaltis, acréscimos e equilíbrio entre mandante e visitante."),
+    ("🖼️", "Relatórios e cards", "pages/9_🖼️_Relatórios_e_Cards.py",
+     "Crie imagens para redes sociais e um relatório de scout em PDF do time — com um clique."),
+    ("👤", "Quem sou eu", "pages/6_👤_Quem_sou_eu.py",
+     "A pessoa e o método por trás do Tchê Scout: metodologia IEEA, e-book e artigo para baixar."),
     ("📣", "Anuncie", "pages/4_📣_Anuncie.py",
      "Quer colocar sua marca diante de quem vive o futebol gaúcho? Veja como apoiar e anunciar."),
 ]
-cols = st.columns(len(cards))
-for col, (ico, titulo, pagina, texto) in zip(cols, cards):
-    col.markdown(f'<div class="ts-card"><div class="ico">{ico}</div><h4>{titulo}</h4><p>{texto}</p></div>',
-                 unsafe_allow_html=True)
-    col.page_link(pagina, label=f"Abrir {titulo} →", width="stretch")
+for linha in range(0, len(cards), 3):
+    cols = st.columns(3)
+    for col, (ico, titulo, pagina, texto) in zip(cols, cards[linha:linha + 3]):
+        col.markdown(f'<div class="ts-card"><div class="ico">{ico}</div><h4>{titulo}</h4><p>{texto}</p></div>',
+                     unsafe_allow_html=True)
+        col.page_link(pagina, label=f"Abrir {titulo} →", width="stretch")
 st.caption("Clique em “Abrir” em qualquer cartão ou use o menu à esquerda.")
 
 st.markdown("## Como funciona")

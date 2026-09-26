@@ -24,7 +24,7 @@ from collections import Counter, defaultdict
 from datetime import datetime
 from pathlib import Path
 
-from nomes import compativeis, eh_truncado, limpa_time, nome_proprio
+from nomes import compativeis, eh_truncado, limpa_time, nome_proprio, pessoa
 from parse_sumula import parse_sumula_pdf
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -35,7 +35,7 @@ OUT_DIR = ROOT / "data" / "processed"
 
 IDS_FEMININO = {59, 564, 708, 803}
 DURACAO = 90
-PARSER_VERSAO = 5  # aumente ao mudar parse_sumula.py: invalida o cache data/parsed
+PARSER_VERSAO = 6  # aumente ao mudar parse_sumula.py: invalida o cache data/parsed
 
 
 def minuto_absoluto(tempo, periodo) -> float | None:
@@ -147,7 +147,7 @@ def main():
                 jogos.append({**{k: cal[k] for k in ("jogo_id", "competicao_id", "competicao_nome", "categoria", "ano",
                                                        "fase_nome", "rodada", "data", "hora", "estadio",
                                                        "time_mandante", "time_visitante", "gols_mandante", "gols_visitante")},
-                              "gols_1t_mandante": None, "gols_1t_visitante": None, "arbitro": None, "situacao": "W.O."})
+                              "gols_1t_mandante": None, "gols_1t_visitante": None, "arbitro": None, "situacao": "W.O.", "sumula_url": None})
             continue
 
         try:
@@ -167,8 +167,17 @@ def main():
             "time_mandante": mand, "time_visitante": visit,
             "gols_mandante": d["resultado_final_mandante"], "gols_visitante": d["resultado_final_visitante"],
             "gols_1t_mandante": d["resultado_1t_mandante"], "gols_1t_visitante": d["resultado_1t_visitante"],
-            "arbitro": (d.get("arbitragem") or {}).get("Árbitro"), "situacao": "Realizado",
+            "situacao": "Realizado", "sumula_url": meta.get("sumula_url") or f"https://fgf.com.br/public/sumulas/{sid}.pdf",
+            "acrescimo_1t": d.get("acrescimo_1t"), "acrescimo_2t": d.get("acrescimo_2t"),
         }
+        arb = d.get("arbitragem") or {}
+        for campo, papel in (("arbitro", "Árbitro"), ("assistente1", "Assistente 1"), ("assistente2", "Assistente 2"),
+                             ("quarto_arbitro", "Quarto Árbitro"), ("var", "VAR"), ("avar", "AVAR")):
+            nome, vinc = pessoa(arb.get(papel))
+            jogo[campo] = nome
+            if campo == "arbitro":
+                jogo["arbitro_vinculo"] = vinc
+        jogo["tem_var"] = bool(jogo["var"])
         jogos.append(jogo)
         calendario.append({**base_cal, **{k: jogo[k] for k in ("jogo_id", "rodada", "data", "hora", "estadio",
                                                                "time_mandante", "time_visitante",

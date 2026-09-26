@@ -5,7 +5,7 @@ import streamlit as st
 import analise as an
 import data_loader as dl
 from theme import COR, cabecalho, rodape
-from ui import chips_forma, tabela
+from ui import abrir_jogo, chips_forma, linha_selecionada, tabela
 
 cabecalho("🔬 Análise de time", "Escolha um time e receba um painel de scout completo, com insights prontos para o seu relatório.")
 
@@ -83,6 +83,12 @@ def delta(valor, col, inverso=False):
         return None
     return f"{valor - Lm[col].mean():+.2f} vs média"
 
+
+ultimo = d.iloc[-1]
+u1, u2 = st.columns([1.3, 3])
+if u1.button("🔎 Ver a súmula do último jogo", key="an_ultimo", type="secondary"):
+    abrir_jogo(ultimo["jogo_id"])
+u2.caption(f"Último jogo: {ultimo['data']:%d/%m/%Y} · {ultimo['mando']} vs {ultimo['adversario']} · {ultimo['gp']}x{ultimo['gc']}")
 
 m = st.columns(6)
 m[0].metric("Jogos", r["J"], f"{r['V']}V {r['E']}E {r['D']}D", delta_color="off")
@@ -321,9 +327,13 @@ with tabs[5]:
                                hovertemplate="%{text}<br>%{y} pts<extra></extra>"))
     fig.update_layout(yaxis_title="Pontos acumulados")
     st.plotly_chart(estilo(fig, 280, False), width="stretch")
-    tabela(x[["data", "competicao", "fase", "rodada", "mando", "adversario", "gp", "gc", "gp1", "gc1", "res"]].rename(columns={
+    tabela(x[["data", "competicao", "fase", "rodada", "mando", "adversario", "gp", "gc", "gp1", "gc1", "res", "jogo_id"]].rename(columns={
         "data": "Data", "competicao": "Competição", "fase": "Fase", "rodada": "Rodada", "mando": "Mando",
         "adversario": "Adversário", "gp": "GP", "gc": "GC", "gp1": "GP 1ºT", "gc1": "GC 1ºT", "res": "Res."}),
-        "jxj", ordenar_por="Data", exportar=f"tche-scout-jogos-{time}", altura=420)
+        "jxj", ordenar_por="Data", exportar=f"tche-scout-jogos-{time}", altura=420, selecionavel=True, ocultar=["jogo_id"])
+    sel = linha_selecionada("jxj")
+    if st.button("🔎 Analisar o jogo selecionado", disabled=sel is None, type="primary", key="jxj_analisar"):
+        abrir_jogo(sel["jogo_id"])
+    st.caption("Clique numa linha para selecioná-la.")
 
 rodape()

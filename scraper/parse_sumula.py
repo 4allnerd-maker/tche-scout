@@ -222,6 +222,11 @@ def parse_sumula_pdf(pdf_path) -> dict:
         elif section == "Cronologia":
             for row in rows:
                 joined = " ".join(_clean(c) for c in row if c not in (None, ""))
+                # acrescimos dados pela arbitragem: "Termino do 1º Tempo: 16:50 Acréscimo: 5 min ..."
+                for n, chave in ((1, "acrescimo_1t"), (2, "acrescimo_2t")):
+                    ma = re.search(rf"T[ée]rmino do {n}[ºo] Tempo:\s*\d+:\d+\s+Acr[ée]scimo:\s*(\d+)", joined)
+                    if ma:
+                        data[chave] = int(ma.group(1))
                 if joined.startswith("Resultado do 1"):
                     m = re.search(
                         r"Resultado do 1[ºo] Tempo:\s*(\d+)\s*X\s*(\d+).*?"
