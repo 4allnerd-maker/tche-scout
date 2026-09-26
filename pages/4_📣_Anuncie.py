@@ -8,7 +8,7 @@ cabecalho("📣 Parcerias e anúncios",
 
 st.markdown(
     """
-    <div class="ts-hero" style="padding:1.6rem 2rem;">
+    <div class="ts-hero" style="padding:1.6rem 2rem; display:block;">
       <h1 style="font-size:1.8rem;">📣 Divulgue sua marca aqui</h1>
       <p>O público do Tchê Scout acompanha o futebol do Rio Grande do Sul de perto: torcedores, analistas de
          desempenho, comissões técnicas, atletas, agentes e jornalistas. Gente que procura dado, não achismo.</p>

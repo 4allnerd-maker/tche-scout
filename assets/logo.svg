@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" role="img" aria-label="Tchê Scout">
+  <defs>
+    <clipPath id="escudo">
+      <path d="M100 8C72 24 42 30 12 32V116C12 168 50 208 100 232C150 208 188 168 188 116V32C158 30 128 24 100 8Z"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#escudo)">
+    <rect width="200" height="240" fill="#0E6B3F"/>
+    <polygon points="0,132 200,44 200,150 0,238" fill="#C8102E"/>
+    <polygon points="0,196 200,114 200,240 0,240" fill="#F2B705"/>
+  </g>
+  <path d="M100 8C72 24 42 30 12 32V116C12 168 50 208 100 232C150 208 188 168 188 116V32C158 30 128 24 100 8Z"
+        fill="none" stroke="#0A3D26" stroke-width="8" stroke-linejoin="round"/>
+  <g fill="#0A3D26" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round">
+    <rect x="46"  y="132" width="24" height="52"/>
+    <rect x="76"  y="112" width="24" height="72"/>
+    <rect x="106" y="94"  width="24" height="90"/>
+    <rect x="136" y="70"  width="24" height="114"/>
+  </g>
+  <g fill="none" stroke="#0A3D26" stroke-width="15" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="44,124 84,88 108,104 152,58"/>
+  </g>
+  <g fill="none" stroke="#F2B705" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="44,124 84,88 108,104 152,58"/>
+  </g>
+  <polygon points="168,44 138,50 160,72" fill="#F2B705" stroke="#0A3D26" stroke-width="5" stroke-linejoin="round"/>
+</svg>

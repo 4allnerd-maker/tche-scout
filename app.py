@@ -5,6 +5,7 @@ import streamlit as st
 from theme import aplicar_tema
 
 aplicar_tema()
+st.logo("assets/logo.svg", size="large")
 
 navegacao = st.navigation([
     st.Page("inicio.py", title="Início", icon="🏠", default=True),

@@ -1,12 +1,19 @@
+import base64
+from pathlib import Path
+
 import streamlit as st
 
 import data_loader as dl
 from config import AUTOR, AUTOR_FUNCAO, NOME, SLOGAN, WHATSAPP_EXIBIR, WHATSAPP_LINK
 from theme import rodape
 
+LOGO = base64.b64encode((Path(__file__).parent / "assets" / "logo.svg").read_bytes()).decode()
+
 st.markdown(
     f"""
     <div class="ts-hero">
+      <img src="data:image/svg+xml;base64,{LOGO}" alt="Tchê Scout"/>
+      <div>
       <h1>Tchê <span>Scout</span></h1>
       <p><b>{SLOGAN}</b></p>
       <p>Resultados, classificações, perfil dos times e a ficha de cada atleta — dos campeonatos profissionais
@@ -14,6 +21,7 @@ st.markdown(
       <span class="ts-tag">Gauchão</span><span class="ts-tag">Série A2</span><span class="ts-tag">Série B</span>
       <span class="ts-tag">Copa FGF</span><span class="ts-tag">Recopa Gaúcha</span><span class="ts-tag">Gauchão Feminino</span>
       <span class="ts-tag">Sub 20 · 17 · 15 Feminino</span>
+      </div>
     </div>
     """,
     unsafe_allow_html=True,

@@ -18,6 +18,9 @@ COR = {
 
 CSS = f"""
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap');
+html, body, [class*="st-"], .stMarkdown {{ font-family: 'Inter', sans-serif; }}
+h1, h2, h3, .ts-hero h1 {{ font-family: 'Archivo Black', 'Inter', sans-serif !important; font-weight: 400; }}
 :root {{ --verde:{COR['verde']}; --verde-escuro:{COR['verde_escuro']}; --dourado:{COR['dourado']}; }}
 .block-container {{ padding-top: 2rem; max-width: 1250px; }}
 h1, h2, h3 {{ color: {COR['verde_escuro']}; letter-spacing: -0.01em; }}
@@ -29,7 +32,10 @@ div[data-testid="stTabs"] button[aria-selected="true"] {{ color: {COR['verde']};
   border-radius: 14px; padding: 2.4rem 2.2rem; color: #fff; margin-bottom: 1.2rem;
   border-bottom: 6px solid {COR['dourado']};
 }}
-.ts-hero h1 {{ color:#fff; font-size: 2.6rem; margin:0 0 .3rem 0; }}
+.ts-hero {{ display:flex; align-items:center; gap:2rem; }}
+.ts-hero img {{ height: 190px; flex: 0 0 auto; }}
+.ts-hero h1 {{ color:#fff; font-size: 3rem; margin:0 0 .3rem 0; text-transform: uppercase; line-height:1.05; }}
+@media (max-width: 700px) {{ .ts-hero {{ flex-direction:column; text-align:center; }} .ts-hero img {{ height:120px; }} }}
 .ts-hero h1 span {{ color: {COR['dourado']}; }}
 .ts-hero p {{ font-size: 1.15rem; opacity:.95; max-width: 46rem; margin:.2rem 0; }}
 .ts-tag {{ display:inline-block; background:rgba(255,255,255,.14); border-radius:999px; padding:.15rem .8rem;
