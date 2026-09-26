@@ -15,6 +15,7 @@ navegacao = st.navigation([
     st.Page("pages/2_🏆_Classificações.py", title="Classificações", icon="🏆", url_path="classificacoes"),
     st.Page("pages/3_🎯_Jogadores.py", title="Jogadores", icon="🎯", url_path="jogadores"),
     st.Page("pages/5_🔬_Análise.py", title="Análise", icon="🔬", url_path="analise"),
+    st.Page("pages/6_👤_Quem_sou_eu.py", title="Quem sou eu", icon="👤", url_path="quem-sou-eu"),
     st.Page("pages/4_📣_Anuncie.py", title="Anuncie", icon="📣", url_path="anuncie"),
 ])
 navegacao.run()
