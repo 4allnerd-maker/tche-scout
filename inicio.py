@@ -12,7 +12,7 @@ LOGO = base64.b64encode((Path(__file__).parent / "assets" / "logo.svg").read_byt
 st.markdown(
     f"""
     <div class="ts-hero">
-      <img src="data:image/svg+xml;base64,{LOGO}" alt="Tchê Scout"/>
+      <img src="data:image/svg+xml;base64,{LOGO}" alt="Tchê Scout" style="height:190px; width:auto; max-width:none;"/>
       <div>
       <h1>Tchê <span>Scout</span></h1>
       <p><b>{SLOGAN}</b></p>
