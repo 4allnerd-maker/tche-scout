@@ -72,6 +72,73 @@ def _split_entrada(texto: str) -> tuple:
     return None, _clean(texto)
 
 
+_TR_RE = re.compile(r"^[TR](\(g\))?$")
+
+
+def _roster_por_palavras(pdf_path, mandante, visitante):
+    """Relê a 'Relação de Jogadores' pela POSIÇÃO das palavras na página (alguns PDFs quebram a tabela em
+    duas e perdem a coluna CBF). Retorna [] se o resultado não parecer uma escalação válida."""
+    jogadores = []
+    with pdfplumber.open(pdf_path) as pdf:
+        for pg in pdf.pages:
+            linhas = {}
+            for w in pg.extract_words():
+                linhas.setdefault(round(w["top"] / 3), []).append(w)
+            chaves = sorted(linhas)
+            cab = None
+            for k in chaves:
+                ws = sorted(linhas[k], key=lambda w: w["x0"])
+                if " ".join(w["text"] for w in ws).startswith("Nº Apelido Nome Completo T/R P/A CBF Nº"):
+                    cab = (k, ws)
+                    break
+            if not cab:
+                continue
+            k0, ws0 = cab
+            corte = [w["x0"] for w in ws0 if w["text"] == "Nº"][1] - 6
+            for k in chaves:
+                if k <= k0:
+                    continue
+                ws = sorted(linhas[k], key=lambda w: w["x0"])
+                if re.match(r"^(Comissão Técnica|Gols|Cartões|Substituições|Ocorrências|T = Titular)",
+                            " ".join(w["text"] for w in ws)):
+                    break
+                for lado, equipe in ((0, mandante), (1, visitante)):
+                    toks = [w for w in ws if (w["x0"] < corte if lado == 0 else w["x0"] >= corte)]
+                    if len(toks) < 3:
+                        continue
+                    cbf = pa = tr = None
+                    if re.fullmatch(r"\d{4,9}", toks[-1]["text"]):
+                        cbf = toks.pop()["text"]
+                    if toks and toks[-1]["text"] in ("P", "A"):
+                        pa = toks.pop()["text"]
+                    if toks and _TR_RE.match(toks[-1]["text"]):
+                        tr = toks.pop()["text"]
+                    if not tr:
+                        continue
+                    numero = None
+                    if toks and re.fullmatch(r"\d{1,3}", toks[0]["text"]):
+                        numero = int(toks.pop(0)["text"])
+                    corte_nome = len(toks)
+                    if len(toks) > 1:
+                        gaps = [toks[i + 1]["x0"] - toks[i]["x1"] for i in range(len(toks) - 1)]
+                        m = max(range(len(gaps)), key=lambda i: gaps[i])
+                        if gaps[m] > 3.6:
+                            corte_nome = m + 1
+                    apelido = " ".join(t["text"] for t in toks[:corte_nome])
+                    nome = " ".join(t["text"] for t in toks[corte_nome:])
+                    jogadores.append({
+                        "equipe": equipe, "numero": numero, "apelido": _clean(apelido), "nome_completo": _clean(nome),
+                        "titular": tr.startswith("T"), "goleiro": "(g)" in tr,
+                        "categoria": "Profissional" if pa == "P" else "Amador", "cbf_id": cbf,
+                    })
+    # validação: cada time precisa ter de 9 a 12 titulares
+    for equipe in (mandante, visitante):
+        n = sum(1 for j in jogadores if j["equipe"] == equipe and j["titular"])
+        if not 9 <= n <= 12:
+            return []
+    return jogadores
+
+
 def parse_sumula_pdf(pdf_path) -> dict:
     with pdfplumber.open(pdf_path) as pdf:
         all_tables = []
@@ -132,6 +199,8 @@ def parse_sumula_pdf(pdf_path) -> dict:
 
     section = None
     cartao_equipe_idx = {}  # secao -> bool se ha coluna Equipe
+    equipe_atual = None  # layout B da relacao de jogadores (um time por tabela)
+    roster_b = False     # True se a tabela de jogadores veio quebrada (layout B): relê por posição das palavras
 
     for table in all_tables[1:]:
         if not table:
@@ -166,9 +235,41 @@ def parse_sumula_pdf(pdf_path) -> dict:
                         data["resultado_final_visitante"] = int(m.group(4))
 
         elif section == "Relação de Jogadores":
+            def _add_jogador(equipe_nome, cols):
+                numero, apelido, nome_completo, t_r, p_a, cbf = (list(cols) + [None] * 6)[:6]
+                # jogador sem numero na sumula (acontece): mantem se tiver nome ou registro CBF
+                if not numero and not (_clean(cbf) or len(_clean(apelido)) > 1):
+                    return
+                numero = numero or ""
+                titular_raw = _clean(t_r)
+                data["jogadores"].append({
+                    "equipe": equipe_nome,
+                    "numero": int(_clean(numero)) if _clean(numero).isdigit() else None,
+                    "apelido": _clean(apelido),
+                    "nome_completo": _clean(nome_completo),
+                    "titular": titular_raw.startswith("T"),
+                    "goleiro": "(g)" in titular_raw,
+                    "categoria": "Profissional" if _clean(p_a) == "P" else "Amador",
+                    "cbf_id": _clean(cbf) or None,
+                })
+
             for row in rows:
                 non_null_idx = [i for i, c in enumerate(row) if c not in (None, "")]
                 if not non_null_idx:
+                    continue
+                # Layout B (visto em ~13% das sumulas, sobretudo 2024-25): 1 tabela POR TIME, 7 colunas
+                # com a 1a vazia: [None, Nº, Apelido, Nome, T/R, P/A, CBF]; o nome do time vem numa linha propria.
+                if len(row) == 5:  # metade do time quebrada em outra tabela, sem coluna CBF
+                    roster_b = True
+                    continue
+                if len(row) == 7 and not _clean(row[0]):
+                    roster_b = True
+                    if len(non_null_idx) == 1:
+                        equipe_atual = _clean(row[non_null_idx[0]])
+                        continue
+                    if _is_header_row(row, JOGADOR_HEADER):
+                        continue
+                    _add_jogador(equipe_atual or data["time_mandante"], row[1:7])
                     continue
                 if _is_header_row(row, JOGADOR_HEADER):
                     continue
@@ -185,22 +286,7 @@ def parse_sumula_pdf(pdf_path) -> dict:
                 ):
                     if not any(c not in (None, "") for c in cols):
                         continue
-                    numero, apelido, nome_completo, t_r, p_a, cbf = (cols + [None] * 6)[:6]
-                    # jogador sem numero na sumula (acontece): mantem se tiver nome ou registro CBF
-                    if not numero and not (_clean(cbf) or len(_clean(apelido)) > 1):
-                        continue
-                    numero = numero or ""
-                    titular_raw = _clean(t_r)
-                    data["jogadores"].append({
-                        "equipe": equipe_nome,
-                        "numero": int(_clean(numero)) if _clean(numero).isdigit() else None,
-                        "apelido": _clean(apelido),
-                        "nome_completo": _clean(nome_completo),
-                        "titular": titular_raw.startswith("T"),
-                        "goleiro": "(g)" in titular_raw,
-                        "categoria": "Profissional" if _clean(p_a) == "P" else "Amador",
-                        "cbf_id": _clean(cbf) or None,
-                    })
+                    _add_jogador(equipe_nome, cols)
 
         elif section == "Comissão Técnica":
             for row in rows:
@@ -259,9 +345,20 @@ def parse_sumula_pdf(pdf_path) -> dict:
                     continue
                 if not cells[0] or len(cells) < 3:
                     continue
+                # Vermelhos: a linha 2 do cartao traz o TIPO na 1a celula ("Cartão Vermelho Direto" /
+                # "2º Cartão Amarelo") e o "Motivo: ..." na 4a — nao e um novo cartao.
+                if not re.match(r"^\+?\d+:\d+$", cells[0]):
+                    if data[key]:
+                        data[key][-1]["detalhe"] = cells[0]
+                        resto = " ".join(c for c in cells[1:] if c)
+                        if resto:
+                            data[key][-1]["motivo"] = (data[key][-1].get("motivo", "") + " " + resto).strip()
+                    continue
                 tempo, periodo, numero = cells[0], cells[1], cells[2]
                 jogador = cells[3] if len(cells) > 3 else None
                 equipe = cells[4] if len(cells) > 4 else None
+                if jogador and not equipe and " - " in jogador:  # vermelhos: "Nome - Equipe" na mesma celula
+                    jogador, equipe = [p.strip() for p in jogador.rsplit(" - ", 1)]
                 data[key].append({
                     "tempo": tempo,
                     "periodo": periodo,
@@ -269,6 +366,7 @@ def parse_sumula_pdf(pdf_path) -> dict:
                     "jogador": jogador,
                     "equipe": equipe,
                     "motivo": "",
+                    "detalhe": "",
                 })
 
         elif section == "Substituições":
@@ -290,6 +388,11 @@ def parse_sumula_pdf(pdf_path) -> dict:
                     "saiu_numero": saiu_num,
                     "saiu": saiu_nome,
                 })
+
+    if roster_b:
+        novo = _roster_por_palavras(pdf_path, data["time_mandante"], data["time_visitante"])
+        if novo:
+            data["jogadores"] = novo
 
     _normalize_equipes(data)
     return data

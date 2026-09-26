@@ -260,7 +260,8 @@ with tabs[3]:
         am, vm = int((cart_t["tipo"] == "amarelo").sum()), int((cart_t["tipo"] == "vermelho").sum())
         k = st.columns(4)
         k[0].metric("Amarelos", am, f"{am / r['J']:.2f} por jogo", delta_color="off")
-        k[1].metric("Vermelhos", vm, delta_color="off")
+        diretos = int((cart_t.get("detalhe", pd.Series(dtype=str)) == "Cartão Vermelho Direto").sum())
+        k[1].metric("Vermelhos", vm, f"{diretos} diretos · {vm - diretos} por 2º amarelo" if vm else None, delta_color="off")
         if not Lm.empty:
             k[2].metric("Amarelos/jogo (média da seleção)", f"{Lm['Amarelos/jogo'].mean():.2f}")
         k[3].metric("Cartões no 2º tempo", f"{round((cart_t['periodo'] == 2).mean() * 100)}%")
@@ -275,7 +276,8 @@ with tabs[3]:
             st.plotly_chart(estilo(fig, 320), width="stretch")
         with b:
             st.markdown("#### Atletas mais advertidos")
-            top = cart_t.groupby("jogador").agg(Amarelos=("tipo", lambda s: (s == "amarelo").sum()),
+            staff = cart_t["comissao"].fillna(False).astype(bool) if "comissao" in cart_t else pd.Series(False, index=cart_t.index)
+            top = cart_t.assign(jogador=cart_t["jogador"].where(~staff, cart_t["jogador"] + " (comissão)")).groupby("jogador").agg(Amarelos=("tipo", lambda s: (s == "amarelo").sum()),
                                                 Vermelhos=("tipo", lambda s: (s == "vermelho").sum())).reset_index()
             top = top.rename(columns={"jogador": "Atleta"})
             tabela(top, "cart_top", ordenar_por="Amarelos", altura=320)

@@ -35,7 +35,7 @@ OUT_DIR = ROOT / "data" / "processed"
 
 IDS_FEMININO = {59, 564, 708, 803}
 DURACAO = 90
-PARSER_VERSAO = 2  # aumente ao mudar parse_sumula.py: invalida o cache data/parsed
+PARSER_VERSAO = 5  # aumente ao mudar parse_sumula.py: invalida o cache data/parsed
 
 
 def minuto_absoluto(tempo, periodo) -> float | None:
@@ -182,6 +182,8 @@ def main():
             if not j.get("cbf_id") and len((j["apelido"] or "").strip()) < 2:
                 continue  # linha lixo da tabela do PDF
             aid = j.get("cbf_id") or f"{eq}|{nome_proprio(j['apelido'])}"
+            if any(r["atleta_id"] == aid and r["equipe"] == eq for r in roster.values()):
+                continue  # linha repetida na sumula
             reg = {"jogo_id": sid, "atleta_id": aid, "equipe": eq, "numero": j["numero"],
                    "titular": bool(j["titular"]), "goleiro": bool(j["goleiro"]), "categoria": j.get("categoria"),
                    "entrou": False, "saiu": False, "min_entrada": 0.0 if j["titular"] else None, "min_saida": None,
@@ -239,7 +241,8 @@ def main():
                 cartoes_out.append({"jogo_id": sid, "atleta_id": reg["atleta_id"] if reg else None,
                                     "jogador": nome_proprio(c["jogador"]), "equipe": eq, "tipo": tipo, "minuto": minuto,
                                     "periodo": 2 if str(c["periodo"]) in ("2", "2T") else 1,
-                                    "motivo": re.sub(r"^Motivo:\s*", "", c.get("motivo") or "").strip() or None})
+                                    "motivo": re.sub(r"^Motivo:\s*", "", c.get("motivo") or "").strip() or None,
+                                    "detalhe": c.get("detalhe") or None, "comissao": c["numero"] is None})
 
         # ---- substituicoes ----
         for s in d["substituicoes"]:
