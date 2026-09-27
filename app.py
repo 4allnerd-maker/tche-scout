@@ -12,6 +12,7 @@ st.logo(str(Path(__file__).parent / "assets" / "logo.svg"), size="large")
 
 navegacao = st.navigation([
     st.Page("inicio.py", title="Início", icon="🏠", default=True),
+    st.Page("pages/11_📰_Notícias.py", title="Notícias", icon="📰", url_path="noticias"),
     st.Page("pages/1_📅_Calendário.py", title="Calendário", icon="📅", url_path="calendario"),
     st.Page("pages/2_🏆_Classificações.py", title="Classificações", icon="🏆", url_path="classificacoes"),
     st.Page("pages/3_🎯_Jogadores.py", title="Jogadores", icon="🎯", url_path="jogadores"),

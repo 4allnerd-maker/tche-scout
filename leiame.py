@@ -7,6 +7,15 @@ import streamlit as st
 TITULO = "ℹ️ Leia-me: como interpretar esta página (e onde pode haver erro)"
 
 TEXTOS = {
+    "noticias": """
+**Lógica.** Dois tipos de post: os de *Resultados* são **gerados automaticamente** a partir dos dados de cada rodada
+(sem redação manual); os demais (Transferências, Artigos, Convocação, Bastidores) são **escritos pela equipe do Tchê Scout**.
+
+**Atenção**
+- Os resumos automáticos de rodada só existem para competições com numeração de rodada e para a temporada mais recente.
+- Textos manuais podem ficar desatualizados entre uma publicação e outra — confira a data.
+- Isto não é aconselhamento de aposta nem informação privilegiada de mercado: é cobertura de resultados e bastidores.
+""",
     "calendario": """
 **Lógica.** Os jogos vêm do site da FGF. *Resultados* traz jogos já disputados; *Próximos jogos*, os agendados.
 
@@ -71,6 +80,7 @@ TEXTOS = {
 **Atenção**
 - Confira o resultado antes de publicar: dados vêm de súmulas, que podem ter erros de digitação ou ser corrigidas depois.
 - **Rodada** vem da súmula; competições com fases eliminatórias não têm rodada numerada.
+- **Escudos:** buscados em fontes abertas (Wikipedia/Wikimedia Commons) para identificação visual; são marcas dos respectivos clubes. Times sem escudo cadastrado ainda mostram um distintivo com as iniciais.
 - As legendas sugeridas são um ponto de partida — revise antes de postar.
 - **Campo tático do PDF:** sem formação informada, é uma *leitura pela numeração de camisa* — **não é a formação real**. Se você informar a formação (ex.: viu o jogo), o PDF usa a sua, marcada como dado digitado e não verificado.
 - Os relatórios são de **estatística de desempenho**, sem finalidade de apostas.

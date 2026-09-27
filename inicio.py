@@ -1,11 +1,13 @@
 import base64
 from pathlib import Path
 
+import pandas as pd
 import streamlit as st
 
 import data_loader as dl
+import noticias as nt
 from config import AUTOR, AUTOR_FUNCAO, NOME, SLOGAN, WHATSAPP_EXIBIR, WHATSAPP_LINK
-from theme import rodape
+from theme import COR, rodape
 
 LOGO = base64.b64encode((Path(__file__).parent / "assets" / "logo.svg").read_bytes()).decode()
 
@@ -37,6 +39,19 @@ if dl.tem_dados():
 else:
     st.warning("Base de dados ainda não gerada. Rode `python scraper/build_dataset.py` (veja o README).")
 
+feed = nt.feed(dl.jogos() if dl.tem_dados() else None, max_auto=6)
+if not feed.empty:
+    st.markdown("## 📰 Últimas notícias")
+    cols = st.columns(3)
+    for col, p in zip(cols, feed.head(3).itertuples()):
+        ico = nt.ICONE_CAT.get(p.categoria, "📰")
+        data_fmt = p.data.strftime("%d/%m/%Y") if pd.notna(p.data) else ""
+        col.markdown(
+            f'<div class="ts-card"><div class="ico">{ico} '
+            f'<span style="font-size:.8rem;color:{COR["texto_suave"]};font-family:Inter">{data_fmt} · {p.categoria}</span></div>'
+            f'<h4>{p.titulo}</h4><p>{p.resumo}</p></div>', unsafe_allow_html=True)
+    st.page_link("pages/11_📰_Notícias.py", label="Ver todas as notícias →", width="stretch")
+
 st.markdown("## Por que o Tchê Scout existe")
 col_a, col_b = st.columns([3, 2])
 with col_a:
@@ -65,6 +80,8 @@ with col_b:
 
 st.markdown("## O que você encontra aqui")
 cards = [
+    ("📰", "Notícias", "pages/11_📰_Notícias.py",
+     "Transferências, artigos e os resultados de cada rodada, num feed que atualiza sozinho."),
     ("📅", "Calendário", "pages/1_📅_Calendário.py",
      "Resultados e próximos jogos, com filtro por competição, ano e time. Selecione um jogo e abra a súmula com um clique."),
     ("🏆", "Classificações", "pages/2_🏆_Classificações.py",

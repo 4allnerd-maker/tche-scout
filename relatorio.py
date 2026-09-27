@@ -10,6 +10,7 @@ import pandas as pd
 from fpdf import FPDF
 
 import cards
+import escudos as es
 
 ASSETS = Path(__file__).resolve().parent / "assets"
 VERDE, VERDE_ESC, DOURADO, VERMELHO = (14, 107, 63), (10, 61, 38), (242, 183, 5), (200, 16, 46)
@@ -41,6 +42,7 @@ class Relatorio(FPDF):
         self.cell(90, 6, "TCHÊ SCOUT")
         self.set_font("DejaVu", "", 8)
         self.cell(0, 6, f"Relatório de scout · {self.titulo_curto}", align="R")
+        self.image(io.BytesIO(es.png_bytes(self.titulo_curto, 96)), x=195, y=1, h=12)
         self.set_y(22)
 
     def footer(self):
@@ -193,9 +195,11 @@ def gerar_pdf_time(ctx: dict) -> bytes:
     pdf.set_fill_color(*DOURADO)
     pdf.rect(0, 188.5, 210, 1.5, "F")
     buf = io.BytesIO()
-    cards.logo(360).save(buf, "PNG")
+    cards.logo(240).save(buf, "PNG")
     buf.seek(0)
-    pdf.image(buf, x=20, y=30, h=42)
+    pdf.image(buf, x=20, y=30, h=28)
+    buf2 = io.BytesIO(es.png_bytes(ctx["time"], 300))
+    pdf.image(buf2, x=170, y=16, h=24)
     pdf.set_xy(78, 38)
     pdf.set_font("DejaVu", "B", 26)
     pdf.set_text_color(255, 255, 255)

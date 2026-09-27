@@ -1,0 +1,12 @@
+[
+  {
+    "id": "boas-vindas-tche-scout",
+    "data": "2026-09-27",
+    "categoria": "Artigo",
+    "titulo": "Tchê Scout no ar: dados abertos do futebol gaúcho",
+    "resumo": "Começa o Tchê Scout, reunindo súmulas oficiais da FGF em painéis de scout gratuitos para todo mundo.",
+    "corpo": "O futebol gaúcho é gigante — Gauchão, Série A2, Série B, Copa FGF, categorias femininas — mas nunca teve um site de scout dedicado a ele. O Tchê Scout nasce para preencher essa lacuna: transforma as súmulas oficiais da Federação Gaúcha de Futebol em dados organizados, padronizados e consultáveis, atualizados automaticamente a cada rodada.\n\nA base já cobre calendário, classificações, perfil de times, arbitragem, elenco por camisa e posição, e agora também relatórios de scout em PDF com campo tático. Tudo gratuito e aberto.\n\nA ideia é simples: quem analisa futebol no Rio Grande do Sul merece as mesmas ferramentas de quem analisa as grandes ligas.",
+    "autor": "Lucho Pahim",
+    "tags": ["lançamento", "tchê scout"]
+  }
+]

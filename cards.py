@@ -9,6 +9,8 @@ from pathlib import Path
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 
+import escudos as es
+
 ASSETS = Path(__file__).resolve().parent / "assets"
 FONT_B = str(ASSETS / "fonts" / "DejaVuSans-Bold.ttf")
 FONT_R = str(ASSETS / "fonts" / "DejaVuSans.ttf")
@@ -150,8 +152,13 @@ def card_resultados(jogos: pd.DataFrame, titulo: str, subtitulo: str = "", desta
             dest = destaque and destaque in (r.time_mandante, r.time_visitante)
             d.rounded_rectangle([70, y, W - 70, y + h], radius=18, fill=BRANCO, outline=DOURADO if dest else None, width=5)
             f = fonte(27)
-            _texto(d, (W // 2 - 92, y + h // 2), _cabe(d, r.time_mandante, f, 380), f, VERDE_ESC, "rm")
-            _texto(d, (W // 2 + 92, y + h // 2), _cabe(d, r.time_visitante, f, 380), f, VERDE_ESC, "lm")
+            esc = min(h - 18, 64)
+            em = es.imagem(r.time_mandante, esc)
+            img.paste(em, (int(W // 2 - 92 - 20 - esc), int(y + (h - esc) / 2)), em)
+            ev = es.imagem(r.time_visitante, esc)
+            img.paste(ev, (int(W // 2 + 92 + 20), int(y + (h - esc) / 2)), ev)
+            _texto(d, (W // 2 - 92 - 20 - esc - 10, y + h // 2), _cabe(d, r.time_mandante, f, 300), f, VERDE_ESC, "rm")
+            _texto(d, (W // 2 + 92 + 20 + esc + 10, y + h // 2), _cabe(d, r.time_visitante, f, 300), f, VERDE_ESC, "lm")
             d.rounded_rectangle([W // 2 - 80, y + 10, W // 2 + 80, y + h - 10], radius=14, fill=VERDE_ESC)
             placar = f"{int(r.gols_mandante)}  x  {int(r.gols_visitante)}"
             _texto(d, (W // 2, y + h // 2), placar, fonte(36), DOURADO, "mm")
@@ -177,7 +184,9 @@ def card_artilheiros(df: pd.DataFrame, titulo: str, subtitulo: str = "", top: in
         d.ellipse([84, y + 12, 84 + 56, y + 68], fill=DOURADO if i == 0 else VERDE_ESC)
         _texto(d, (112, y + 40), str(i + 1), fonte(28), VERDE_ESC if i == 0 else BRANCO, "mm")
         _texto(d, (160, y + 10), _cabe(d, str(r["Atleta"]), fonte(30), 470), fonte(30), VERDE_ESC)
-        _texto(d, (160, y + 50), _cabe(d, str(r["Time"]), fonte(21, False), 470), fonte(21, False), CINZA)
+        et = es.imagem(str(r["Time"]), 26)
+        img.paste(et, (160, y + 52), et)
+        _texto(d, (192, y + 50), _cabe(d, str(r["Time"]), fonte(21, False), 430), fonte(21, False), CINZA)
         bx0, bx1 = 650, W - 190
         d.rounded_rectangle([bx0, y + 28, bx1, y + 52], radius=12, fill=(225, 233, 226))
         d.rounded_rectangle([bx0, y + 28, bx0 + max(28, int((bx1 - bx0) * r["Gols"] / maxg)), y + 52], radius=12,
@@ -193,8 +202,8 @@ def card_classificacao(df: pd.DataFrame, titulo: str, subtitulo: str = "", desta
     alt = 1350
     img, d, y0 = _moldura(alt, titulo, subtitulo)
     cab = fonte(22)
-    xs = {"pos": 96, "time": 150, "P": 700, "J": 780, "V": 860, "SG": 960}
-    _texto(d, (xs["time"], y0 - 6), "TIME", cab, DOURADO)
+    xs = {"pos": 96, "time": 158, "P": 700, "J": 780, "V": 860, "SG": 960}
+    _texto(d, (xs["time"] + 62, y0 - 6), "TIME", cab, DOURADO)
     for k, rot in (("P", "P"), ("J", "J"), ("V", "V"), ("SG", "SG")):
         _texto(d, (xs[k], y0 - 6), rot, cab, DOURADO, "ma")
     y = y0 + 32
@@ -203,7 +212,11 @@ def card_classificacao(df: pd.DataFrame, titulo: str, subtitulo: str = "", desta
         dest = destaque and r["Time"] == destaque
         d.rounded_rectangle([70, y, W - 70, y + linha - 8], radius=14, fill=BRANCO, outline=DOURADO if dest else None, width=5)
         _texto(d, (xs["pos"], y + (linha - 8) // 2), str(int(r["Pos"])), fonte(28), VERDE_ESC, "mm")
-        _texto(d, (xs["time"], y + (linha - 8) // 2), _cabe(d, str(r["Time"]), fonte(28), 500), fonte(28), VERDE_ESC, "lm")
+        esc = min(linha - 14, 48)
+        et = es.imagem(str(r["Time"]), esc)
+        img.paste(et, (int(xs["time"]), int(y + (linha - 8 - esc) / 2)), et)
+        _texto(d, (xs["time"] + esc + 14, y + (linha - 8) // 2), _cabe(d, str(r["Time"]), fonte(28), 430), fonte(28),
+              VERDE_ESC, "lm")
         for k in ("P", "J", "V", "SG"):
             v = r[k]
             txt = f"{int(v):+d}" if k == "SG" else str(int(v))
@@ -217,6 +230,8 @@ def card_time(time: str, subtitulo: str, kpis: list[tuple[str, str]], forma: lis
     """Raio-X do time. kpis: [(rótulo, valor)] (até 6); forma: ['V','E','D',...]; faixas: colunas Faixa, Feitos, Sofridos."""
     alt = 1350
     img, d, y0 = _moldura(alt, time, subtitulo)
+    et = es.imagem(time, 104)
+    img.paste(et, (W - 174, 46), et)
     # KPIs 3x2
     cw, ch = 300, 130
     for i, (rot, val) in enumerate(kpis[:6]):
