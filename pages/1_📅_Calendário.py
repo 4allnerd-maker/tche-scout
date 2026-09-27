@@ -2,10 +2,12 @@ import pandas as pd
 import streamlit as st
 
 import data_loader as dl
+import leiame
 from theme import cabecalho, rodape
 from ui import abrir_jogo, linha_selecionada, tabela
 
 cabecalho("📅 Calendário", "Resultados e próximos jogos dos campeonatos gaúchos.")
+leiame.mostrar("calendario")
 
 if not dl.tem_dados():
     st.warning("Base de dados ainda não gerada.")

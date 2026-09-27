@@ -7,10 +7,13 @@ import streamlit as st
 import camisas as cm
 import campo
 import data_loader as dl
+import formacoes
+import leiame
 from theme import COR, cabecalho, rodape
 from ui import tabela
 
 cabecalho("🧾 Jogo & súmula", "A súmula de uma partida, aberta e explicada: linha do tempo, escalações por numeração e arbitragem.")
+leiame.mostrar("jogo")
 
 if not dl.tem_dados():
     st.warning("Base de dados ainda não gerada.")
@@ -90,7 +93,7 @@ if isinstance(r.get("sumula_url"), str) and r["sumula_url"]:
     b1.link_button("📄 Abrir súmula oficial (PDF)", r["sumula_url"], width="stretch")
 b2.caption(f"Código do jogo: {jogo_id}")
 
-tabs = st.tabs(["⏱️ Linha do tempo", "👕 Escalações por numeração", "📊 Comparativo", "⚖️ Arbitragem"])
+tabs = st.tabs(["⏱️ Linha do tempo", "👕 Escalações por numeração", "📊 Comparativo", "⚖️ Arbitragem", "🧩 Formação (manual)"])
 
 # ------------------------------------------------------------------ linha do tempo
 with tabs[0]:
@@ -192,5 +195,20 @@ with tabs[3]:
             cs = cartoes_all[cartoes_all["jogo_id"].isin(set(outros["jogo_id"]))]
             st.caption(f"Nos {len(outros)} jogos deste árbitro na base: {(cs['tipo'] == 'amarelo').sum() / len(outros):.2f} amarelos e "
                        f"{(cs['tipo'] == 'vermelho').sum() / len(outros):.2f} vermelhos por jogo. Veja mais na aba Arbitragem.")
+
+with tabs[4]:
+    st.markdown("A súmula **não informa o desenho tático**. Aqui você registra a formação de cada time neste jogo (por exemplo, "
+                "vista no vídeo ou na transmissão) e o Tchê Scout cruza com os resultados na aba **Análise → 🧩 Formações**.")
+    st.warning("Registros são digitados por pessoas e **não são verificados** pelo Tchê Scout. Podem conter equívocos.")
+    for equipe in (mand, visit):
+        atual, obs_atual = formacoes.obter(jogo_id, equipe)
+        opcoes = formacoes.OPCOES + ([atual] if atual and atual not in formacoes.OPCOES else [])
+        c1, c2 = st.columns([1, 2])
+        f = c1.selectbox(f"Formação — {equipe}", opcoes, index=opcoes.index(atual) if atual in opcoes else 0,
+                         key=f"form_{jogo_id}_{equipe}", format_func=lambda x: x or "— não informada —")
+        o = c2.text_input("Observação (opcional)", value=obs_atual, key=f"obs_{jogo_id}_{equipe}",
+                          placeholder="Ex.: mudou para 3-5-2 no 2º tempo")
+        formacoes.salvar(jogo_id, equipe, f, o)
+    formacoes.painel_arquivo()
 
 rodape()

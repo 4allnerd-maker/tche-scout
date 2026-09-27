@@ -7,12 +7,14 @@ import streamlit as st
 import cards
 import contexto
 import data_loader as dl
+import leiame
 import relatorio
 import stats
 from config import AUTOR, AUTOR_FUNCAO
 from theme import cabecalho, rodape
 
 cabecalho("🖼️ Relatórios e cards", "Crie imagens prontas para as redes sociais e um relatório de scout em PDF — com um clique.")
+leiame.mostrar("relatorios")
 
 if not dl.tem_dados():
     st.warning("Base de dados ainda não gerada.")

@@ -68,6 +68,6 @@ def rodape() -> None:
     st.markdown(
         '<div class="ts-rodape">Dados extraídos das súmulas oficiais publicadas pela Federação Gaúcha de Futebol (FGF). '
         "O Tchê Scout é um projeto independente e não tem vínculo oficial com a FGF ou com os clubes. "
-        "Estatísticas de scout — não é conteúdo de apostas.</div>",
+        "Estatísticas de scout — não é conteúdo de apostas. Leia a aba <b>Metodologia</b> para entender como os números são feitos e onde podem ocorrer equívocos.</div>",
         unsafe_allow_html=True,
     )

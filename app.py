@@ -18,6 +18,7 @@ navegacao = st.navigation([
     st.Page("pages/8_🧾_Jogo.py", title="Jogo & súmula", icon="🧾", url_path="jogo"),
     st.Page("pages/7_⚖️_Arbitragem.py", title="Arbitragem", icon="⚖️", url_path="arbitragem"),
     st.Page("pages/9_🖼️_Relatórios_e_Cards.py", title="Relatórios e cards", icon="🖼️", url_path="relatorios"),
+    st.Page("pages/10_📘_Metodologia.py", title="Metodologia", icon="📘", url_path="metodologia"),
     st.Page("pages/6_👤_Quem_sou_eu.py", title="Quem sou eu", icon="👤", url_path="quem-sou-eu"),
     st.Page("pages/4_📣_Anuncie.py", title="Anuncie", icon="📣", url_path="anuncie"),
 ])

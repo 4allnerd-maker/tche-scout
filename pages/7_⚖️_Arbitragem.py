@@ -4,10 +4,12 @@ import streamlit as st
 
 import arbitragem as ab
 import data_loader as dl
+import leiame
 from theme import COR, cabecalho, rodape
 from ui import tabela
 
 cabecalho("⚖️ Arbitragem", "Como cada árbitro conduz os jogos: disciplina, pênaltis, acréscimos e equilíbrio entre mandante e visitante.")
+leiame.mostrar("arbitragem")
 
 if not dl.tem_dados():
     st.warning("Base de dados ainda não gerada.")

@@ -2,12 +2,14 @@ import plotly.graph_objects as go
 import streamlit as st
 
 import data_loader as dl
+import leiame
 import stats
 from theme import COR, cabecalho, rodape
 from ui import tabela
 
 cabecalho("🏆 Classificações e scout dos times",
           "Tabela, perfil de cada time e em que momento do jogo os gols acontecem.")
+leiame.mostrar("classificacoes")
 
 if not dl.tem_dados():
     st.warning("Base de dados ainda não gerada.")

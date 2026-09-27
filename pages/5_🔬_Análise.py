@@ -4,10 +4,13 @@ import streamlit as st
 
 import analise as an
 import data_loader as dl
+import formacoes
+import leiame
 from theme import COR, cabecalho, rodape
 from ui import abrir_jogo, chips_forma, linha_selecionada, tabela
 
 cabecalho("🔬 Análise de time", "Escolha um time e receba um painel de scout completo, com insights prontos para o seu relatório.")
+leiame.mostrar("analise")
 
 if not dl.tem_dados():
     st.warning("Base de dados ainda não gerada.")
@@ -100,7 +103,7 @@ m[3].metric("Gols contra/jogo", r["gc_j"], delta(r["gc_j"], "Gols contra/jogo"),
 m[4].metric("Saldo de gols", f"{r['SG']:+d}", f"{r['GP']} pró · {r['GC']} contra", delta_color="off")
 m[5].metric("Jogos sem sofrer", f"{r['sem_sofrer']}", f"{r['pct_sem_sofrer']}%", delta_color="off")
 
-tabs = st.tabs(["📌 Resumo & insights", "⏱️ Gols e minutagem", "🧠 Como joga", "🟨 Disciplina", "👥 Elenco", "📋 Jogo a jogo"])
+tabs = st.tabs(["📌 Resumo & insights", "⏱️ Gols e minutagem", "🧠 Como joga", "🟨 Disciplina", "👥 Elenco", "📋 Jogo a jogo", "🧩 Formações"])
 
 # ------------------------------------------------------------------ 1. resumo
 with tabs[0]:
@@ -350,5 +353,42 @@ with tabs[5]:
     if st.button("🔎 Analisar o jogo selecionado", disabled=sel is None, type="primary", key="jxj_analisar"):
         abrir_jogo(sel["jogo_id"])
     st.caption("Clique numa linha para selecioná-la.")
+
+# ------------------------------------------------------------------ 7. formações (manual)
+with tabs[6]:
+    st.markdown("A súmula não traz a formação tática. Preencha o desenho de cada jogo do time na tabela abaixo (clique na célula "
+                "**Formação**) e veja o rendimento por formação.")
+    st.warning("Os registros são digitados por pessoas e **não são verificados**. Eles ficam só nesta sessão do navegador: "
+               "use **Baixar CSV** no fim da página para guardar.")
+    ed = d[["jogo_id", "data", "adversario", "mando", "gp", "gc", "res"]].copy()
+    ed["Formação"] = ed["jogo_id"].map(lambda i: formacoes.obter(i, time)[0])
+    ed["Observação"] = ed["jogo_id"].map(lambda i: formacoes.obter(i, time)[1])
+    ed["Placar"] = ed["gp"].astype(str) + " x " + ed["gc"].astype(str)
+    ed = ed.rename(columns={"data": "Data", "adversario": "Adversário", "mando": "Mando", "res": "Res."}).set_index("jogo_id")
+    ed = ed[["Data", "Adversário", "Mando", "Placar", "Res.", "Formação", "Observação"]]
+    opcoes = formacoes.OPCOES + sorted({v for v in ed["Formação"] if v and v not in formacoes.OPCOES})
+    editado = st.data_editor(
+        ed, hide_index=True, width="stretch", key=f"ed_form_{time}_{mando}_{int(ultimos)}",
+        disabled=["Data", "Adversário", "Mando", "Placar", "Res."],
+        column_config={"Data": st.column_config.DateColumn("Data", format="DD/MM/YYYY", width="small"),
+                       "Formação": st.column_config.SelectboxColumn("Formação", options=opcoes, width="small"),
+                       "Observação": st.column_config.TextColumn("Observação", width="large")})
+    for jid, row in editado.iterrows():
+        formacoes.salvar(jid, time, row["Formação"] or "", row["Observação"] or "")
+    resumo_f = formacoes.resumo_por_formacao(d, time)
+    if resumo_f.empty:
+        st.info("Nenhuma formação registrada ainda para este recorte.")
+    else:
+        st.markdown("#### Rendimento por formação")
+        top = resumo_f.iloc[0]
+        st.markdown(f"- **Mais usada:** {top['Formação']} em {int(top['Jogos'])} jogos "
+                    f"({top['Aproveitamento (%)']}% de aproveitamento).")
+        tabela(resumo_f, "formacoes_res", ordenar_por="Jogos", com_controles=False)
+        fig = go.Figure(go.Bar(x=resumo_f["Formação"], y=resumo_f["Aproveitamento (%)"], marker_color=COR["verde"],
+                               text=resumo_f["Jogos"].map(lambda n: f"{n} jogo(s)"), textposition="outside"))
+        fig.update_layout(yaxis_title="Aproveitamento (%)", yaxis_range=[0, 110])
+        st.plotly_chart(estilo(fig, 300, False), width="stretch")
+        st.caption("Com poucos jogos por formação, a comparação é frágil — use como indício, não como conclusão.")
+    formacoes.painel_arquivo()
 
 rodape()
