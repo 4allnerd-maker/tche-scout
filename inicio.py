@@ -74,7 +74,7 @@ cards = [
     ("🔬", "Análise", "pages/5_🔬_Análise.py",
      "Escolha um time e veja um painel completo: forma, gols por minuto, quem abre o placar, disciplina e insights prontos."),
     ("🧾", "Jogo & súmula", "pages/8_🧾_Jogo.py",
-     "A súmula de uma partida explicada: linha do tempo, escalações por numeração, formação estimada e arbitragem."),
+     "A súmula de uma partida explicada: linha do tempo, campo com as camisas dos titulares, escalações e arbitragem."),
     ("⚖️", "Arbitragem", "pages/7_⚖️_Arbitragem.py",
      "Ranking e ficha dos árbitros: cartões por jogo, pênaltis, acréscimos e equilíbrio entre mandante e visitante."),
     ("🖼️", "Relatórios e cards", "pages/9_🖼️_Relatórios_e_Cards.py",

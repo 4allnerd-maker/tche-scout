@@ -69,6 +69,8 @@ prim = an.primeiro_gol(d, g) if not g.empty else pd.DataFrame()
 quadro = an.quadro_intervalo(d)
 Lm = liga.set_index("Time") if not liga.empty else pd.DataFrame()
 
+cont = an.continuidade_onze(partidas_all, d, time)
+cont_res = an.resumo_continuidade(cont)
 recorte = f"{mando}" + (f" · últimos {int(ultimos)} jogos" if ultimos else "")
 st.markdown(
     f'<div class="ts-hero" style="padding:1.2rem 1.6rem; display:block;"><h1 style="font-size:2rem;margin:0">{time}</h1>'
@@ -110,7 +112,7 @@ with tabs[0]:
                                  for x in rec.itertuples()]), unsafe_allow_html=True)
         st.caption("Passe o mouse sobre a bolinha para ver o jogo · mais antigo → mais recente")
         st.markdown("#### Insights automáticos")
-        textos = an.insights(time, d, g, cart_t, elen, liga, prim, quadro, subs_t)
+        textos = an.insights(time, d, g, cart_t, elen, liga, prim, quadro, subs_t, cont_res)
         for t in textos:
             st.markdown(f"- {t}")
     with c2:
@@ -314,6 +316,19 @@ with tabs[4]:
                 k = st.columns(2)
                 k[0].metric("Substituições/jogo", f"{len(subs_t) / r['J']:.1f}")
                 k[1].metric("Minuto da 1ª troca", f"{subs_t.groupby('jogo_id')['minuto'].min().mean():.0f}'")
+        if not cont.empty:
+            st.markdown("#### Continuidade do onze")
+            k = st.columns(4)
+            k[0].metric("Titulares mantidos por jogo", cont_res["media_mantidos"], help="Média de atletas que repetem como titulares em relação ao jogo anterior")
+            k[1].metric("Mudanças por jogo", cont_res["media_novos"])
+            k[2].metric("Jogos com até 2 mudanças", f"{cont_res['pct_ate_2']}%")
+            k[3].metric("Onze idêntico ao anterior", f"{cont_res['pct_igual']}%")
+            fig = go.Figure(go.Bar(x=cont["Data"], y=cont["Titulares novos"], marker_color=COR["dourado"],
+                                   text=cont["Titulares novos"], textposition="outside",
+                                   hovertext="vs " + cont["Adversário"]))
+            fig.update_layout(yaxis_title="Titulares novos vs jogo anterior")
+            st.plotly_chart(estilo(fig, 260, False), width="stretch")
+            st.caption("Quanto mais alto, mais rotação. Barras sempre baixas indicam um time-base estável.")
         st.markdown("#### Elenco completo")
         tabela(elen, "elenco", ordenar_por="Minutos", fixar="Atleta", altura=420, exportar=f"tche-scout-elenco-{time}")
 

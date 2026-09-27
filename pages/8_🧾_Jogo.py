@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 import camisas as cm
+import campo
 import data_loader as dl
 from theme import COR, cabecalho, rodape
 from ui import tabela
@@ -127,32 +128,23 @@ with tabs[0]:
 
 # ------------------------------------------------------------------ escalações
 with tabs[1]:
-    st.caption("A súmula não informa a posição do atleta. A coluna **Função (convenção)** usa a numeração tradicional do "
-               "futebol brasileiro (1 goleiro, 2 lateral direito, 3–4 zagueiros, 5 volante, 6 lateral esquerdo, 7 e 11 pontas, "
-               "8 meia, 9 centroavante, 10 armador) — é uma pista, não um fato.")
+    st.caption("A súmula não informa a posição nem o desenho tático. O campo abaixo posiciona os titulares **pela numeração de camisa** "
+               "(convenção brasileira: 1 goleiro, 2 lateral direito, 3–4 zagueiros, 5 volante, 6 lateral esquerdo, 7 e 11 pontas, "
+               "8 meia, 9 centroavante, 10 armador). É uma **leitura da súmula**, não a formação real do jogo.")
     cols = st.columns(2)
     for col, equipe in zip(cols, (mand, visit)):
         with col:
             e = pj[pj["equipe"] == equipe].copy()
             e["situacao"] = e.apply(lambda x: "Titular" if x["titular"] else ("Entrou" if x["entrou"] else "Banco"), axis=1)
-            e["zona"] = e.apply(lambda x: cm.zona(x["numero"], bool(x["goleiro"])), axis=1)
+            padrao_n = cm.padrao_de_numeracao(e)
             st.markdown(f"#### {equipe}")
-            st.markdown(f"**Formação estimada pela numeração:** {cm.formacao_por_numeracao(e)}")
-            # mapa por zona (chips)
-            linhas = ""
-            for z in ["Ataque", "Meio", "Defesa", "Goleiro"]:
-                t = e[(e["titular"]) & (e["zona"] == z)].sort_values("numero")
-                chips = "".join(
-                    f'<span style="display:inline-block;background:{cm.COR_ZONA[z]};color:#fff;border-radius:8px;padding:3px 9px;'
-                    f'margin:2px 4px 2px 0;font-size:.82rem"><b>{"" if pd.isna(x.numero) else int(x.numero)}</b> '
-                    f'{html.escape(str(x.nome))}</span>' for x in t.itertuples())
-                if chips:
-                    linhas += f'<div style="margin:.15rem 0"><span style="display:inline-block;width:64px;font-size:.78rem;color:#5B6B62">{z}</span>{chips}</div>'
-            outros = e[(e["titular"]) & (e["zona"] == "Variável")].sort_values("numero")
-            if len(outros):
-                linhas += '<div style="margin:.15rem 0"><span style="display:inline-block;width:64px;font-size:.78rem;color:#5B6B62">Outros</span>' + "".join(
-                    f'<span style="display:inline-block;background:{cm.COR_ZONA["Variável"]};color:#fff;border-radius:8px;padding:3px 9px;margin:2px 4px 2px 0;font-size:.82rem"><b>{"" if pd.isna(x.numero) else int(x.numero)}</b> {html.escape(str(x.nome))}</span>' for x in outros.itertuples()) + "</div>"
-            st.markdown(linhas, unsafe_allow_html=True)
+            if padrao_n["total"]:
+                st.markdown(f"**Padrão de numeração: {padrao_n['nivel']}** — {padrao_n['convencionais']} de {padrao_n['total']} titulares "
+                            f"de linha usam camisas 2–11<br/><small style='color:#5B6B62'>{padrao_n['distribuicao']}</small>",
+                            unsafe_allow_html=True)
+            pos = cm.posicoes_no_campo(e)
+            if not pos.empty:
+                st.plotly_chart(campo.figura_campo(pos, "Titulares pela numeração", 460), width="stretch", key=f"campo_{equipe}")
             e["Função (convenção)"] = e["numero"].map(cm.funcao_provavel)
             out = e.sort_values(["numero"])[["numero", "nome", "situacao", "Função (convenção)", "minutos", "gols", "amarelos",
                                              "vermelhos"]].rename(columns={"numero": "Nº", "nome": "Atleta", "situacao": "Situação",

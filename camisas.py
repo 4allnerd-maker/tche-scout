@@ -101,40 +101,53 @@ def numeracao_dos_atletas(partidas: pd.DataFrame) -> pd.DataFrame:
         ["atleta_id", "camisa_principal", "fixo_pct", "numeros_usados", "total"]]
 
 
-def formacao_por_numeracao(escalacao: pd.DataFrame) -> str:
-    """Estimativa do desenho ('4-3-3') a partir das camisas dos 10 titulares de linha (convenção)."""
+# ---------------------------------------------------------------- padrão de numeração e campo (leitura da súmula)
+LADO = {6: 0, 11: 0, 16: 0, 14: 1, 12: 2, 4: 3, 10: 4, 5: 4, 9: 5, 8: 5, 18: 5, 19: 5, 20: 5, 21: 5, 3: 6, 15: 6,
+        13: 7, 17: 8, 7: 9, 2: 9}
+Y_ZONA = {"Goleiro": 9, "Defesa": 29, "Meio": 54, "Ataque": 79}
+
+
+def formacao(escalacao: pd.DataFrame) -> dict:
+    """Conta as zonas (defesa/meio/ataque) pela numeração dos 10 titulares de linha. ATENÇÃO: com a numeração
+    tradicional o resultado é sempre 4-3-3 — mede o padrão de camisas, não o desenho tático. Retorna {'desenho': '4-3-3', 'confianca': 90, 'nivel': 'Alta', 'convencionais': 9}."""
     linha = escalacao[(escalacao["titular"]) & (~escalacao["goleiro"])]
     if len(linha) < 8:
-        return "—"
-    z = linha.apply(lambda r: zona(r["numero"], False), axis=1).value_counts()
-    d, m, a = int(z.get("Defesa", 0)), int(z.get("Meio", 0)), int(z.get("Ataque", 0))
-    resto = int(z.get("Variável", 0))
-    return f"{d}-{m}-{a}" + (f" (+{resto} fora da convenção)" if resto else "")
+        return {"desenho": "—", "confianca": 0, "nivel": "Sem dados", "convencionais": 0}
+    zonas = linha["numero"].map(lambda n: zona(n, False))
+    z = zonas.value_counts()
+    d, m, a, v = int(z.get("Defesa", 0)), int(z.get("Meio", 0)), int(z.get("Ataque", 0)), int(z.get("Variável", 0))
+    conv = int(linha["numero"].apply(lambda n: pd.notna(n) and 2 <= int(n) <= 11).sum())
+    conf = round(conv / len(linha) * 100)
+    nivel = "Alta" if conf >= 90 else "Média" if conf >= 70 else "Baixa"
+    desenho = f"{d}-{m}-{a}" + (f" (+{v})" if v else "")
+    return {"desenho": desenho, "confianca": conf, "nivel": nivel, "convencionais": conv}
 
 
-def insights_camisas(perfil: pd.DataFrame) -> list[str]:
-    """Frases automáticas sobre o que a numeração revela nos dados."""
-    if perfil.empty:
-        return []
-    out = []
-    tit = perfil[perfil["Camisa"] <= 11]
-    gk = perfil[perfil["% goleiro"] >= 90]
-    if len(gk):
-        out.append("**Goleiros:** camisa(s) " + ", ".join(str(n) for n in gk["Camisa"]) + " — "
-                   f"a 1 é goleiro em {perfil.loc[perfil['Camisa'] == 1, '% goleiro'].max():.0f}% das vezes.")
-    if len(tit):
-        top = tit.sort_values("Gols/jogo", ascending=False).iloc[0]
-        base = tit[tit["Camisa"].isin([2, 3, 4, 6])]["Gols/jogo"].mean()
-        mult = f" — {top['Gols/jogo'] / base:.0f}× mais que a média dos defensores (2, 3, 4 e 6)" if base and base > 0 else ""
-        out.append(f"**Quem mais marca:** a camisa {int(top['Camisa'])} ({top['Gols/jogo']:.2f} gols por jogo){mult}.")
-        cart = tit[tit["% goleiro"] < 50].sort_values("Amarelos/jogo", ascending=False).iloc[0]
-        out.append(f"**Mais advertida:** a camisa {int(cart['Camisa'])} ({cart['Amarelos/jogo']:.2f} amarelos por jogo).")
-    res = perfil[(perfil["Camisa"] >= 12) & (perfil["Camisa"] <= 22)]
-    if len(res):
-        out.append(f"**Reservas:** as camisas 12–22 começam o jogo em média em {res['% titular'].mean():.0f}% das vezes; "
-                   f"as 1–11, em {tit['% titular'].mean():.0f}%.")
-    livres = perfil[perfil["Camisa"] >= 23]
-    if len(livres):
-        out.append("**Numeração livre (23+):** aparecem com frequência, mas não seguem a convenção de posição — "
-                   "por isso a convenção vale sobretudo para as camisas 1 a 22.")
-    return out
+def posicoes_no_campo(escalacao: pd.DataFrame) -> pd.DataFrame:
+    """Coordenadas (x 0-100 esquerda→direita, y 0-100 do próprio gol ao gol adversário) de cada titular."""
+    t = escalacao[escalacao["titular"]].copy()
+    t["zona"] = t.apply(lambda r: zona(r["numero"], bool(r["goleiro"])), axis=1)
+    t["ordem_x"] = t["numero"].map(lambda n: LADO.get(int(n), 5) if pd.notna(n) else 5)
+    linhas = []
+    for z, y in Y_ZONA.items():
+        g = t[t["zona"] == z].sort_values(["ordem_x", "numero"])
+        n = len(g)
+        for i, r in enumerate(g.itertuples()):
+            x = 50 if n == 1 else 12 + i * (76 / (n - 1))
+            linhas.append({"numero": r.numero, "nome": r.nome, "zona": z, "x": x, "y": y})
+    resto = t[t["zona"] == "Variável"].sort_values("numero")
+    for i, r in enumerate(resto.itertuples()):  # fora da convenção: faixa lateral inferior
+        linhas.append({"numero": r.numero, "nome": r.nome, "zona": "Variável", "x": 8 + i * 12, "y": 41})
+    return pd.DataFrame(linhas)
+
+
+def padrao_de_numeracao(escalacao: pd.DataFrame) -> dict:
+    """Quanto a escalação segue a numeração tradicional (camisas 2–11 entre os 10 titulares de linha).
+    NÃO indica o desenho tático: ver campo.py."""
+    f = formacao(escalacao)
+    linha = escalacao[(escalacao["titular"]) & (~escalacao["goleiro"])]
+    z = linha["numero"].map(lambda n: zona(n, False)).value_counts()
+    dist = " · ".join(f"{int(z.get(k, 0))} {k.lower()}" for k in ("Defesa", "Meio", "Ataque"))
+    if int(z.get("Variável", 0)):
+        dist += f" · {int(z.get('Variável', 0))} fora da convenção"
+    return {"nivel": f["nivel"], "convencionais": f["convencionais"], "total": len(linha), "distribuicao": dist}

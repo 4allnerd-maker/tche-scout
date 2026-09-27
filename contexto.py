@@ -24,7 +24,8 @@ def contexto_time(time, jogos_sel, gols, cartoes, partidas, subs, comps, ano, ma
     prim = an.primeiro_gol(d, g) if not g.empty else pd.DataFrame()
     quadro = an.quadro_intervalo(d)
     r = an.resumo(d)
-    ins = [_limpa(t) for t in an.insights(time, d, g, ct, el, liga, prim, quadro, st_)]
+    cont_res = an.resumo_continuidade(an.continuidade_onze(partidas, d, time))
+    ins = [_limpa(t) for t in an.insights(time, d, g, ct, el, liga, prim, quadro, st_, cont_res)]
 
     faixas = an.por_faixa(g) if not g.empty else pd.DataFrame({"Faixa": an.FAIXAS, "Feitos": 0, "Sofridos": 0})
     tempos = an.por_tempo(g) if not g.empty else pd.DataFrame({"Tempo": ["1º tempo", "2º tempo"], "Feitos": 0, "Sofridos": 0})

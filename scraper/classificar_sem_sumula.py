@@ -47,10 +47,10 @@ def _data_do_jogo(entry: dict, texto: str) -> str | None:
 
 def _times_do_texto(seg: str):
     """A pagina repete o confronto no fim do cabecalho: 'A 2 X 1 B A 2 X 1 B' ou 'A X B A X B'."""
-    m = re.search(r"(\S.*?) (\d+) X (\d+) (\S.*?)   X  $", seg.strip())
+    m = re.search(r"(\S.*?) (\d+) X (\d+) (\S.*?) \1 \2 X \3 \4$", seg.strip())
     if m:
         return m.group(1), m.group(4)
-    m = re.search(r"(\S.*?) X (\S.*?)  X $", seg.strip())
+    m = re.search(r"(\S.*?) X (\S.*?) \1 X \2$", seg.strip())
     return (m.group(1), m.group(2)) if m else None
 
 
@@ -90,7 +90,10 @@ def classificar(entry: dict) -> dict:
         out["mandante"], out["visitante"] = a_b
     h = re.search(r"(?:Seg|Ter|Qua|Qui|Sex|Sab|Dom), \d{2}/\d{2} (\d{2}:\d{2})", seg)
     out["hora"] = h.group(1) if h else None
-    est = re.search(r"FASE .+? (?P<est>[^,]+?) (?:Seg|Ter|Qua|Qui|Sex|Sab|Dom), \d{2}/\d{2}", seg)
+    fase_up = re.escape(str(entry.get("fase_nome", "")).upper())
+    est = re.search(r"FASE\s+" + fase_up + r"\s+(?P<est>.+?)\s+(?:Seg|Ter|Qua|Qui|Sex|Sab|Dom), \d{2}/\d{2}", seg) if fase_up else None
+    if not est:
+        est = re.search(r"(?:^|\s)(?P<est>[^,]+?)\s+(?:Seg|Ter|Qua|Qui|Sex|Sab|Dom), \d{2}/\d{2}", seg)
     out["estadio"] = est.group("est").strip() if est else None
     placares = re.findall(r"(\d+)\s+X\s+(\d+)", seg)
     if placares and (d is None or d < date.today()):

@@ -184,7 +184,8 @@ def _pct(a, b):
 
 
 def insights(time: str, d: pd.DataFrame, g: pd.DataFrame, cartoes_t: pd.DataFrame, elenco_t: pd.DataFrame,
-             liga: pd.DataFrame, primeiro: pd.DataFrame, quadro: pd.DataFrame, subs: pd.DataFrame) -> list[str]:
+             liga: pd.DataFrame, primeiro: pd.DataFrame, quadro: pd.DataFrame, subs: pd.DataFrame,
+             cont: dict | None = None) -> list[str]:
     r = resumo(d)
     if not r:
         return []
@@ -269,6 +270,34 @@ def insights(time: str, d: pd.DataFrame, g: pd.DataFrame, cartoes_t: pd.DataFram
     if not subs.empty:
         out.append(f"**Substituições:** média de {len(subs) / r['J']:.1f} por jogo; a 1ª troca costuma acontecer aos "
                    f"{subs.groupby('jogo_id')['minuto'].min().mean():.0f}'.")
+    if cont:
+        out.append(f"**Continuidade do onze:** mantém em média {cont['media_mantidos']} dos 11 titulares de um jogo para o outro "
+                   f"(em {cont['pct_ate_2']}% dos jogos muda no máximo 2 atletas; onze idêntico em {cont['pct_igual']}%).")
     ult5 = d.tail(5)
     out.append("**Últimos 5 jogos:** " + " ".join(ult5["res"]) + f" — {ult5.gp.sum()} gols feitos e {ult5.gc.sum()} sofridos.")
     return out
+
+
+# ---------------------------------------------------------------- continuidade do onze (dado real, sem convenção)
+def continuidade_onze(partidas: pd.DataFrame, d: pd.DataFrame, time: str) -> pd.DataFrame:
+    """Titulares mantidos e novos em relação ao jogo anterior do time (d em ordem cronológica)."""
+    tit = partidas[(partidas["equipe"] == time) & (partidas["titular"]) & (partidas["jogo_id"].isin(set(d["jogo_id"])))]
+    sets = {jid: set(g["atleta_id"]) for jid, g in tit.groupby("jogo_id")}
+    linhas, prev = [], None
+    for r in d.itertuples():
+        s = sets.get(r.jogo_id)
+        if not s:
+            continue
+        if prev is not None:
+            linhas.append({"jogo_id": r.jogo_id, "Data": r.data, "Adversário": r.adversario,
+                           "Titulares mantidos": len(s & prev), "Titulares novos": len(s - prev)})
+        prev = s
+    return pd.DataFrame(linhas)
+
+
+def resumo_continuidade(c: pd.DataFrame) -> dict:
+    if c.empty:
+        return {}
+    return {"media_mantidos": round(c["Titulares mantidos"].mean(), 1), "media_novos": round(c["Titulares novos"].mean(), 1),
+            "jogos": len(c), "pct_ate_2": round((c["Titulares novos"] <= 2).mean() * 100),
+            "pct_igual": round((c["Titulares novos"] == 0).mean() * 100)}
