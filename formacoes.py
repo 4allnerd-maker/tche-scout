@@ -1,6 +1,6 @@
 """Formações táticas registradas MANUALMENTE (a súmula não traz o desenho do time).
 Fontes: (1) data/manual/formacoes.csv, versionado no repositório; (2) o que o usuário digita na sessão.
-A sessão do Streamlit é temporária: use 'Baixar CSV' para guardar e 'Carregar CSV' para retomar."""
+Valem só na visita atual (sessão do navegador); entram no PDF gerado nesta visita."""
 
 from __future__ import annotations
 
@@ -79,18 +79,6 @@ def resumo_por_formacao(d: pd.DataFrame, time: str) -> pd.DataFrame:
 
 
 def painel_arquivo() -> None:
-    """Botões de baixar/carregar, com o aviso de que a sessão é temporária."""
-    st.info("**Como funciona:** as formações que você registra ficam apenas nesta sessão do navegador — se fechar ou recarregar a "
-            "página, somem. Use **Baixar CSV** para guardar e **Carregar CSV** para retomar. Para deixar registros fixos no "
-            "site, envie o CSV ao administrador (arquivo `data/manual/formacoes.csv`).")
-    c1, c2 = st.columns(2)
-    c1.download_button("⬇️ Baixar minhas formações (CSV)", exportar_csv(), file_name="tche-scout-formacoes.csv", mime="text/csv",
-                       key="form_dl")
-    up = c2.file_uploader("Carregar CSV salvo", type="csv", key="form_up", label_visibility="collapsed")
-    if up is not None and st.session_state.get("form_up_lido") != up.file_id:
-        try:
-            n = importar_csv(up.getvalue())
-            st.session_state["form_up_lido"] = up.file_id
-            st.success(f"{n} registros carregados.")
-        except Exception as e:  # noqa: BLE001
-            st.error(f"Não foi possível ler o CSV: {e}")
+    """(Mantido por compatibilidade.) Apenas explica que os registros valem na visita atual."""
+    st.caption("As formações que você registra valem nesta visita e entram no PDF/relatório gerado agora; "
+               "ao recarregar a página, voltam ao padrão.")

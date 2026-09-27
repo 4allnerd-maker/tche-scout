@@ -5,6 +5,7 @@ import streamlit as st
 import analise as an
 import data_loader as dl
 import formacoes
+import posicoes_ui as pui
 import leiame
 from theme import COR, cabecalho, rodape
 from ui import abrir_jogo, chips_forma, linha_selecionada, tabela
@@ -333,7 +334,15 @@ with tabs[4]:
             st.plotly_chart(estilo(fig, 260, False), width="stretch")
             st.caption("Quanto mais alto, mais rotação. Barras sempre baixas indicam um time-base estável.")
         st.markdown("#### Elenco completo")
-        tabela(elen, "elenco", ordenar_por="Minutos", fixar="Atleta", altura=420, exportar=f"tche-scout-elenco-{time}")
+        pui.aviso()
+        _pos = pui.tabela_final().set_index("atleta_id")
+        elen_v = elen.drop(columns=["Posição"], errors="ignore")
+        elen_v.insert(1, "Posição", elen_v["atleta_id"].map(_pos["exibicao"]).fillna("Não confirmada"))
+        elen_v.insert(2, "Status da posição", elen_v["atleta_id"].map(_pos["status"]).fillna(pui.STATUS_NAO))
+        tabela(elen_v.drop(columns=["atleta_id"]), "elenco", ordenar_por="Minutos", fixar="Atleta", altura=420,
+               exportar=f"tche-scout-elenco-{time}")
+        with st.expander("✏️ Ajustar posições deste time (vale só para esta visita e para o PDF)"):
+            pui.editor_time(elen[["atleta_id", "Atleta", "Jogos"]], f"an_{time}")
 
 # ------------------------------------------------------------------ 6. jogo a jogo
 with tabs[5]:
@@ -358,8 +367,8 @@ with tabs[5]:
 with tabs[6]:
     st.markdown("A súmula não traz a formação tática. Preencha o desenho de cada jogo do time na tabela abaixo (clique na célula "
                 "**Formação**) e veja o rendimento por formação.")
-    st.warning("Os registros são digitados por pessoas e **não são verificados**. Eles ficam só nesta sessão do navegador: "
-               "use **Baixar CSV** no fim da página para guardar.")
+    st.warning("Os registros são digitados por pessoas e **não são verificados**. Valem só nesta visita "
+               "(e entram no PDF que você gerar em Relatórios e cards); ao recarregar a página, somem.")
     ed = d[["jogo_id", "data", "adversario", "mando", "gp", "gc", "res"]].copy()
     ed["Formação"] = ed["jogo_id"].map(lambda i: formacoes.obter(i, time)[0])
     ed["Observação"] = ed["jogo_id"].map(lambda i: formacoes.obter(i, time)[1])

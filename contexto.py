@@ -5,6 +5,8 @@ from __future__ import annotations
 import pandas as pd
 
 import analise as an
+import formacoes
+import posicoes_ui as pui
 
 
 def _limpa(t: str) -> str:
@@ -46,7 +48,14 @@ def contexto_time(time, jogos_sel, gols, cartoes, partidas, subs, comps, ano, ma
                            "Derrotas": int((x.res == "D").sum())})
         ps = pd.DataFrame(linhas)
 
-    elenco_top = el.head(16)[["Atleta", "Jogos", "Titular", "Entrou", "Minutos", "Gols", "Amarelos", "Vermelhos"]] if not el.empty else el
+    if not el.empty:
+        _pos = pui.tabela_final().set_index("atleta_id")
+        el2 = el.copy()
+        el2["Posição"] = el2["atleta_id"].map(_pos["exibicao"]).fillna("Não confirmada")
+        elenco_top = el2.head(16)[["Atleta", "Posição", "Jogos", "Titular", "Minutos", "Gols", "Amarelos", "Vermelhos"]]
+    else:
+        elenco_top = el
+    form_res = formacoes.resumo_por_formacao(d, time)
 
     am = int((ct["tipo"] == "amarelo").sum()) if not ct.empty else 0
     vm = int((ct["tipo"] == "vermelho").sum()) if not ct.empty else 0
@@ -63,4 +72,4 @@ def contexto_time(time, jogos_sel, gols, cartoes, partidas, subs, comps, ano, ma
     return {"time": time, "d": d, "g": g, "r": r, "forma": list(d["res"]), "insights": ins, "faixas": faixas, "tempos": tempos,
             "primeiro": ps, "quadro": quadro, "casa_fora": cf, "elenco": elenco_top, "cartoes": cart, "jogos": jogos_pdf,
             "comps": comps, "ano": ano, "recorte": mando + (f" · últimos {int(ultimos)} jogos" if ultimos else ""),
-            "liga": liga, "elenco_full": el}
+            "liga": liga, "elenco_full": el, "formacoes": form_res}

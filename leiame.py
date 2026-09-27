@@ -33,7 +33,7 @@ TEXTOS = {
 - **Minutos jogados** são estimados (base de 90 min): titular joga do início, reserva a partir da substituição, expulsão encerra a participação. Não usa o tempo real de jogo nem acréscimos.
 - Em algumas súmulas **femininas de base** a FGF marca poucos titulares; os minutos desses jogos podem estar errados.
 - Nomes completos podem vir **cortados** pela própria FGF; "Apelido" é como o atleta é chamado na súmula (pode repetir entre atletas).
-- **Posição do atleta NÃO vem da súmula.** A coluna *Posição* vem de camadas: goleiro (exato, pela súmula), inferida pela camisa (aproximação, até 80% de confiança), fonte aberta (com link, cobre poucos atletas) ou correção manual. Sempre veja a **Fonte** e a **Confiança**.
+- **Posição do atleta NÃO vem da súmula.** Parte dos atletas já tem posição (goleiro exato pela súmula, *provável* pela camisa ou confirmada em fonte aberta); os demais aparecem como **Não confirmada**. A base é atualizada toda semana e vai melhorando.
 - **Camisas**: a numeração segue a convenção brasileira (1 goleiro, 9 centroavante…), mas **não é posição** — é uma pista.
 """,
     "analise": """

@@ -7,6 +7,7 @@ import streamlit as st
 import cards
 import contexto
 import data_loader as dl
+import posicoes_ui as pui
 import leiame
 import relatorio
 import stats
@@ -138,6 +139,13 @@ with tab_pdf:
     time_r = c1.selectbox("Time", times, index=times.index(destaque) if destaque in times else 0, key="rc_pdf_time")
     mando = c2.segmented_control("Mando", ["Todos", "Casa", "Fora"], default="Todos", key="rc_pdf_mando") or "Todos"
     ult = c3.number_input("Últimos N jogos (0 = todos)", 0, 60, 0, key="rc_pdf_ult")
+    with st.expander("✏️ Conferir e ajustar as posições do elenco antes de gerar (vale só para esta visita)"):
+        pui.aviso()
+        _ctx = contexto.contexto_time(time_r, j, gols_all, cartoes_all, partidas_all, subs_all, [comp], ano, mando, ult)
+        if _ctx is not None and not _ctx["elenco_full"].empty:
+            pui.editor_time(_ctx["elenco_full"][["atleta_id", "Atleta", "Jogos"]], f"rc_{time_r}")
+        else:
+            st.caption("Sem elenco para ajustar nessa seleção.")
     if st.button("📄 Gerar relatório em PDF", type="primary", key="rc_pdf_go"):
         ctx = contexto.contexto_time(time_r, j, gols_all, cartoes_all, partidas_all, subs_all, [comp], ano, mando, ult)
         if ctx is None:

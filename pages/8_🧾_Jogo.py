@@ -8,6 +8,7 @@ import camisas as cm
 import campo
 import data_loader as dl
 import formacoes
+import posicoes_ui as pui
 import leiame
 from theme import COR, cabecalho, rodape
 from ui import tabela
@@ -69,7 +70,7 @@ pj = partidas_all[partidas_all["jogo_id"] == jogo_id].rename(columns={"categoria
 g = gols_all[gols_all["jogo_id"] == jogo_id]
 c = cartoes_all[cartoes_all["jogo_id"] == jogo_id]
 s_ = subs_all[subs_all["jogo_id"] == jogo_id]
-posicoes_tab = dl.posicoes().set_index("atleta_id") if not dl.posicoes().empty else None
+posicoes_tab = pui.tabela_final().set_index("atleta_id")
 
 # ------------------------------------------------------------------ placar
 ht = f"{int(r['gols_1t_mandante'])} x {int(r['gols_1t_visitante'])}" if pd.notna(r["gols_1t_mandante"]) else "—"
@@ -136,6 +137,7 @@ with tabs[1]:
                "(convenção brasileira: 1 goleiro, 2 lateral direito, 3–4 zagueiros, 5 volante, 6 lateral esquerdo, 7 e 11 pontas, "
                "8 meia, 9 centroavante, 10 armador). É uma **leitura da súmula**, não a formação real do jogo.")
     cols = st.columns(2)
+    pui.aviso()
     for col, equipe in zip(cols, (mand, visit)):
         with col:
             e = pj[pj["equipe"] == equipe].copy()
@@ -150,12 +152,8 @@ with tabs[1]:
             if not pos.empty:
                 st.plotly_chart(campo.figura_campo(pos, "Titulares pela numeração", 460), width="stretch", key=f"campo_{equipe}")
             e["Função (convenção)"] = e["numero"].map(cm.funcao_provavel)
-            if posicoes_tab is not None:
-                e["Posição (base)"] = e["atleta_id"].map(posicoes_tab["posicao"]).fillna("—")
-                e["Fonte"] = e["atleta_id"].map(posicoes_tab["fonte"]).fillna("—").str.replace("Fonte aberta: ", "Fonte aberta", regex=False)
-            else:
-                e["Posição (base)"], e["Fonte"] = "—", "—"
-            out = e.sort_values(["numero"])[["numero", "nome", "situacao", "Posição (base)", "Fonte", "Função (convenção)", "minutos",
+            e["Posição"] = e["atleta_id"].map(posicoes_tab["exibicao"]).fillna("Não confirmada")
+            out = e.sort_values(["numero"])[["numero", "nome", "situacao", "Posição", "Função (convenção)", "minutos",
                                              "gols", "amarelos", "vermelhos"]].rename(columns={"numero": "Nº", "nome": "Atleta", "situacao": "Situação",
                                                                           "minutos": "Min", "gols": "Gols", "amarelos": "🟨",
                                                                           "vermelhos": "🟥"})
@@ -204,7 +202,7 @@ with tabs[3]:
 
 with tabs[4]:
     st.markdown("A súmula **não informa o desenho tático**. Aqui você registra a formação de cada time neste jogo (por exemplo, "
-                "vista no vídeo ou na transmissão) e o Tchê Scout cruza com os resultados na aba **Análise → 🧩 Formações**.")
+                "vista no vídeo ou na transmissão) e o Tchê Scout cruza com os resultados na aba **Análise → 🧩 Formações**. Vale só nesta visita.")
     st.warning("Registros são digitados por pessoas e **não são verificados** pelo Tchê Scout. Podem conter equívocos.")
     for equipe in (mand, visit):
         atual, obs_atual = formacoes.obter(jogo_id, equipe)

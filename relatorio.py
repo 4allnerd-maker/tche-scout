@@ -255,6 +255,10 @@ def gerar_pdf_time(ctx: dict) -> bytes:
     if ctx.get("quadro") is not None and len(ctx["quadro"]):
         pdf.subtitulo("Situação no intervalo × resultado final")
         pdf.tabela(ctx["quadro"], [50, 30, 30, 30, 30])
+    if ctx.get("formacoes") is not None and len(ctx["formacoes"]):
+        pdf.subtitulo("Formações registradas (informadas manualmente)")
+        f_ = ctx["formacoes"][["Formação", "Jogos", "V", "E", "D", "GP", "GC", "Aproveitamento (%)"]]
+        pdf.tabela(f_, [40, 18, 14, 14, 14, 16, 16, 40])
     pdf.subtitulo("Casa × fora")
     pdf.tabela(ctx["casa_fora"], [24, 18, 22, 20, 22, 14, 14, 26, 26], fonte=7.2)
 
@@ -265,7 +269,11 @@ def gerar_pdf_time(ctx: dict) -> bytes:
     pdf.paragrafo(f"Cartões amarelos: {ct.get('amarelos', 0)} ({ct.get('amarelos_jogo', 0):.2f} por jogo) · "
                   f"Cartões vermelhos: {ct.get('vermelhos', 0)} ({ct.get('diretos', 0)} diretos, {ct.get('segundo_amarelo', 0)} por 2º amarelo).")
     pdf.subtitulo("Atletas mais utilizados")
-    pdf.tabela(ctx["elenco"], [58, 18, 20, 20, 16, 20, 22, 16], fonte=7.6)
+    pdf.tabela(ctx["elenco"], [40, 36, 14, 16, 16, 12, 18, 16], fonte=7.2)
+    pdf.set_font("DejaVu", "I", 7.5)
+    pdf.set_text_color(*CINZA)
+    pdf.multi_cell(0, 4.2, "Posição: 'provável' = estimada pela camisa; 'Não confirmada' = a base ainda não sabe. "
+                   "A súmula oficial não informa posições.", new_x="LMARGIN", new_y="NEXT")
 
     # ---------------- jogo a jogo
     pdf.add_page()

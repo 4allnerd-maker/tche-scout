@@ -78,12 +78,15 @@ st.markdown(
     """
 )
 
-st.markdown("### 6. Formações registradas por você")
+st.markdown("### 6. Posições e formações: o que é da base e o que é seu")
 st.markdown(
     """
-    O campo de **formação manual** guarda os registros apenas na sessão do navegador. Para não perder: use **Baixar CSV** e, depois,
-    **Carregar CSV**. Registros fixos no site exigem enviar o arquivo ao administrador. Como são dados digitados por pessoas,
-    **podem conter erros** e não são verificados pelo Tchê Scout.
+    - **Posições:** parte dos atletas já tem posição incluída automaticamente (goleiros pela súmula, posição *provável* pela camisa e
+      posição *confirmada* em fonte aberta, com link). Os demais aparecem como **Não confirmada** — o site não inventa. A base é
+      atualizada **toda semana** e a cobertura vai melhorar com o tempo.
+    - **Correção local:** ao analisar um time (Análise → Elenco, ou em Relatórios e cards), você pode ajustar posições e registrar
+      formações. Isso vale **na sua visita** e entra no PDF que você gerar; ao recarregar a página, volta ao padrão da base.
+      Dados digitados por pessoas **não são verificados** e podem conter equívocos.
     """
 )
 
