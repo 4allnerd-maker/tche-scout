@@ -18,32 +18,52 @@ COMPETICOES = [
     ("Copa FGF", "Copa FGF"),
     ("Gauchão Feminino", "Feminino"),
 ]
-TOP_N = 6
-SEGUNDOS_POR_SLIDE = 6
+SEGUNDOS_POR_SLIDE = 7
+ALTURA_LINHA = 27
+ALTURA_CABECALHO = 34
+MAX_LINHAS = 12  # teto de linhas por slide: mantém o card compacto e os times realmente na tabela
+# Pos | Escudo | Time(flexível) | P | J | V | E | D | SG
+GRADE = "1.5rem 1.4rem minmax(0,1fr) 2.1rem 1.7rem 1.7rem 1.7rem 1.7rem 2.3rem"
 
 
-def _linha(pos: int, time: str, pts: int, j: int, sg: int, zona: str) -> str:
+def _linha(pos: int, time: str, pts: int, j: int, v: int, e: int, d: int, sg: int, zona: str) -> str:
     cor_zona = {"g1": "#0E6B3F", "g2": "#F2B705", "rz": "#C8102E"}.get(zona, "transparent")
     nome = html.escape(str(time))
+
+    def _num(valor, cor="#5B6B62", peso=600):
+        return (f'<span style="text-align:center;color:{cor};font-size:.78rem;font-weight:{peso}">'
+                f'{valor}</span>')
+
     return (
-        f'<div style="display:flex;align-items:center;gap:.55rem;padding:.4rem .5rem;border-radius:8px;'
+        f'<div style="display:grid;grid-template-columns:{GRADE};align-items:center;column-gap:.4rem;'
+        f'height:{ALTURA_LINHA}px;padding:0 .5rem;border-radius:6px;'
         f'background:{"#F3F6F1" if pos % 2 else "#fff"}">'
-        f'<span style="width:4px;align-self:stretch;border-radius:2px;background:{cor_zona};flex:0 0 auto"></span>'
-        f'<span style="width:1.3rem;color:#5B6B62;font-weight:700;font-size:.85rem;flex:0 0 auto">{pos}</span>'
-        f'<img src="{es.data_uri(time, 64)}" alt="{nome}" style="width:22px;height:22px;object-fit:contain;'
+        f'<span style="width:4px;height:70%;border-radius:2px;background:{cor_zona};justify-self:start"></span>'
+        f'<span style="color:#5B6B62;font-weight:700;font-size:.8rem">{pos}</span>'
+        f'<span style="display:flex;align-items:center;gap:.4rem;overflow:hidden">'
+        f'<img src="{es.data_uri(time, 64)}" alt="{nome}" style="width:18px;height:18px;object-fit:contain;'
         f'background:#fff;border-radius:50%;border:1px solid #DCE5DD;flex:0 0 auto">'
-        f'<span style="flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.88rem;'
-        f'font-weight:600;color:#16241C">{nome}</span>'
-        f'<span style="width:1.7rem;text-align:center;color:#5B6B62;font-size:.8rem;flex:0 0 auto;'
-        f'margin-right:.35rem">{j}</span>'
-        f'<span style="width:2.1rem;text-align:center;color:#5B6B62;font-size:.8rem;flex:0 0 auto;'
-        f'margin-right:.35rem">{sg:+d}</span>'
-        f'<span style="width:2rem;text-align:right;font-weight:800;color:#0A3D26;flex:0 0 auto">{pts}</span>'
+        f'<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.82rem;'
+        f'font-weight:600;color:#16241C">{nome}</span></span>'
+        f'{_num(pts, "#0A3D26", 800)}{_num(j)}{_num(v)}{_num(e)}{_num(d)}{_num(f"{sg:+d}")}'
         f"</div>"
     )
 
 
-def _slide(comp: str, rotulo: str, jogos: pd.DataFrame, ano: int) -> str | None:
+def _cabecalho_linha() -> str:
+    def _c(rotulo):
+        return f'<span style="text-align:center;color:#8AA091;font-size:.68rem;font-weight:700">{rotulo}</span>'
+    return (
+        f'<div style="display:grid;grid-template-columns:{GRADE};align-items:center;column-gap:.4rem;'
+        f'height:{ALTURA_CABECALHO}px;padding:0 .5rem;border-bottom:1px solid #EEF2EE">'
+        f'<span></span><span style="color:#8AA091;font-size:.68rem;font-weight:700">#</span>'
+        f'<span style="color:#8AA091;font-size:.68rem;font-weight:700">Time</span>'
+        f'{_c("Pts")}{_c("J")}{_c("V")}{_c("E")}{_c("D")}{_c("SG")}</div>'
+    )
+
+
+def _slide(comp: str, rotulo: str, jogos: pd.DataFrame, ano: int) -> tuple[str, int] | None:
+    """Retorna (html do slide, nº de linhas) ou None se não houver classificação."""
     j = jogos[(jogos["categoria"] == ("Feminino" if "Feminino" in comp else "Masculino")) &
               (jogos["ano"] == ano) & (jogos["competicao_nome"] == comp)]
     if j.empty:
@@ -54,19 +74,22 @@ def _slide(comp: str, rotulo: str, jogos: pd.DataFrame, ano: int) -> str | None:
     tabela = stats.classificacao(j)
     if tabela.empty:
         return None
-    tabela = tabela.head(TOP_N)
     n = len(tabela)
+    visivel = tabela.head(MAX_LINHAS)
     linhas = "".join(
-        _linha(int(r.Pos), r.Time, int(r.P), int(r.J), int(r.SG),
+        _linha(int(r.Pos), r.Time, int(r.P), int(r.J), int(r.V), int(r.E), int(r.D), int(r.SG),
               "g1" if r.Pos == 1 else ("g2" if r.Pos <= 4 else ("rz" if r.Pos > n - 2 else "")))
-        for r in tabela.itertuples())
-    return (
-        f'<div class="ts-slide">'
-        f'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">'
+        for r in visivel.itertuples())
+    rodape = (f'<div style="text-align:center;color:#8AA091;font-size:.72rem;padding:.35rem 0 0 0">'
+              f'+{n - len(visivel)} times na tabela completa</div>') if n > len(visivel) else ""
+    slide = (
+        f'<div class="ts-slide"><div class="ts-slide-conteudo">'
+        f'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem">'
         f'<span style="font-family:\'Archivo Black\',Inter;color:#0A3D26;font-size:1.05rem">{html.escape(rotulo)}</span>'
-        f'<span style="color:#5B6B62;font-size:.78rem">{ano} · J · SG · Pts</span></div>'
-        f'{linhas}</div>'
+        f'<span style="color:#5B6B62;font-size:.78rem">{ano} · {n} times</span></div>'
+        f'{_cabecalho_linha()}{linhas}{rodape}</div></div>'
     )
+    return slide, len(visivel)
 
 
 def widget(jogos: pd.DataFrame) -> str | None:
@@ -74,15 +97,17 @@ def widget(jogos: pd.DataFrame) -> str | None:
     if jogos.empty:
         return None
     ano = int(jogos[jogos["categoria"] == "Masculino"]["ano"].max())
-    slides = [s for comp, rot in COMPETICOES if (s := _slide(comp, rot, jogos, ano))]
+    resultados = [s for comp, rot in COMPETICOES if (s := _slide(comp, rot, jogos, ano))]
     fem = jogos[jogos["categoria"] == "Feminino"]
     if not fem.empty:
         ano_fem = int(fem["ano"].max())
         s = _slide("Gauchão Feminino", "Feminino", jogos, ano_fem)
-        if s and len(slides) < len(COMPETICOES):
-            slides.append(s)
-    if not slides:
+        if s and len(resultados) < len(COMPETICOES):
+            resultados.append(s)
+    if not resultados:
         return None
+    slides = [s for s, _ in resultados]
+    maior_tabela = max(linhas for _, linhas in resultados)
     n = len(slides)
     total = n * SEGUNDOS_POR_SLIDE
     fatia = 100 / n
@@ -111,17 +136,19 @@ def widget(jogos: pd.DataFrame) -> str | None:
     """
     estilo = f"""
     <style>
-    a.ts-carousel-link {{ text-decoration:none; color:inherit; display:block; }}
     .ts-carousel {{ position: relative; background:#fff; border:1px solid #DCE5DD; border-radius:12px;
       padding: 1rem 1.1rem .9rem 1.1rem; box-shadow: 0 1px 2px rgba(10,61,38,.05);
       transition: box-shadow .15s, transform .15s, border-color .15s; cursor: pointer; }}
-    a.ts-carousel-link:hover .ts-carousel {{ box-shadow: 0 6px 18px rgba(10,61,38,.14); transform: translateY(-2px);
+    .ts-carousel:hover {{ box-shadow: 0 6px 18px rgba(10,61,38,.14); transform: translateY(-2px);
       border-color: #B9CBBD; }}
+    a.ts-carousel-link {{ position:absolute; inset:0; z-index:5; text-decoration:none; }}
     .ts-carousel .ts-cta {{ display:flex; align-items:center; justify-content:space-between; margin-top:.7rem;
       padding-top:.6rem; border-top:1px solid #EEF2EE; color:#0E6B3F; font-weight:700; font-size:.85rem; }}
-    .ts-carousel .ts-stage {{ position: relative; height: {40 + TOP_N * 34}px; }}
-    .ts-carousel .ts-slide {{ position: absolute; inset: 0; opacity: 0;
-      animation: tsCarrosselFade {total}s infinite; }}
+    .ts-carousel .ts-stage {{ position: relative;
+      height: {30 + ALTURA_CABECALHO + maior_tabela * ALTURA_LINHA + 22}px; }}
+    .ts-carousel .ts-slide {{ position: absolute; inset: 0; opacity: 0; display:flex; flex-direction:column;
+      justify-content:center; animation: tsCarrosselFade {total}s infinite; }}
+    .ts-carousel .ts-slide-conteudo {{ width:100%; }}
     .ts-carousel .ts-dots {{ display:flex; gap:6px; justify-content:center; margin-top:.6rem; }}
     .ts-carousel .ts-dot {{ width:7px; height:7px; border-radius:50%; background:#DCE5DD;
       animation: tsCarrosselDot {total}s infinite; }}
@@ -132,11 +159,12 @@ def widget(jogos: pd.DataFrame) -> str | None:
     """
     pontos = "".join('<span class="ts-dot"></span>' for _ in range(n))
     html_final = (
-        f'{estilo}<a class="ts-carousel-link" href="classificacoes" target="_self">'
-        f'<div class="ts-carousel"><div class="ts-stage">{"".join(slides)}</div>'
+        f'{estilo}<div class="ts-carousel">'
+        f'<a class="ts-carousel-link" href="classificacoes" target="_self" aria-label="Ver todas as classificações"></a>'
+        f'<div class="ts-stage">{"".join(slides)}</div>'
         f'<div class="ts-dots">{pontos}</div>'
         f'<div class="ts-cta"><span>🏆 Ver todas as classificações e times</span><span>→</span></div>'
-        f"</div></a>"
+        f"</div>"
     )
     # remove a indentação de cada linha: com 4+ espaços, o Markdown trataria o bloco como
     # código pré-formatado (texto puro) em vez de renderizar o HTML/CSS
