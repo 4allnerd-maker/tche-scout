@@ -258,3 +258,45 @@ def card_time(time: str, subtitulo: str, kpis: list[tuple[str, str]], forma: lis
         _texto(d, (70, y), "▸ " + _cabe(d, t, fonte(23, False), W - 170), fonte(23, False), BRANCO)
         y += 40
     return _png(img)
+
+
+# ------------------------------------------------------------------ campo tático (PNG para o PDF)
+COR_ZONA_RGB = {"Goleiro": (122, 92, 0), "Defesa": (10, 61, 38), "Meio": (14, 107, 63), "Ataque": (200, 16, 46),
+                "Variável": (91, 107, 98)}
+
+
+def campo_png(pos: pd.DataFrame, titulo: str = "", largura: int = 520) -> bytes:
+    """Campo em pé (ataque para cima) com os jogadores em (x, y) de 0 a 100. pos: colunas numero, nome, zona, x, y."""
+    ss = 2
+    w, h = largura * ss, int(largura * 1.36) * ss
+    img = Image.new("RGB", (w, h), (14, 107, 63))
+    d = ImageDraw.Draw(img)
+    for i in range(0, 8):  # listras do gramado
+        if i % 2:
+            d.rectangle([0, int(h * i / 8), w, int(h * (i + 1) / 8)], fill=(17, 116, 69))
+    m = int(w * 0.06)
+    branco = (255, 255, 255)
+    lw = 3 * ss
+    d.rectangle([m, m, w - m, h - m], outline=branco, width=lw)
+    d.line([(m, h // 2), (w - m, h // 2)], fill=branco, width=lw)
+    r = int(w * 0.13)
+    d.ellipse([w // 2 - r, h // 2 - r, w // 2 + r, h // 2 + r], outline=branco, width=lw)
+    for top in (True, False):
+        y0, y1 = (m, m + int((h - 2 * m) * 0.16)) if top else (h - m - int((h - 2 * m) * 0.16), h - m)
+        d.rectangle([int(w * 0.22), y0, int(w * 0.78), y1], outline=branco, width=lw)
+        y0, y1 = (m, m + int((h - 2 * m) * 0.06)) if top else (h - m - int((h - 2 * m) * 0.06), h - m)
+        d.rectangle([int(w * 0.38), y0, int(w * 0.62), y1], outline=branco, width=lw)
+    f_num, f_nome = fonte(20 * ss), fonte(13 * ss, False)
+    for r_ in pos.itertuples():
+        x = m + (w - 2 * m) * (r_.x / 100)
+        y = h - m - (h - 2 * m) * (r_.y / 100)  # ataque para cima
+        cor = COR_ZONA_RGB.get(r_.zona, (91, 107, 98))
+        rad = 22 * ss
+        d.ellipse([x - rad, y - rad, x + rad, y + rad], fill=cor, outline=branco, width=2 * ss)
+        num = "" if r_.numero != r_.numero else str(int(r_.numero))
+        d.text((x, y), num, font=f_num, fill=branco, anchor="mm")
+        nome = str(r_.nome).split(" ")[0][:11]
+        d.text((x + 1 * ss, y + rad + 3 * ss + 1 * ss), nome, font=f_nome, fill=(0, 0, 0), anchor="ma")
+        d.text((x, y + rad + 3 * ss), nome, font=f_nome, fill=branco, anchor="ma")
+    img = img.resize((largura, int(largura * 1.36)), Image.LANCZOS)
+    return _png(img)

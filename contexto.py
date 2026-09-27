@@ -5,6 +5,8 @@ from __future__ import annotations
 import pandas as pd
 
 import analise as an
+import camisas as cm
+import cards
 import formacoes
 import posicoes_ui as pui
 
@@ -69,7 +71,67 @@ def contexto_time(time, jogos_sel, gols, cartoes, partidas, subs, comps, ano, ma
                               "Adversário": jj["adversario"], "GP": jj["gp"], "GC": jj["gc"],
                               "GP 1ºT": jj["gp1"].map(lambda v: "" if pd.isna(v) else int(v)),
                               "GC 1ºT": jj["gc1"].map(lambda v: "" if pd.isna(v) else int(v)), "Res.": jj["res"]})
-    return {"time": time, "d": d, "g": g, "r": r, "forma": list(d["res"]), "insights": ins, "faixas": faixas, "tempos": tempos,
+    campos = campos_taticos(time, d, partidas)
+    return {"time": time, "campos": campos, "d": d, "g": g, "r": r, "forma": list(d["res"]), "insights": ins, "faixas": faixas, "tempos": tempos,
             "primeiro": ps, "quadro": quadro, "casa_fora": cf, "elenco": elenco_top, "cartoes": cart, "jogos": jogos_pdf,
             "comps": comps, "ano": ano, "recorte": mando + (f" · últimos {int(ultimos)} jogos" if ultimos else ""),
             "liga": liga, "elenco_full": el, "formacoes": form_res}
+
+
+def _esc_time(partidas, jogo_id, time):
+    return partidas[(partidas["jogo_id"] == jogo_id) & (partidas["equipe"] == time)]
+
+
+def campos_taticos(time, d, partidas):
+    """Campos para o PDF: última escalação e onze mais utilizado. Usa a formação registrada manualmente, se houver;
+    senão, a leitura automática pela numeração de camisa (que NÃO é a formação real)."""
+    out = []
+    ultimo = d.iloc[-1]
+    esc = _esc_time(partidas, ultimo["jogo_id"], time)
+    if not esc.empty and esc["titular"].sum() >= 9:
+        form, _ = formacoes.obter(ultimo["jogo_id"], time)
+        pos = cm.layout_por_formacao(esc, form) if form else None
+        if pos is not None:
+            legenda = (f"Formação {form} informada manualmente. Os atletas foram distribuídos nas linhas pela posição típica de "
+                       "cada camisa. Dado digitado, não verificado.")
+            titulo_f = f"Formação informada: {form}"
+        else:
+            pos = cm.posicoes_no_campo(esc)
+            pn = cm.padrao_de_numeracao(esc)
+            aviso_form = f" (a formação '{form}' informada não fecha com 10 jogadores de linha)" if form else ""
+            legenda = (f"Leitura automática pela numeração de camisa (padrão de numeração: {pn['nivel'].lower()}){aviso_form}. "
+                       "NÃO é a formação tática real: a súmula não informa o desenho.")
+            titulo_f = "Leitura pela numeração"
+        out.append({"titulo": f"Última escalação — {ultimo['data']:%d/%m/%Y} vs {ultimo['adversario']} ({ultimo['gp']}x{ultimo['gc']})",
+                    "subtitulo": titulo_f, "png": cards.campo_png(pos), "legenda": legenda})
+
+    # onze mais utilizado (maior número de titularidades)
+    ids = set(d["jogo_id"])
+    tit = partidas[(partidas["equipe"] == time) & (partidas["titular"]) & (partidas["jogo_id"].isin(ids))]
+    if len(tit):
+        cont = tit.groupby("atleta_id").size().sort_values(ascending=False)
+        base_ids = list(cont.head(11).index)
+        fix = cm.numeracao_dos_atletas(partidas[partidas["jogo_id"].isin(ids) & (partidas["equipe"] == time)])
+        fix = fix.set_index("atleta_id")
+        linhas = []
+        for aid in base_ids:
+            r = tit[tit["atleta_id"] == aid].iloc[-1]
+            linhas.append({"numero": fix.loc[aid, "camisa_principal"] if aid in fix.index else r["numero"], "nome": r["nome"],
+                           "titular": True, "goleiro": bool(tit[tit["atleta_id"] == aid]["goleiro"].mean() > 0.5)})
+        base_df = pd.DataFrame(linhas)
+        if len(base_df) >= 9:
+            regs = formacoes.estado()
+            regs = regs[(regs["equipe"] == time) & (regs["jogo_id"].isin(ids))]
+            form_base = regs["formacao"].mode().iloc[0] if len(regs) else ""
+            pos = cm.layout_por_formacao(base_df, form_base) if form_base else None
+            if pos is not None:
+                legenda = f"Formação mais registrada por você ({form_base}), com os 11 atletas mais utilizados como titulares."
+                sub = f"Formação informada: {form_base}"
+            else:
+                pos = cm.posicoes_no_campo(base_df)
+                legenda = ("Os 11 atletas com mais titularidades, posicionados pela camisa mais usada por cada um (convenção brasileira). "
+                           "NÃO é a formação tática real.")
+                sub = "Leitura pela numeração"
+            out.append({"titulo": f"Onze mais utilizado ({len(d)} jogos)", "subtitulo": sub, "png": cards.campo_png(pos),
+                        "legenda": legenda})
+    return out

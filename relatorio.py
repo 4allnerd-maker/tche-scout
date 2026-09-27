@@ -262,6 +262,36 @@ def gerar_pdf_time(ctx: dict) -> bytes:
     pdf.subtitulo("Casa × fora")
     pdf.tabela(ctx["casa_fora"], [24, 18, 22, 20, 22, 14, 14, 26, 26], fonte=7.2)
 
+    # ---------------- escalação e campo tático
+    if ctx.get("campos"):
+        pdf.add_page()
+        pdf.titulo("Escalação e campo tático")
+        y0 = pdf.get_y()
+        larg = 88
+        alt = larg * 1.36
+        for i, c in enumerate(ctx["campos"][:2]):
+            x = 12 + i * 96
+            pdf.set_xy(x, y0)
+            pdf.set_font("DejaVu", "B", 8.5)
+            pdf.set_text_color(*VERDE_ESC)
+            pdf.multi_cell(larg, 4.4, c["titulo"], new_x="LEFT", new_y="NEXT")
+            pdf.set_x(x)
+            pdf.set_font("DejaVu", "", 8)
+            pdf.set_text_color(*VERDE)
+            pdf.cell(larg, 5, c["subtitulo"], new_x="LEFT", new_y="NEXT")
+            pdf.image(io.BytesIO(c["png"]), x=x, y=pdf.get_y() + 1, w=larg)
+        pdf.set_y(y0 + 18 + alt + 4)
+        for c in ctx["campos"][:2]:
+            pdf.set_font("DejaVu", "I", 7.8)
+            pdf.set_text_color(*CINZA)
+            pdf.multi_cell(0, 4.2, f"• {c['titulo'].split(' — ')[0]}: {c['legenda']}", new_x="LMARGIN", new_y="NEXT")
+        pdf.ln(1)
+        pdf.set_font("DejaVu", "", 7.8)
+        pdf.set_text_color(*CINZA)
+        pdf.multi_cell(0, 4.2, "Cores: goleiro (dourado escuro), defesa (verde escuro), meio (verde), ataque (vermelho). "
+                               "Camisas seguem a convenção brasileira; a posição real do atleta pode ser diferente.",
+                       new_x="LMARGIN", new_y="NEXT")
+
     # ---------------- elenco e disciplina
     pdf.add_page()
     pdf.titulo("Elenco e disciplina")

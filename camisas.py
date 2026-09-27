@@ -3,6 +3,8 @@ Aqui a convenção é usada como PISTA (com o quanto os dados a confirmam), nunc
 
 from __future__ import annotations
 
+import re
+
 import pandas as pd
 
 # Convenção tradicional (titulares 1–11) e usos frequentes de reservas (12+).
@@ -179,3 +181,45 @@ def insights_camisas(perfil: pd.DataFrame) -> list[str]:
         out.append("**Numeração livre (23+):** aparecem com frequência, mas não seguem a convenção de posição — "
                    "por isso a convenção vale sobretudo para as camisas 1 a 22.")
     return out
+
+
+# ---------------------------------------------------------------- campo a partir de uma formação informada
+# "profundidade" típica de cada camisa: 1 = mais recuado ... 6 = mais avançado (convenção brasileira)
+PROFUNDIDADE = {2: 1, 3: 1, 4: 1, 6: 1, 13: 1, 14: 1, 15: 1, 16: 1, 5: 2, 8: 3, 18: 3, 20: 3, 10: 4, 17: 5, 7: 5, 11: 5,
+                19: 6, 21: 6, 9: 6}
+PROF_ZONA = {"Defesa": 1, "Meio": 3, "Ataque": 5}
+
+
+def _prof(numero, z) -> float:
+    try:
+        return PROFUNDIDADE.get(int(numero), PROF_ZONA.get(z, 3))
+    except (TypeError, ValueError):
+        return PROF_ZONA.get(z, 3)
+
+
+def layout_por_formacao(escalacao: pd.DataFrame, formacao: str):
+    """Distribui os titulares de linha nas linhas da formação informada (ex.: '4-2-3-1'), do fundo para a frente,
+    ordenando por profundidade típica da camisa (ou pela posição confirmada, se houver coluna 'zona').
+    Retorna o DataFrame de posições ou None se a formação não fecha com 10 jogadores de linha."""
+    partes = [int(x) for x in re.findall(r"\d+", str(formacao).split("(")[0])]
+    t = escalacao[escalacao["titular"]].copy()
+    gk = t[t["goleiro"]]
+    linha = t[~t["goleiro"]].copy()
+    if not partes or sum(partes) != len(linha):
+        return None
+    linha["zona_"] = linha.apply(lambda r: zona(r["numero"], False), axis=1)
+    linha["prof"] = linha.apply(lambda r: _prof(r["numero"], r["zona_"]), axis=1)
+    linha["ordem_x"] = linha["numero"].map(lambda n: LADO.get(int(n), 5) if pd.notna(n) else 5)
+    linha = linha.sort_values(["prof", "numero"]).reset_index(drop=True)
+    n_linhas = len(partes)
+    ys = [29 + i * (55 / max(n_linhas - 1, 1)) for i in range(n_linhas)] if n_linhas > 1 else [56]
+    linhas, ini = [], 0
+    for qtd, y in zip(partes, ys):
+        g = linha.iloc[ini:ini + qtd].sort_values(["ordem_x", "numero"])
+        ini += qtd
+        for i, r in enumerate(g.itertuples()):
+            x = 50 if qtd == 1 else 12 + i * (76 / (qtd - 1))
+            linhas.append({"numero": r.numero, "nome": r.nome, "zona": r.zona_, "x": x, "y": y})
+    for r in gk.itertuples():
+        linhas.append({"numero": r.numero, "nome": r.nome, "zona": "Goleiro", "x": 50, "y": 9})
+    return pd.DataFrame(linhas)

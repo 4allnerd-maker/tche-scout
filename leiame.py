@@ -72,6 +72,7 @@ TEXTOS = {
 - Confira o resultado antes de publicar: dados vêm de súmulas, que podem ter erros de digitação ou ser corrigidas depois.
 - **Rodada** vem da súmula; competições com fases eliminatórias não têm rodada numerada.
 - As legendas sugeridas são um ponto de partida — revise antes de postar.
+- **Campo tático do PDF:** sem formação informada, é uma *leitura pela numeração de camisa* — **não é a formação real**. Se você informar a formação (ex.: viu o jogo), o PDF usa a sua, marcada como dado digitado e não verificado.
 - Os relatórios são de **estatística de desempenho**, sem finalidade de apostas.
 """,
 }
