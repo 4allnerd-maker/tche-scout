@@ -3,6 +3,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 import data_loader as dl
+import escudos as es
 import estado
 import leiame
 import camisas as cm
@@ -80,7 +81,9 @@ tab_tab, tab_graf, tab_ficha, tab_cam, tab_pos = st.tabs(["Tabela de atletas", "
 with tab_tab:
     cols = ["Atleta", "Nome completo", "Time", "Times", "Posição", "Status da posição", "Relacionado", "Jogos", "Titular", "Entrou", "Banco", "Substituído",
             "Minutos", "Gols", "G.C.", "Min/gol", "Amarelos", "Vermelhos"]
-    tabela(painel[cols], "atl", ordenar_por="Gols", fixar="Atleta", altura=520, exportar="tche-scout-atletas",
+    painel_v = es.inserir_coluna(painel[cols], "Time")
+    tabela(painel_v, "atl", ordenar_por="Gols", fixar="Atleta", altura=520, exportar="tche-scout-atletas",
+           imagem_col="Escudo",
            ajuda={"Times": "Em quantos times o atleta atuou na seleção", "Relacionado": "Jogos em que constou na súmula",
                   "Jogos": "Titular + entrou durante o jogo", "Entrou": "Entrou como substituto",
                   "Banco": "Relacionado e não utilizado", "Substituído": "Saiu por substituição",
@@ -110,7 +113,8 @@ with tab_ficha:
     else:
         escolhido = st.selectbox("Atleta", opcoes.index, format_func=lambda a: opcoes[a], key="jog_ficha")
         linha = painel[painel["atleta_id"] == escolhido].iloc[0]
-        st.subheader(linha["Atleta"])
+        st.markdown(f'{es.img_tag(linha["Time"], 34)} &nbsp; **{linha["Atleta"]}** — {linha["Time"]}',
+                   unsafe_allow_html=True)
         cad = dl.atletas()
         c = cad[cad["atleta_id"] == escolhido]
         if not c.empty:
@@ -130,7 +134,8 @@ with tab_ficha:
         hist["Situação"] = hist.apply(lambda r: "Titular" if r["titular"] else ("Entrou" if r["entrou"] else "Banco"), axis=1)
         out = hist[["Data", "competicao_nome", "Confronto", "equipe", "Situação", "minutos", "gols", "amarelos", "vermelhos"]]
         out.columns = ["Data", "Competição", "Confronto", "Time", "Situação", "Min", "Gols", "🟨", "🟥"]
-        tabela(out, "ficha", ordenar_por="Data", altura=360)
+        out_v = es.inserir_coluna(out, "Time")
+        tabela(out_v, "ficha", ordenar_por="Data", altura=360, imagem_col="Escudo")
 
 with tab_cam:
     st.markdown("#### O que cada número costuma significar")
@@ -161,8 +166,9 @@ with tab_cam:
         f = f[f["Jogos"] >= 5].rename(columns={"camisa_principal": "Camisa principal", "fixo_pct": "% dos jogos com essa camisa",
                                                 "numeros_usados": "Nº de camisas diferentes"})
         f["Zona (convenção)"] = f["Camisa principal"].map(lambda n: cm.zona(n))
-        tabela(f[["Atleta", "Time", "Camisa principal", "% dos jogos com essa camisa", "Nº de camisas diferentes", "Zona (convenção)",
-                  "Jogos"]], "camfixa", ordenar_por="Jogos", fixar="Atleta", altura=360)
+        f_v = es.inserir_coluna(f[["Atleta", "Time", "Camisa principal", "% dos jogos com essa camisa", "Nº de camisas diferentes",
+                                  "Zona (convenção)", "Jogos"]], "Time")
+        tabela(f_v, "camfixa", ordenar_por="Jogos", fixar="Atleta", altura=360, imagem_col="Escudo")
 
 with tab_pos:
     st.markdown("A súmula não traz a posição do atleta. A base de posições é montada em camadas e **melhora a cada semana**:")

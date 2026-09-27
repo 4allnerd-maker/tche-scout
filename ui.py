@@ -9,7 +9,8 @@ CRESC = "↑ Crescente"
 DECRESC = "↓ Decrescente"
 
 
-def _config_colunas(df: pd.DataFrame, fixar: str | None, ajuda: dict | None, ocultar: list | None = None) -> dict:
+def _config_colunas(df: pd.DataFrame, fixar: str | None, ajuda: dict | None, ocultar: list | None = None,
+                     imagem: str | list[str] | None = None) -> dict:
     """Largura fixa por coluna: evita cabeçalhos espremidos/sobrepostos ao clicar para ordenar."""
     ajuda = ajuda or {}
     cfg = {}
@@ -18,9 +19,14 @@ def _config_colunas(df: pd.DataFrame, fixar: str | None, ajuda: dict | None, ocu
             cfg[col] = None
             continue
         serie = df[col]
-        comum = dict(help=ajuda.get(col), pinned=(col == fixar) or None)
+        imgs = set(imagem) if isinstance(imagem, (list, tuple, set)) else ({imagem} if imagem else set())
+        # com coluna de escudo, não fixamos nenhuma coluna: fixar só o nome (sem o escudo) descola os dois
+        # visualmente (o "pinned" do Streamlit não preserva a ordem das colunas fixadas de forma previsível)
+        comum = dict(help=ajuda.get(col), pinned=(col == fixar and not imgs) or None)
         comum = {k: v for k, v in comum.items() if v is not None}
-        if pd.api.types.is_bool_dtype(serie):
+        if col in imgs:
+            cfg[col] = st.column_config.ImageColumn(" ", width="small")
+        elif pd.api.types.is_bool_dtype(serie):
             cfg[col] = st.column_config.CheckboxColumn(col, width="small", **comum)
         elif pd.api.types.is_numeric_dtype(serie):
             inteira = serie.dropna().apply(lambda x: float(x).is_integer()).all() if len(serie.dropna()) else True
@@ -36,13 +42,16 @@ def _config_colunas(df: pd.DataFrame, fixar: str | None, ajuda: dict | None, ocu
 def tabela(df: pd.DataFrame, chave: str, ordenar_por: str | None = None, crescente: bool = False,
            altura: int | None = None, fixar: str | None = None, ajuda: dict | None = None,
            exportar: str | None = None, com_controles: bool = True, selecionavel: bool = False,
-           ocultar: list | None = None) -> pd.DataFrame:
+           ocultar: list | None = None, imagem_col: str | list[str] | None = None) -> pd.DataFrame:
     """Mostra a tabela com seletores visíveis de 'Ordenar por' e 'Ordem'.
-    `chave` precisa ser única na página. Retorna o DataFrame já ordenado."""
+    `imagem_col`: nome (ou lista de nomes) de coluna com data-URIs de imagem (ex.: escudo do time) —
+    vira coluna estreita sem texto, fora do seletor de ordenação. `chave` precisa ser única na página.
+    Retorna o DataFrame já ordenado."""
     if df is None or df.empty:
         st.info("Nada para mostrar com os filtros atuais.")
         return df
-    colunas = [c for c in df.columns if not (ocultar and c in ocultar)]
+    _imgs = set(imagem_col) if isinstance(imagem_col, (list, tuple, set)) else ({imagem_col} if imagem_col else set())
+    colunas = [c for c in df.columns if not (ocultar and c in ocultar) and c not in _imgs]
     if com_controles:
         c1, c2, c3 = st.columns([2, 2, 3])
         padrao = ordenar_por if ordenar_por in colunas else colunas[0]
@@ -56,7 +65,7 @@ def tabela(df: pd.DataFrame, chave: str, ordenar_por: str | None = None, crescen
     if selecionavel:
         kwargs.update(on_select="rerun", selection_mode="single-row", key=f"{chave}_df")
     evento = st.dataframe(df, hide_index=True, width="stretch",
-                          column_config=_config_colunas(df, fixar, ajuda, ocultar), **kwargs)
+                          column_config=_config_colunas(df, fixar, ajuda, ocultar, imagem_col), **kwargs)
     if selecionavel:
         linhas = list(evento.selection.rows) if evento is not None and getattr(evento, "selection", None) else []
         st.session_state[f"{chave}_linha"] = df.iloc[linhas[0]] if linhas else None

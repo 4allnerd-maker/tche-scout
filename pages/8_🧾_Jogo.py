@@ -7,6 +7,7 @@ import streamlit as st
 import camisas as cm
 import campo
 import data_loader as dl
+import escudos as es
 import estado
 import formacoes
 import posicoes_ui as pui
@@ -78,11 +79,19 @@ st.markdown(
     <div class="ts-hero" style="display:block; padding:1.4rem 1.8rem; text-align:center;">
       <div style="font-size:.95rem; opacity:.9">{html.escape(str(r['competicao_nome']))} · {html.escape(str(r['fase_nome']))}
         {'· Rodada ' + str(r['rodada']) if pd.notna(r['rodada']) else ''}</div>
-      <div style="display:flex; align-items:center; justify-content:center; gap:1.4rem; margin:.5rem 0;">
-        <div style="flex:1; text-align:right; font-family:'Archivo Black',Inter; font-size:1.7rem">{html.escape(mand)}</div>
+      <div style="display:flex; align-items:center; justify-content:center; gap:.8rem; margin:.5rem 0;">
+        <div style="flex:1; display:flex; align-items:center; justify-content:flex-end; gap:.6rem;">
+          <span style="font-family:'Archivo Black',Inter; font-size:1.7rem">{html.escape(mand)}</span>
+          <img src="{es.data_uri(mand, 150)}" alt="{html.escape(mand)}" style="height:50px;width:50px;object-fit:contain;
+            background:#fff;border-radius:50%;border:1px solid #DCE5DD;flex:0 0 auto;">
+        </div>
         <div style="font-family:'Archivo Black',Inter; font-size:3rem; color:#F2B705; white-space:nowrap">
           {int(r['gols_mandante'])} <span style="font-size:1.6rem">x</span> {int(r['gols_visitante'])}</div>
-        <div style="flex:1; text-align:left; font-family:'Archivo Black',Inter; font-size:1.7rem">{html.escape(visit)}</div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:flex-start; gap:.6rem;">
+          <img src="{es.data_uri(visit, 150)}" alt="{html.escape(visit)}" style="height:50px;width:50px;object-fit:contain;
+            background:#fff;border-radius:50%;border:1px solid #DCE5DD;flex:0 0 auto;">
+          <span style="font-family:'Archivo Black',Inter; font-size:1.7rem">{html.escape(visit)}</span>
+        </div>
       </div>
       <div style="font-size:.95rem; opacity:.9">{r['data']:%d/%m/%Y} · {r['hora'] or ''} · {html.escape(str(r['estadio'] or ''))}
         · intervalo {ht}</div>
@@ -142,7 +151,7 @@ with tabs[1]:
             e = pj[pj["equipe"] == equipe].copy()
             e["situacao"] = e.apply(lambda x: "Titular" if x["titular"] else ("Entrou" if x["entrou"] else "Banco"), axis=1)
             padrao_n = cm.padrao_de_numeracao(e)
-            st.markdown(f"#### {equipe}")
+            st.markdown(f'#### {es.img_tag(equipe, 26)} &nbsp; {equipe}', unsafe_allow_html=True)
             if padrao_n["total"]:
                 st.markdown(f"**Padrão de numeração: {padrao_n['nivel']}** — {padrao_n['convencionais']} de {padrao_n['total']} titulares "
                             f"de linha usam camisas 2–11<br/><small style='color:#5B6B62'>{padrao_n['distribuicao']}</small>",
@@ -171,12 +180,16 @@ with tabs[2]:
                        "Amarelos": int((ce["tipo"] == "amarelo").sum()), "Vermelhos": int((ce["tipo"] == "vermelho").sum()),
                        "Substituições": len(se), "Minuto da 1ª troca": round(se["minuto"].min()) if len(se) else None,
                        "Relacionados": len(e), "Titulares": int(e["titular"].sum()), "Atletas utilizados": int(e["jogou"].sum())})
-    st.dataframe(pd.DataFrame(linhas), hide_index=True, width="stretch")
+    comp_df = es.inserir_coluna(pd.DataFrame(linhas), "Time")
+    st.dataframe(comp_df, hide_index=True, width="stretch",
+                 column_config={"Escudo": st.column_config.ImageColumn(" ", width="small")})
     if not g.empty:
         st.markdown("#### Quem marcou")
         gg = g.groupby(["jogador", "equipe_creditada"]).size().reset_index(name="Gols").rename(
             columns={"jogador": "Atleta", "equipe_creditada": "Time"}).sort_values("Gols", ascending=False)
-        st.dataframe(gg, hide_index=True, width="stretch")
+        gg = es.inserir_coluna(gg, "Time")
+        st.dataframe(gg, hide_index=True, width="stretch",
+                     column_config={"Escudo": st.column_config.ImageColumn(" ", width="small")})
 
 # ------------------------------------------------------------------ arbitragem
 with tabs[3]:

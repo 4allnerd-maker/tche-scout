@@ -315,3 +315,62 @@ def campo_png(pos: pd.DataFrame, titulo: str = "", largura: int = 520) -> bytes:
         d.text((x, y + rad + 3 * ss), nome, font=f_nome, fill=branco, anchor="ma")
     img = img.resize((largura, int(largura * 1.36)), Image.LANCZOS)
     return _png(img)
+
+
+# ------------------------------------------------------------------ card de notícia (para WhatsApp/redes)
+def _quebra(draw, texto: str, fnt, largura: int) -> list[str]:
+    """Quebra `texto` em linhas que cabem em `largura` px com a fonte `fnt`."""
+    palavras, linhas, atual = texto.split(), [], ""
+    for p in palavras:
+        teste = (atual + " " + p).strip()
+        if draw.textlength(teste, font=fnt) <= largura or not atual:
+            atual = teste
+        else:
+            linhas.append(atual)
+            atual = p
+    if atual:
+        linhas.append(atual)
+    return linhas
+
+
+CATEGORIA_COR = {"Resultados": VERDE, "Transferências": VERMELHO, "Artigo": DOURADO, "Convocação": VERDE,
+                 "Bastidores": (91, 107, 62)}
+
+
+def card_noticia(titulo: str, resumo: str, categoria: str, data_str: str, autor: str = "Tchê Scout") -> bytes:
+    """Card quadrado (1080x1080) para WhatsApp/Instagram: manchete + resumo, pronto para compartilhar."""
+    alt = 1080
+    img = _fundo(alt)
+    d = ImageDraw.Draw(img)
+    lg = logo(72)
+    img.paste(lg, (56, 46), lg)
+    _texto(d, (144, 52), "TCHÊ SCOUT", fonte(26), BRANCO)
+    _texto(d, (144, 84), "NOTÍCIAS", fonte(16, False), (210, 225, 214))
+
+    cor_cat = CATEGORIA_COR.get(categoria, DOURADO)
+    tag = categoria.upper()
+    f_tag = fonte(22)
+    larg_tag = d.textlength(tag, font=f_tag) + 44
+    d.rounded_rectangle([56, 150, 56 + larg_tag, 150 + 52], radius=26, fill=cor_cat)
+    _texto(d, (56 + larg_tag / 2, 150 + 26), tag, f_tag, BRANCO, "mm")
+    _texto(d, (W - 56, 176), data_str, fonte(20, False), (210, 225, 214), "rm")
+
+    y = 240
+    f_tit = fonte(52)
+    for linha in _quebra(d, titulo, f_tit, W - 112)[:6]:
+        _texto(d, (56, y), linha, f_tit, BRANCO)
+        y += 62
+    y += 18
+    d.rounded_rectangle([56, y, 130, y + 6], radius=3, fill=DOURADO)
+    y += 34
+
+    f_res = fonte(28, False)
+    for linha in _quebra(d, resumo, f_res, W - 112)[:9]:
+        _texto(d, (56, y), linha, f_res, (222, 234, 225))
+        y += 40
+
+    d.rectangle([0, alt - 100, W, alt], fill=VERDE_ESC)
+    d.rectangle([0, alt - 104, W, alt - 100], fill=DOURADO)
+    _texto(d, (56, alt - 62), f"Por {autor}", fonte(22), DOURADO)
+    _texto(d, (W - 56, alt - 62), "tchescout.streamlit.app", fonte(22, False), BRANCO, "rm")
+    return _png(img)

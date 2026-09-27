@@ -8,11 +8,14 @@ qualquer site de resultados esportivos), não como afirmação de vínculo ofici
 
 from __future__ import annotations
 
+import base64
+import io
 import json
 import re
 from functools import lru_cache
 from pathlib import Path
 
+import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 
 ASSETS = Path(__file__).resolve().parent / "assets"
@@ -94,10 +97,34 @@ def imagem(time: str, tamanho: int = 96) -> Image.Image:
 
 
 def png_bytes(time: str, tamanho: int = 96) -> bytes:
-    import io
     buf = io.BytesIO()
     imagem(time, tamanho).save(buf, "PNG")
     return buf.getvalue()
+
+
+@lru_cache(maxsize=512)
+def data_uri(time: str, tamanho: int = 32) -> str:
+    """PNG do escudo (ou distintivo de reserva) como 'data:image/png;base64,...' — funciona em qualquer
+    lugar (colunas de tabela, HTML embutido) sem depender de servir arquivo, inclusive no Streamlit Cloud."""
+    return "data:image/png;base64," + base64.b64encode(png_bytes(time, tamanho)).decode()
+
+
+def img_tag(time: str, altura: int = 28) -> str:
+    """Tag <img> pronta para colar em HTML (st.markdown), já com o escudo embutido."""
+    nome = time.replace('"', "")
+    return (f'<img src="{data_uri(time, altura * 3)}" alt="{nome}" title="{nome}" '
+            f'style="height:{altura}px;width:{altura}px;vertical-align:middle;border-radius:50%;'
+            f'object-fit:contain;background:#fff;border:1px solid #DCE5DD;">')
+
+
+def inserir_coluna(df: pd.DataFrame, coluna_time: str, nome_coluna: str = "Escudo", tamanho: int = 32) -> pd.DataFrame:
+    """Retorna uma cópia de `df` com uma coluna de imagens (data URI) inserida logo antes de `coluna_time`."""
+    if df is None or df.empty or coluna_time not in df.columns:
+        return df
+    df2 = df.copy()
+    pos = df2.columns.get_loc(coluna_time)
+    df2.insert(pos, nome_coluna, df2[coluna_time].map(lambda t: data_uri(str(t), tamanho) if pd.notna(t) else None))
+    return df2
 
 
 def cobertura(times_totais) -> tuple[int, int]:

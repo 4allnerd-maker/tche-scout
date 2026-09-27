@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 
 import data_loader as dl
+import escudos as es
 import estado
 import leiame
 from theme import cabecalho, rodape
@@ -57,7 +58,10 @@ with tab_res:
         out = v[["Data", "competicao_nome", "fase_nome", "rodada", "time_mandante", "Placar", "time_visitante",
                  "estadio", "Obs.", "jogo_id"]]
         out.columns = ["Data", "Competição", "Fase", "Rodada", "Mandante", "Placar", "Visitante", "Estádio", "Obs.", "jogo_id"]
-        tabela(out, "cal_res", ordenar_por="Data", exportar="tche-scout-resultados", selecionavel=True, ocultar=["jogo_id"])
+        out = es.inserir_coluna(out, "Mandante", "Esc. M")
+        out = es.inserir_coluna(out, "Visitante", "Esc. V")
+        tabela(out, "cal_res", ordenar_por="Data", exportar="tche-scout-resultados", selecionavel=True,
+               ocultar=["jogo_id"], imagem_col=["Esc. M", "Esc. V"])
         sel = linha_selecionada("cal_res")
         ok = sel is not None and str(sel["jogo_id"]).isdigit()
         b1, b2 = st.columns([1, 3])
@@ -75,6 +79,8 @@ with tab_prox:
         p["Data"] = p["data"]
         out = p[["Data", "hora", "competicao_nome", "fase_nome", "time_mandante", "time_visitante", "estadio"]]
         out.columns = ["Data", "Hora", "Competição", "Fase", "Mandante", "Visitante", "Estádio"]
-        tabela(out, "cal_prox", ordenar_por="Data", crescente=True)
+        out = es.inserir_coluna(out, "Mandante", "Esc. M")
+        out = es.inserir_coluna(out, "Visitante", "Esc. V")
+        tabela(out, "cal_prox", ordenar_por="Data", crescente=True, imagem_col=["Esc. M", "Esc. V"])
 
 rodape()

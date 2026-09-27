@@ -2,6 +2,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 import data_loader as dl
+import escudos as es
 import estado
 import leiame
 import stats
@@ -51,7 +52,9 @@ tab_class, tab_perfil, tab_minutos, tab_art = st.tabs(
 
 with tab_class:
     classif = stats.classificacao(j)
-    tabela_class = tabela(classif, "cls", ordenar_por="Pos", crescente=True, fixar="Time", exportar="tche-scout-classificacao",
+    classif_v = es.inserir_coluna(classif, "Time")
+    tabela_class = tabela(classif_v, "cls", ordenar_por="Pos", crescente=True, fixar="Time", exportar="tche-scout-classificacao",
+                          imagem_col="Escudo",
                           ajuda={"P": "Pontos", "J": "Jogos", "V": "Vitórias", "E": "Empates", "D": "Derrotas", "GP": "Gols pró",
                                  "GC": "Gols contra", "SG": "Saldo de gols", "%": "Aproveitamento (%)",
                                  "WO": "Jogos decididos por W.O. (3x0)"})
@@ -67,8 +70,9 @@ with tab_perfil:
         cols = ["Time", "J", "Gols pró/jogo", "Gols contra/jogo", "Pró/jogo (casa)", "Pró/jogo (fora)",
                 "Contra/jogo (casa)", "Contra/jogo (fora)", "Min/gol feito", "Min/gol sofrido",
                 "Jogos s/ sofrer", "Jogos s/ marcar", "Amarelos", "Vermelhos", "Amarelos/jogo"]
-        tabela(perfil[[c for c in cols if c in perfil]], "perfil", ordenar_por="Gols pró/jogo", fixar="Time",
-               exportar="tche-scout-perfil-times")
+        perfil_v = es.inserir_coluna(perfil[[c for c in cols if c in perfil]], "Time")
+        tabela(perfil_v, "perfil", ordenar_por="Gols pró/jogo", fixar="Time",
+               exportar="tche-scout-perfil-times", imagem_col="Escudo")
         st.caption("Médias calculadas só sobre jogos com súmula (W.O. não entra). "
                    "‘Min/gol’ = minutos de jogo (90 × jogos) por gol.")
         fig = go.Figure()
@@ -105,6 +109,7 @@ with tab_art:
         st.info("Ainda não há gols nesta seleção.")
     else:
         art.insert(0, "Pos", range(1, len(art) + 1))
-        tabela(art, "art", ordenar_por="Pos", crescente=True, fixar="Atleta")
+        art_v = es.inserir_coluna(art, "Time")
+        tabela(art_v, "art", ordenar_por="Pos", crescente=True, fixar="Atleta", imagem_col="Escudo")
 
 rodape()

@@ -4,6 +4,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
+import carrossel
 import data_loader as dl
 import noticias as nt
 from config import AUTOR, AUTOR_FUNCAO, NOME, SLOGAN, WHATSAPP_EXIBIR, WHATSAPP_LINK
@@ -38,6 +39,13 @@ if dl.tem_dados():
     c4.metric("Última atualização", m.get("gerado_em", "—"))
 else:
     st.warning("Base de dados ainda não gerada. Rode `python scraper/build_dataset.py` (veja o README).")
+
+if dl.tem_dados():
+    widget_html = carrossel.widget(dl.jogos())
+    if widget_html:
+        st.markdown("## 🏆 Classificações em destaque")
+        st.caption("Gira sozinho entre os campeonatos — clique para ver a tabela completa, o perfil dos times e mais.")
+        st.markdown(widget_html, unsafe_allow_html=True)
 
 feed = nt.feed(dl.jogos() if dl.tem_dados() else None, max_auto=6)
 if not feed.empty:

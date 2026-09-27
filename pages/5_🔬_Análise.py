@@ -4,6 +4,7 @@ import streamlit as st
 
 import analise as an
 import data_loader as dl
+import escudos as es
 import estado
 import formacoes
 import posicoes_ui as pui
@@ -79,8 +80,11 @@ cont = an.continuidade_onze(partidas_all, d, time)
 cont_res = an.resumo_continuidade(cont)
 recorte = f"{mando}" + (f" · últimos {int(ultimos)} jogos" if ultimos else "")
 st.markdown(
-    f'<div class="ts-hero" style="padding:1.2rem 1.6rem; display:block;"><h1 style="font-size:2rem;margin:0">{time}</h1>'
-    f'<p style="margin:.2rem 0 0 0">{", ".join(comps) or "Todas as competições"} · {ano} · {fase} · recorte: {recorte}</p></div>',
+    f'<div class="ts-hero" style="padding:1.2rem 1.6rem; display:flex; align-items:center; gap:1rem;">'
+    f'<img src="{es.data_uri(time, 180)}" alt="{time}" style="height:64px;width:64px;object-fit:contain;background:#fff;'
+    f'border-radius:50%;border:1px solid #DCE5DD;flex:0 0 auto;">'
+    f'<div><h1 style="font-size:2rem;margin:0">{time}</h1>'
+    f'<p style="margin:.2rem 0 0 0">{", ".join(comps) or "Todas as competições"} · {ano} · {fase} · recorte: {recorte}</p></div></div>',
     unsafe_allow_html=True)
 if r["J"] < 5:
     st.warning(f"Amostra pequena: só {r['J']} jogo(s). Interprete os percentuais com cautela.")
@@ -262,9 +266,10 @@ with tabs[2]:
                                    marker=dict(colors=[COR["verde"], COR["dourado"], COR["vermelho"], "#7FB59A"])))
             st.plotly_chart(estilo(fig, 300), width="stretch")
     st.markdown("#### Resultado por adversário")
-    tabela(d[["data", "adversario", "mando", "gp", "gc", "res"]].rename(columns={
-        "data": "Data", "adversario": "Adversário", "mando": "Mando", "gp": "GP", "gc": "GC", "res": "Res."}),
-        "advers", ordenar_por="Data", altura=300)
+    tab_adv = d[["data", "adversario", "mando", "gp", "gc", "res"]].rename(columns={
+        "data": "Data", "adversario": "Adversário", "mando": "Mando", "gp": "GP", "gc": "GC", "res": "Res."})
+    tab_adv = es.inserir_coluna(tab_adv, "Adversário")
+    tabela(tab_adv, "advers", ordenar_por="Data", altura=300, imagem_col="Escudo")
 
 # ------------------------------------------------------------------ 4. disciplina
 with tabs[3]:
@@ -356,10 +361,12 @@ with tabs[5]:
                                hovertemplate="%{text}<br>%{y} pts<extra></extra>"))
     fig.update_layout(yaxis_title="Pontos acumulados")
     st.plotly_chart(estilo(fig, 280, False), width="stretch")
-    tabela(x[["data", "competicao", "fase", "rodada", "mando", "adversario", "gp", "gc", "gp1", "gc1", "res", "jogo_id"]].rename(columns={
+    tab_jxj = x[["data", "competicao", "fase", "rodada", "mando", "adversario", "gp", "gc", "gp1", "gc1", "res", "jogo_id"]].rename(columns={
         "data": "Data", "competicao": "Competição", "fase": "Fase", "rodada": "Rodada", "mando": "Mando",
-        "adversario": "Adversário", "gp": "GP", "gc": "GC", "gp1": "GP 1ºT", "gc1": "GC 1ºT", "res": "Res."}),
-        "jxj", ordenar_por="Data", exportar=f"tche-scout-jogos-{time}", altura=420, selecionavel=True, ocultar=["jogo_id"])
+        "adversario": "Adversário", "gp": "GP", "gc": "GC", "gp1": "GP 1ºT", "gc1": "GC 1ºT", "res": "Res."})
+    tab_jxj = es.inserir_coluna(tab_jxj, "Adversário")
+    tabela(tab_jxj, "jxj", ordenar_por="Data", exportar=f"tche-scout-jogos-{time}", altura=420, selecionavel=True,
+           ocultar=["jogo_id"], imagem_col="Escudo")
     sel = linha_selecionada("jxj")
     if st.button("🔎 Analisar o jogo selecionado", disabled=sel is None, type="primary", key="jxj_analisar"):
         abrir_jogo(sel["jogo_id"])

@@ -4,6 +4,7 @@ import streamlit as st
 
 import arbitragem as ab
 import data_loader as dl
+import escudos as es
 import estado
 import leiame
 from theme import COR, cabecalho, rodape
@@ -123,16 +124,21 @@ with tabs[1]:
     tm = c_arb.groupby("equipe").agg(Amarelos=("tipo", lambda s: (s == "amarelo").sum()),
                                      Vermelhos=("tipo", lambda s: (s == "vermelho").sum()),
                                      Jogos=("jogo_id", "nunique")).reset_index().rename(columns={"equipe": "Time"})
-    tabela(tm, "arb_times", ordenar_por="Amarelos", altura=260)
+    tm_v = es.inserir_coluna(tm, "Time")
+    tabela(tm_v, "arb_times", ordenar_por="Amarelos", altura=260, imagem_col="Escudo")
     st.markdown("#### Jogos apitados")
     jj = mine[["data", "competicao_nome", "rodada", "time_mandante", "gols_mandante", "gols_visitante", "time_visitante",
                "amarelos", "vermelhos", "penaltis_convertidos", "acrescimo_1t", "acrescimo_2t", "sumula_url"]].rename(columns={
         "data": "Data", "competicao_nome": "Competição", "rodada": "Rodada", "time_mandante": "Mandante", "gols_mandante": "GM",
         "gols_visitante": "GV", "time_visitante": "Visitante", "amarelos": "Amarelos", "vermelhos": "Vermelhos",
         "penaltis_convertidos": "Pên. conv.", "acrescimo_1t": "Acr. 1ºT", "acrescimo_2t": "Acr. 2ºT", "sumula_url": "Súmula"})
+    jj = es.inserir_coluna(jj, "Mandante", "Esc. M")
+    jj = es.inserir_coluna(jj, "Visitante", "Esc. V")
     st.dataframe(jj.sort_values("Data", ascending=False), hide_index=True, width="stretch", height=340,
                  column_config={"Súmula": st.column_config.LinkColumn("Súmula", display_text="PDF"),
-                                "Data": st.column_config.DateColumn("Data", format="DD/MM/YYYY")})
+                                "Data": st.column_config.DateColumn("Data", format="DD/MM/YYYY"),
+                                "Esc. M": st.column_config.ImageColumn(" ", width="small"),
+                                "Esc. V": st.column_config.ImageColumn(" ", width="small")})
 
 with tabs[2]:
     eq = ab.equipes_de_arbitragem(base)
