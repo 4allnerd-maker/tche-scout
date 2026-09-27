@@ -60,7 +60,7 @@ st.markdown(
     """
     | Informação | Situação no Tchê Scout |
     |---|---|
-    | **Posição do atleta** | Não existe. Usamos a **numeração de camisa** como *pista* (convenção brasileira) e mostramos o que os dados confirmam. |
+    | **Posição do atleta** | Não existe. Montamos em **camadas com fonte e confiança**: goleiro (exato, pela súmula) → inferida pela camisa (até 80%) → pesquisada em fonte aberta (com link; poucos atletas; pode confundir homônimos) → correção manual. Veja em Jogadores → 📍 Posições. |
     | **Formação tática** | Não existe. Contar camisas por zona resulta em "4-3-3" em ~81% dos jogos, por isso **não é usado como formação**. Você pode **registrar manualmente** (aba Jogo & súmula / Análise). |
     | **Assistências, finalizações, passes** | Não existem em súmula. Ficam de fora. |
     | **Pênaltis perdidos, tempo efetivo, faltas** | Não constam. |

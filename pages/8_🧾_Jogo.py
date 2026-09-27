@@ -69,6 +69,7 @@ pj = partidas_all[partidas_all["jogo_id"] == jogo_id].rename(columns={"categoria
 g = gols_all[gols_all["jogo_id"] == jogo_id]
 c = cartoes_all[cartoes_all["jogo_id"] == jogo_id]
 s_ = subs_all[subs_all["jogo_id"] == jogo_id]
+posicoes_tab = dl.posicoes().set_index("atleta_id") if not dl.posicoes().empty else None
 
 # ------------------------------------------------------------------ placar
 ht = f"{int(r['gols_1t_mandante'])} x {int(r['gols_1t_visitante'])}" if pd.notna(r["gols_1t_mandante"]) else "—"
@@ -149,8 +150,13 @@ with tabs[1]:
             if not pos.empty:
                 st.plotly_chart(campo.figura_campo(pos, "Titulares pela numeração", 460), width="stretch", key=f"campo_{equipe}")
             e["Função (convenção)"] = e["numero"].map(cm.funcao_provavel)
-            out = e.sort_values(["numero"])[["numero", "nome", "situacao", "Função (convenção)", "minutos", "gols", "amarelos",
-                                             "vermelhos"]].rename(columns={"numero": "Nº", "nome": "Atleta", "situacao": "Situação",
+            if posicoes_tab is not None:
+                e["Posição (base)"] = e["atleta_id"].map(posicoes_tab["posicao"]).fillna("—")
+                e["Fonte"] = e["atleta_id"].map(posicoes_tab["fonte"]).fillna("—").str.replace("Fonte aberta: ", "Fonte aberta", regex=False)
+            else:
+                e["Posição (base)"], e["Fonte"] = "—", "—"
+            out = e.sort_values(["numero"])[["numero", "nome", "situacao", "Posição (base)", "Fonte", "Função (convenção)", "minutos",
+                                             "gols", "amarelos", "vermelhos"]].rename(columns={"numero": "Nº", "nome": "Atleta", "situacao": "Situação",
                                                                           "minutos": "Min", "gols": "Gols", "amarelos": "🟨",
                                                                           "vermelhos": "🟥"})
             tabela(out, f"esc_{equipe}", ordenar_por="Nº", crescente=True, com_controles=False, altura=420, fixar="Atleta")

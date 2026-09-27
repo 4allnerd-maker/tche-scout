@@ -19,11 +19,16 @@ Uso: python scraper/build_dataset.py
 from __future__ import annotations
 
 import json
+
+import pandas as pd
 import re
 from collections import Counter, defaultdict
 from datetime import datetime
 from pathlib import Path
 
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import posicoes as posicoes_mod  # noqa: E402
 from nomes import compativeis, eh_truncado, limpa_time, nome_proprio, pessoa
 from parse_sumula import parse_sumula_pdf
 
@@ -311,6 +316,8 @@ def main():
     for nome, dados in (("jogos", jogos), ("calendario", calendario), ("jogadores_partida", partidas),
                         ("atletas", atletas), ("gols", gols_out), ("cartoes", cartoes_out), ("substituicoes", subs_out)):
         grava(nome, dados)
+    pos_df = posicoes_mod.consolidar(pd.DataFrame(partidas))
+    grava("posicoes", pos_df.where(pos_df.notna(), None).to_dict("records"))
     grava("meta", {"gerado_em": datetime.now().strftime("%d/%m/%Y %H:%M"), "jogos": len(jogos),
                    "calendario": len(calendario), "atletas": len(atletas), "gols": len(gols_out),
                    "cartoes": len(cartoes_out), "substituicoes": len(subs_out)})

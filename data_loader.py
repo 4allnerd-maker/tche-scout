@@ -75,3 +75,7 @@ def cartoes() -> pd.DataFrame:
 
 def substituicoes() -> pd.DataFrame:
     return _carrega("substituicoes", _stamp())
+
+
+def posicoes() -> pd.DataFrame:
+    return _carrega("posicoes", _stamp())

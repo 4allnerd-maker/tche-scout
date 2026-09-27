@@ -1,9 +1,11 @@
+import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
 import data_loader as dl
 import leiame
 import camisas as cm
+import posicoes as po
 import stats
 from theme import COR, cabecalho, rodape
 from ui import tabela
@@ -39,10 +41,19 @@ if times:
 
 g1, g2, g3 = st.columns([2, 1, 1])
 busca = g1.text_input("Buscar atleta", placeholder="Digite parte do nome ou apelido…")
-posicao = g2.selectbox("Posição", ["Todas", "Goleiro", "Linha"])
+posicao = g2.selectbox("Posição / zona", ["Todas", "Goleiro", "Defesa", "Meio", "Ataque", "Sem informação"])
 so_atuaram = g3.toggle("Só quem atuou", value=True, help="Esconde atletas que ficaram apenas no banco.")
 
-painel = stats.painel_atletas(p).merge(dl.atletas()[["atleta_id", "nome_completo"]], on="atleta_id", how="left")
+painel = stats.painel_atletas(p).drop(columns=["Posição"]).merge(dl.atletas()[["atleta_id", "nome_completo"]], on="atleta_id", how="left")
+pos_tab = dl.posicoes()
+if pos_tab.empty:
+    pos_tab = pd.DataFrame(columns=["atleta_id", "posicao", "zona", "fonte", "confianca", "camisa_principal", "url", "obs_pesquisa"])
+manuais = st.session_state.setdefault("posicoes_manuais", {})
+pos_tab = po.aplicar_manuais(pos_tab, manuais)
+painel = painel.merge(pos_tab[["atleta_id", "posicao", "zona", "fonte", "confianca", "url", "obs_pesquisa"]], on="atleta_id", how="left")
+painel["Posição"] = painel["posicao"].fillna(painel["zona"].map(lambda z: f"{z} (zona)" if isinstance(z, str) else None)).fillna("—")
+painel["Fonte da posição"] = painel["fonte"].fillna("—")
+painel["Confiança (%)"] = painel["confianca"]
 painel = painel.rename(columns={"nome_completo": "Nome completo"})
 if painel.empty:
     st.info("Nenhum atleta para essa seleção.")
@@ -51,7 +62,10 @@ if busca:
     painel = painel[painel["Atleta"].str.contains(busca, case=False, na=False)
                     | painel["Nome completo"].str.contains(busca, case=False, na=False)]
 if posicao != "Todas":
-    painel = painel[painel["Posição"] == posicao]
+    if posicao == "Sem informação":
+        painel = painel[painel["zona"].isna()]
+    else:
+        painel = painel[painel["zona"] == posicao]
 if so_atuaram:
     painel = painel[painel["Jogos"] > 0]
 
@@ -61,10 +75,10 @@ k2.metric("Gols", int(painel["Gols"].sum()))
 k3.metric("Cartões amarelos", int(painel["Amarelos"].sum()))
 k4.metric("Cartões vermelhos", int(painel["Vermelhos"].sum()))
 
-tab_tab, tab_graf, tab_ficha, tab_cam = st.tabs(["Tabela de atletas", "Gráficos", "Ficha do atleta", "👕 Camisas"])
+tab_tab, tab_graf, tab_ficha, tab_cam, tab_pos = st.tabs(["Tabela de atletas", "Gráficos", "Ficha do atleta", "👕 Camisas", "📍 Posições"])
 
 with tab_tab:
-    cols = ["Atleta", "Nome completo", "Time", "Times", "Posição", "Relacionado", "Jogos", "Titular", "Entrou", "Banco", "Substituído",
+    cols = ["Atleta", "Nome completo", "Time", "Times", "Posição", "Fonte da posição", "Confiança (%)", "Relacionado", "Jogos", "Titular", "Entrou", "Banco", "Substituído",
             "Minutos", "Gols", "G.C.", "Min/gol", "Amarelos", "Vermelhos"]
     tabela(painel[cols], "atl", ordenar_por="Gols", fixar="Atleta", altura=520, exportar="tche-scout-atletas",
            ajuda={"Times": "Em quantos times o atleta atuou na seleção", "Relacionado": "Jogos em que constou na súmula",
@@ -149,5 +163,47 @@ with tab_cam:
         f["Zona (convenção)"] = f["Camisa principal"].map(lambda n: cm.zona(n))
         tabela(f[["Atleta", "Time", "Camisa principal", "% dos jogos com essa camisa", "Nº de camisas diferentes", "Zona (convenção)",
                   "Jogos"]], "camfixa", ordenar_por="Jogos", fixar="Atleta", altura=360)
+
+with tab_pos:
+    st.markdown("A súmula não traz a posição do atleta. O Tchê Scout monta a posição em **camadas**, sempre mostrando a **fonte** e a **confiança**:")
+    st.markdown(
+        "1. **Súmula (goleiro)** — exata: a súmula marca quem é goleiro.  \n"
+        "2. **Inferida pela camisa** — usa a camisa mais usada (convenção brasileira) e quanto o atleta a repete. "
+        "Confiança máxima de 80%: é aproximação e pode errar (ex.: a camisa 5 nem sempre é volante).  \n"
+        "3. **Fonte aberta** — pesquisada em notícias e sites de scout, com o **link da fonte**. Cobre só parte dos atletas "
+        "(os de mais destaque) e pode confundir homônimos: confira o link.  \n"
+        "4. **Manual (você)** — vale mais que todas as outras.")
+    st.warning("Posições não vêm da súmula e **podem estar erradas**. A camisa é uma pista e as fontes abertas podem confundir "
+               "atletas homônimos. Correções manuais ficam só na sua sessão — use **Baixar CSV**.")
+    cob = painel["fonte"].fillna("Sem informação").value_counts().rename_axis("Fonte").reset_index(name="Atletas")
+    cob["%"] = (cob["Atletas"] / cob["Atletas"].sum() * 100).round(1)
+    st.markdown("#### Cobertura na seleção atual")
+    st.dataframe(cob, hide_index=True, width="stretch")
+    st.markdown("#### Conferir e corrigir")
+    ed = painel[["atleta_id", "Atleta", "Time", "Jogos", "posicao", "Fonte da posição", "Confiança (%)", "url"]].rename(
+        columns={"posicao": "Posição", "url": "Fonte (link)"}).sort_values("Jogos", ascending=False).head(400).set_index("atleta_id")
+    ed["Posição"] = ed["Posição"].fillna("")
+    ed["Fonte (link)"] = ed["Fonte (link)"].fillna("")
+    editado = st.data_editor(
+        ed, hide_index=True, width="stretch", height=420, key="ed_posicoes",
+        disabled=["Atleta", "Time", "Jogos", "Fonte da posição", "Confiança (%)", "Fonte (link)"],
+        column_config={"Posição": st.column_config.SelectboxColumn("Posição", options=[""] + po.POSICOES, width="medium"),
+                       "Fonte (link)": st.column_config.LinkColumn("Fonte (link)", display_text="abrir")})
+    st.caption("Mostrando até 400 atletas (mais jogos primeiro). Escolha a posição na coluna **Posição** para corrigir.")
+    for aid, row in editado.iterrows():
+        if row["Posição"] and row["Posição"] != ed.loc[aid, "Posição"]:
+            manuais[aid] = row["Posição"]
+    if manuais:
+        st.success(f"{len(manuais)} correção(ões) manual(is) nesta sessão.")
+        st.download_button("⬇️ Baixar correções (CSV)", po.manuais_para_csv(manuais), file_name="tche-scout-posicoes-manuais.csv",
+                           mime="text/csv", key="pos_dl")
+    pesq = pos_tab[pos_tab["fonte"].fillna("").str.startswith("Fonte aberta")]
+    if len(pesq):
+        st.markdown("#### Posições pesquisadas em fontes abertas")
+        v = pesq.merge(dl.atletas()[["atleta_id", "nome", "equipe_principal"]], on="atleta_id", how="left")
+        st.dataframe(v[["nome", "equipe_principal", "posicao", "fonte", "confianca", "obs_pesquisa", "url"]].rename(
+            columns={"nome": "Atleta", "equipe_principal": "Time", "posicao": "Posição", "fonte": "Fonte", "confianca": "Confiança (%)",
+                     "obs_pesquisa": "Observação", "url": "Link"}), hide_index=True, width="stretch",
+            column_config={"Link": st.column_config.LinkColumn("Link", display_text="abrir")})
 
 rodape()
