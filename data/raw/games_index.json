@@ -9340,16 +9340,8 @@
     "ano": 2026,
     "fase_id": 4387,
     "fase_nome": "2ª Fase",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "26/09/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Internacional",
-    "visitante": "Brasil de Farroupilha",
-    "placar_mandante": 4,
-    "placar_visitante": 1,
-    "hora": "15:00",
-    "estadio": "SESC Protásio Alves - Porto Alegre"
+    "sumula_id": "58882",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/58882.pdf"
   },
   "internacionalxecflamengodesaopedro-gauchaofeminino-24-10-2026": {
     "slug": "internacionalxecflamengodesaopedro-gauchaofeminino-24-10-2026",
