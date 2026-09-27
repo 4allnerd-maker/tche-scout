@@ -7,6 +7,7 @@ import streamlit as st
 import cards
 import contexto
 import data_loader as dl
+import estado
 import posicoes_ui as pui
 import leiame
 import relatorio
@@ -24,25 +25,29 @@ if not dl.tem_dados():
 jogos_all = dl.jogos()
 gols_all, cartoes_all, partidas_all, subs_all = dl.gols(), dl.cartoes(), dl.partidas(), dl.substituicoes()
 
+estado.barra_limpar("rc")
 with st.container(border=True):
     f1, f2, f3, f4 = st.columns([1, 1, 2, 1.4])
     cats = sorted(jogos_all["categoria"].unique(), reverse=True)
     categoria = f1.selectbox("Categoria", cats, key="rc_cat")
     j = jogos_all[jogos_all["categoria"] == categoria]
-    ano = f2.selectbox("Ano", sorted(j["ano"].unique(), reverse=True), key="rc_ano")
-    j = j[j["ano"] == ano]
+    ano = f2.selectbox("Ano", sorted(j["ano"].unique(), reverse=True), index=None, placeholder="Escolha o ano", key="rc_ano")
+    j = j[j["ano"] == ano] if ano is not None else j.iloc[0:0]
     comps_disp = sorted(j["competicao_nome"].unique())
-    pad = comps_disp.index("Gauchão Série A2") if "Gauchão Série A2" in comps_disp else 0
-    comp = f3.selectbox("Competição", comps_disp, index=pad, key="rc_comp")
-    j = j[j["competicao_nome"] == comp]
+    comp = f3.selectbox("Competição", comps_disp, index=None, placeholder="Escolha a competição", key="rc_comp", disabled=ano is None)
+    j = j[j["competicao_nome"] == comp] if comp is not None else j.iloc[0:0]
     fases = sorted(j["fase_nome"].dropna().unique())
-    fase = f4.selectbox("Fase", ["Todas"] + fases, key="rc_fase")
+    fase = f4.selectbox("Fase", ["Todas"] + fases, key="rc_fase", disabled=comp is None)
     if fase != "Todas":
         j = j[j["fase_nome"] == fase]
-    times = sorted(set(j["time_mandante"]) | set(j["time_visitante"]))
-    destaque = st.selectbox("Time em destaque (opcional)", ["—"] + times, index=(times.index("Brasil de Farroupilha") + 1
-                            if "Brasil de Farroupilha" in times else 0), key="rc_dest")
+    times = sorted(set(j["time_mandante"]) | set(j["time_visitante"])) if len(j) else []
+    destaque = st.selectbox("Time em destaque (opcional)", ["—"] + times, key="rc_dest", disabled=comp is None)
     destaque = None if destaque == "—" else destaque
+
+if ano is None or comp is None:
+    st.info("👆 Escolha o **ano** e a **competição** para criar cards e relatórios.")
+    rodape()
+    st.stop()
 
 rotulo = f"{comp} {ano}"
 tag_comp = "".join(ch for ch in comp.title() if ch.isalnum())
@@ -117,10 +122,10 @@ with tab_cards:
             st.code(f"🏆 Classificação — {rotulo}\n\n{lista}\n\n📊 tchescout.streamlit.app\n#TchêScout #FutebolGaúcho #{tag_comp}", language=None)
 
     else:  # Raio-X
-        time = st.selectbox("Time", times, index=times.index(destaque) if destaque in times else 0, key="rc_rx_time")
-        ctx = contexto.contexto_time(time, j, gols_all, cartoes_all, partidas_all, subs_all, [comp], ano)
+        time = st.selectbox("Time", times, index=None, placeholder="Escolha o time", key="rc_rx_time")
+        ctx = contexto.contexto_time(time, j, gols_all, cartoes_all, partidas_all, subs_all, [comp], ano) if time is not None else None
         if ctx is None:
-            st.info("Esse time ainda não tem jogos com súmula.")
+            st.info("Escolha um time com jogos com súmula para gerar o raio-X.")
         else:
             r = ctx["r"]
             kp = [("JOGOS", f"{r['J']}"), ("APROVEITAMENTO", f"{r['aprov']}%".replace(".", ",")),
@@ -136,17 +141,17 @@ with tab_pdf:
     st.markdown("Relatório de scout do time com resumo, insights, gols por minuto, quem abre o placar, elenco, disciplina e jogo a jogo. "
                 "Pronto para enviar à comissão técnica.")
     c1, c2, c3 = st.columns([2, 1.5, 1.5])
-    time_r = c1.selectbox("Time", times, index=times.index(destaque) if destaque in times else 0, key="rc_pdf_time")
+    time_r = c1.selectbox("Time", times, index=None, placeholder="Escolha o time", key="rc_pdf_time")
     mando = c2.segmented_control("Mando", ["Todos", "Casa", "Fora"], default="Todos", key="rc_pdf_mando") or "Todos"
     ult = c3.number_input("Últimos N jogos (0 = todos)", 0, 60, 0, key="rc_pdf_ult")
     with st.expander("✏️ Conferir e ajustar as posições do elenco antes de gerar (vale só para esta visita)"):
         pui.aviso()
-        _ctx = contexto.contexto_time(time_r, j, gols_all, cartoes_all, partidas_all, subs_all, [comp], ano, mando, ult)
+        _ctx = contexto.contexto_time(time_r, j, gols_all, cartoes_all, partidas_all, subs_all, [comp], ano, mando, ult) if time_r is not None else None
         if _ctx is not None and not _ctx["elenco_full"].empty:
             pui.editor_time(_ctx["elenco_full"][["atleta_id", "Atleta", "Jogos"]], f"rc_{time_r}")
         else:
             st.caption("Sem elenco para ajustar nessa seleção.")
-    if st.button("📄 Gerar relatório em PDF", type="primary", key="rc_pdf_go"):
+    if st.button("📄 Gerar relatório em PDF", type="primary", key="rc_pdf_go", disabled=time_r is None):
         ctx = contexto.contexto_time(time_r, j, gols_all, cartoes_all, partidas_all, subs_all, [comp], ano, mando, ult)
         if ctx is None:
             st.warning("Esse time ainda não tem jogos com súmula nessa seleção.")

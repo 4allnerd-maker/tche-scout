@@ -4,6 +4,7 @@ import streamlit as st
 
 import analise as an
 import data_loader as dl
+import estado
 import formacoes
 import posicoes_ui as pui
 import leiame
@@ -31,31 +32,32 @@ def estilo(fig, altura=360, legenda=True):
 
 
 # ------------------------------------------------------------------ filtros
+estado.barra_limpar("an")
 with st.container(border=True):
     f1, f2, f3, f4 = st.columns([1, 1, 2, 1.4])
     cats = sorted(jogos_all["categoria"].unique(), reverse=True)
     categoria = f1.selectbox("Categoria", cats, key="an_cat")
     j = jogos_all[jogos_all["categoria"] == categoria]
-    ano = f2.selectbox("Ano", sorted(j["ano"].unique(), reverse=True), key="an_ano")
-    j = j[j["ano"] == ano]
+    ano = f2.selectbox("Ano", sorted(j["ano"].unique(), reverse=True), index=None, placeholder="Escolha o ano", key="an_ano")
+    j = j[j["ano"] == ano] if ano is not None else j.iloc[0:0]
     comps_disp = sorted(j["competicao_nome"].unique())
-    comps = f3.multiselect("Competição", comps_disp, default=comps_disp[:1] if "Gauchão Série A2" not in comps_disp
-                           else ["Gauchão Série A2"], key="an_comp")
-    j = j[j["competicao_nome"].isin(comps)] if comps else j
+    comps = f3.multiselect("Competição", comps_disp, placeholder="Escolha a(s) competição(ões)", key="an_comp", disabled=ano is None)
+    j = j[j["competicao_nome"].isin(comps)] if comps else j.iloc[0:0]
     fases = sorted(j["fase_nome"].dropna().unique())
-    fase = f4.selectbox("Fase", ["Todas"] + fases, key="an_fase")
+    fase = f4.selectbox("Fase", ["Todas"] + fases, key="an_fase", disabled=not comps)
     if fase != "Todas":
         j = j[j["fase_nome"] == fase]
 
-    times = sorted(set(j["time_mandante"]) | set(j["time_visitante"]))
-    if not times:
-        st.info("Nenhum jogo nessa seleção.")
-        st.stop()
+    times = sorted(set(j["time_mandante"]) | set(j["time_visitante"])) if len(j) else []
     g1, g2, g3 = st.columns([2, 1.5, 1.5])
-    padrao = times.index("Brasil de Farroupilha") if "Brasil de Farroupilha" in times else 0
-    time = g1.selectbox("Time a analisar", times, index=padrao, key="an_time")
+    time = g1.selectbox("Time a analisar", times, index=None, placeholder="Escolha o time", key="an_time", disabled=not times)
     mando = g2.segmented_control("Mando", ["Todos", "Casa", "Fora"], default="Todos", key="an_mando") or "Todos"
     ultimos = g3.number_input("Últimos N jogos (0 = todos)", min_value=0, max_value=60, value=0, step=1, key="an_ult")
+
+if ano is None or not comps or time is None:
+    st.info("👆 Escolha o **ano**, a **competição** e o **time** para ver a análise.")
+    rodape()
+    st.stop()
 
 d = an.jogos_do_time(j, time, mando, int(ultimos))
 if d.empty:

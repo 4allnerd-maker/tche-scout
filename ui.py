@@ -85,4 +85,5 @@ def linha_selecionada(chave: str):
 def abrir_jogo(jogo_id: str) -> None:
     """Leva para a aba Jogo & súmula já com o jogo escolhido."""
     st.session_state["jogo_id"] = str(jogo_id)
+    st.session_state["_manter_jogo"] = True  # o roteador não apaga este pedido ao trocar de aba
     st.switch_page("pages/8_🧾_Jogo.py")

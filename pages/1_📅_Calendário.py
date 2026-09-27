@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 
 import data_loader as dl
+import estado
 import leiame
 from theme import cabecalho, rodape
 from ui import abrir_jogo, linha_selecionada, tabela
@@ -18,18 +19,20 @@ if cal.empty:
     st.info("Nenhum jogo na base.")
     st.stop()
 
+estado.barra_limpar("cal")
 f1, f2, f3, f4 = st.columns(4)
-categoria = f1.selectbox("Categoria", ["Todas"] + sorted(cal["categoria"].unique()))
+categoria = f1.selectbox("Categoria", ["Todas"] + sorted(cal["categoria"].unique()), key="cal_cat")
 base = cal if categoria == "Todas" else cal[cal["categoria"] == categoria]
 anos = sorted(base["ano"].unique(), reverse=True)
-ano = f2.selectbox("Ano", anos)
-base = base[base["ano"] == ano]
+ano = f2.selectbox("Ano", ["Todos"] + anos, key="cal_ano")
+if ano != "Todos":
+    base = base[base["ano"] == ano]
 competicao = f3.multiselect("Competição", sorted(base["competicao_nome"].unique()),
-                            placeholder="Todas as competições")
+                            placeholder="Todas as competições", key="cal_comp")
 if competicao:
     base = base[base["competicao_nome"].isin(competicao)]
 times = sorted(set(base["time_mandante"].dropna()) | set(base["time_visitante"].dropna()))
-time = f4.selectbox("Time", ["Todos"] + times)
+time = f4.selectbox("Time", ["Todos"] + times, key="cal_time")
 if time != "Todos":
     base = base[(base["time_mandante"] == time) | (base["time_visitante"] == time)]
 

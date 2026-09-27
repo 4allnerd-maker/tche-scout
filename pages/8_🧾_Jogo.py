@@ -7,6 +7,7 @@ import streamlit as st
 import camisas as cm
 import campo
 import data_loader as dl
+import estado
 import formacoes
 import posicoes_ui as pui
 import leiame
@@ -26,13 +27,9 @@ partidas_all, gols_all, cartoes_all, subs_all = dl.partidas(), dl.gols(), dl.car
 
 # ------------------------------------------------------------------ seleção do jogo
 pedido = st.session_state.get("jogo_id")
-if pedido and (real["jogo_id"] == pedido).any():
-    padrao = real[real["jogo_id"] == pedido].iloc[0]
-else:  # sem jogo pedido: o mais recente da base masculina
-    recentes = real[real["categoria"] == "Masculino"].sort_values(["data", "jogo_id"])
-    padrao = recentes.iloc[-1] if len(recentes) else None
-    pedido = padrao["jogo_id"] if padrao is not None else None
+padrao = real[real["jogo_id"] == pedido].iloc[0] if pedido and (real["jogo_id"] == pedido).any() else None
 
+estado.barra_limpar("jg")
 with st.container(border=True):
     f1, f2, f3, f4 = st.columns([1, 1, 2, 2])
     cats = sorted(real["categoria"].unique(), reverse=True)
@@ -40,15 +37,15 @@ with st.container(border=True):
     categoria = f1.selectbox("Categoria", cats, index=cat0, key="jg_cat")
     j = real[real["categoria"] == categoria]
     anos = sorted(j["ano"].unique(), reverse=True)
-    ano0 = anos.index(padrao["ano"]) if padrao is not None and padrao["ano"] in anos else 0
-    ano = f2.selectbox("Ano", anos, index=ano0, key="jg_ano")
-    j = j[j["ano"] == ano]
+    ano0 = anos.index(padrao["ano"]) if padrao is not None and padrao["ano"] in anos else None
+    ano = f2.selectbox("Ano", anos, index=ano0, placeholder="Escolha o ano", key="jg_ano")
+    j = j[j["ano"] == ano] if ano is not None else j.iloc[0:0]
     comps = sorted(j["competicao_nome"].unique())
-    comp0 = comps.index(padrao["competicao_nome"]) if padrao is not None and padrao["competicao_nome"] in comps else 0
-    comp = f3.selectbox("Competição", comps, index=comp0, key="jg_comp")
-    j = j[j["competicao_nome"] == comp]
+    comp0 = comps.index(padrao["competicao_nome"]) if padrao is not None and padrao["competicao_nome"] in comps else None
+    comp = f3.selectbox("Competição", comps, index=comp0, placeholder="Escolha a competição", key="jg_comp", disabled=ano is None)
+    j = j[j["competicao_nome"] == comp] if comp is not None else j.iloc[0:0]
     times = ["Todos"] + sorted(set(j["time_mandante"]) | set(j["time_visitante"]))
-    time = f4.selectbox("Time (opcional)", times, key="jg_time")
+    time = f4.selectbox("Time (opcional)", times, key="jg_time", disabled=comp is None)
     if time != "Todos":
         j = j[(j["time_mandante"] == time) | (j["time_visitante"] == time)]
 
@@ -57,11 +54,13 @@ with st.container(border=True):
                           f"{r.time_visitante}" + (f" · R{r.rodada}" if pd.notna(r.rodada) else "")
                for r in j.itertuples()}
     ids = list(rotulos)
-    if not ids:
-        st.info("Nenhum jogo nessa seleção.")
-        st.stop()
-    idx0 = ids.index(pedido) if pedido in ids else 0
-    jogo_id = st.selectbox("Jogo", ids, index=idx0, format_func=lambda i: rotulos[i], key="jg_jogo")
+    idx0 = ids.index(pedido) if pedido in ids else None
+    jogo_id = st.selectbox("Jogo", ids, index=idx0, format_func=lambda i: rotulos[i], placeholder="Escolha o jogo",
+                           key="jg_jogo", disabled=comp is None)
+if jogo_id is None:
+    st.info("👆 Escolha o **ano**, a **competição** e o **jogo** para abrir a súmula.")
+    rodape()
+    st.stop()
 st.session_state["jogo_id"] = jogo_id
 
 r = real[real["jogo_id"] == jogo_id].iloc[0]

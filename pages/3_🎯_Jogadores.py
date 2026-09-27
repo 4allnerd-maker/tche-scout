@@ -3,6 +3,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 import data_loader as dl
+import estado
 import leiame
 import camisas as cm
 import posicoes as po
@@ -28,22 +29,23 @@ meta_jogos = jogos[["jogo_id", "categoria", "ano", "competicao_nome", "fase_nome
 # no jogador-partida, "categoria" = vinculo (Profissional/Amador); no jogo, "categoria" = Masculino/Feminino
 p = partidas.rename(columns={"categoria": "vinculo"}).merge(meta_jogos, on="jogo_id", how="inner").sort_values("data")  # ordem cronologica: "Time" do atleta = o mais recente
 
+estado.barra_limpar("jog")
 f1, f2, f3, f4 = st.columns(4)
-categoria = f1.selectbox("Categoria", sorted(p["categoria"].unique(), reverse=True))
+categoria = f1.selectbox("Categoria", sorted(p["categoria"].unique(), reverse=True), key="jog_cat")
 p = p[p["categoria"] == categoria]
-anos = f2.multiselect("Ano", sorted(p["ano"].unique(), reverse=True), default=[max(p["ano"])])
+anos = f2.multiselect("Ano", sorted(p["ano"].unique(), reverse=True), placeholder="Todos os anos", key="jog_ano")
 p = p[p["ano"].isin(anos)] if anos else p
-comps = f3.multiselect("Competição", sorted(p["competicao_nome"].unique()), placeholder="Todas")
+comps = f3.multiselect("Competição", sorted(p["competicao_nome"].unique()), placeholder="Todas", key="jog_comp")
 if comps:
     p = p[p["competicao_nome"].isin(comps)]
-times = f4.multiselect("Time", sorted(p["equipe"].unique()), placeholder="Todos")
+times = f4.multiselect("Time", sorted(p["equipe"].unique()), placeholder="Todos", key="jog_time")
 if times:
     p = p[p["equipe"].isin(times)]
 
 g1, g2, g3 = st.columns([2, 1, 1])
-busca = g1.text_input("Buscar atleta", placeholder="Digite parte do nome ou apelido…")
-posicao = g2.selectbox("Posição / zona", ["Todas", "Goleiro", "Defesa", "Meio", "Ataque", "Não confirmada"])
-so_atuaram = g3.toggle("Só quem atuou", value=True, help="Esconde atletas que ficaram apenas no banco.")
+busca = g1.text_input("Buscar atleta", placeholder="Digite parte do nome ou apelido…", key="jog_busca")
+posicao = g2.selectbox("Posição / zona", ["Todas", "Goleiro", "Defesa", "Meio", "Ataque", "Não confirmada"], key="jog_pos")
+so_atuaram = g3.toggle("Só quem atuou", value=True, help="Esconde atletas que ficaram apenas no banco.", key="jog_atuou")
 
 painel = stats.painel_atletas(p).drop(columns=["Posição"]).merge(dl.atletas()[["atleta_id", "nome_completo"]], on="atleta_id", how="left")
 pos_tab = pui.tabela_final()
@@ -106,7 +108,7 @@ with tab_ficha:
     if opcoes.empty:
         st.info("Nenhum atleta para exibir.")
     else:
-        escolhido = st.selectbox("Atleta", opcoes.index, format_func=lambda a: opcoes[a])
+        escolhido = st.selectbox("Atleta", opcoes.index, format_func=lambda a: opcoes[a], key="jog_ficha")
         linha = painel[painel["atleta_id"] == escolhido].iloc[0]
         st.subheader(linha["Atleta"])
         cad = dl.atletas()

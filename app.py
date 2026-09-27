@@ -4,6 +4,7 @@ from pathlib import Path
 
 import streamlit as st
 
+import estado
 from theme import aplicar_tema
 
 aplicar_tema()
@@ -22,4 +23,5 @@ navegacao = st.navigation([
     st.Page("pages/6_👤_Quem_sou_eu.py", title="Quem sou eu", icon="👤", url_path="quem-sou-eu"),
     st.Page("pages/4_📣_Anuncie.py", title="Anuncie", icon="📣", url_path="anuncie"),
 ])
+estado.controlar_navegacao(navegacao.title)
 navegacao.run()

@@ -2,6 +2,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 import data_loader as dl
+import estado
 import leiame
 import stats
 from theme import COR, cabecalho, rodape
@@ -20,22 +21,29 @@ if jogos.empty:
     st.info("Nenhum jogo com resultado na base.")
     st.stop()
 
+estado.barra_limpar("cls")
 f1, f2, f3, f4 = st.columns(4)
 cats = sorted(jogos["categoria"].unique(), reverse=True)  # Masculino primeiro
-categoria = f1.selectbox("Categoria", cats)
+categoria = f1.selectbox("Categoria", cats, key="cls_cat")
 j = jogos[jogos["categoria"] == categoria]
-ano = f2.selectbox("Ano", sorted(j["ano"].unique(), reverse=True))
-j = j[j["ano"] == ano]
-comps = sorted(j["competicao_nome"].unique())
-competicao = f3.selectbox("Competição", comps, index=comps.index("Gauchão") if "Gauchão" in comps else 0)
-j = j[j["competicao_nome"] == competicao]
-fases = sorted(j["fase_nome"].dropna().unique())
-fase = f4.selectbox("Fase", ["Todas"] + fases, index=1 if fases else 0,
-                    help="A tabela padrão mostra a 1ª fase; escolha 'Todas' para somar todas as fases.")
-if fase != "Todas":
-    j = j[j["fase_nome"] == fase]
+ano = f2.selectbox("Ano", sorted(j["ano"].unique(), reverse=True), index=None, placeholder="Escolha o ano", key="cls_ano")
+comps = sorted(j[j["ano"] == ano]["competicao_nome"].unique()) if ano is not None else []
+competicao = f3.selectbox("Competição", comps, index=None, placeholder="Escolha a competição", key="cls_comp",
+                          disabled=ano is None)
+fases = sorted(j[(j["ano"] == ano) & (j["competicao_nome"] == competicao)]["fase_nome"].dropna().unique()) if competicao else []
+fase = f4.selectbox("Fase", ["Todas as fases"] + fases, index=None, placeholder="1ª fase (padrão)", key="cls_fase",
+                    disabled=competicao is None,
+                    help="Sem escolher, mostra a 1ª fase; 'Todas as fases' soma todas (útil só para estatística).")
+if ano is None or competicao is None:
+    st.info("👆 Escolha o **ano** e a **competição** para ver a classificação.")
+    rodape()
+    st.stop()
+j = j[(j["ano"] == ano) & (j["competicao_nome"] == competicao)]
+fase_uso = fase if fase is not None else (fases[0] if fases else "Todas as fases")
+if fase_uso != "Todas as fases":
+    j = j[j["fase_nome"] == fase_uso]
 
-st.caption(f"{len(j)} jogos nesta seleção · {competicao} {ano}")
+st.caption(f"{len(j)} jogos nesta seleção · {competicao} {ano} · {fase_uso}")
 
 gols_df, cartoes_df = dl.gols(), dl.cartoes()
 tab_class, tab_perfil, tab_minutos, tab_art = st.tabs(
@@ -75,7 +83,7 @@ with tab_perfil:
 
 with tab_minutos:
     times = sorted(set(j["time_mandante"]) | set(j["time_visitante"]))
-    alvo = st.selectbox("Time", ["Todos os times (campeonato)"] + times)
+    alvo = st.selectbox("Time", ["Todos os times (campeonato)"] + times, key="cls_time")
     time = None if alvo.startswith("Todos") else alvo
     dist = stats.gols_por_faixa(gols_df, j, time)
     fig = go.Figure()

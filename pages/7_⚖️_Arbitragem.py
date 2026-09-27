@@ -4,6 +4,7 @@ import streamlit as st
 
 import arbitragem as ab
 import data_loader as dl
+import estado
 import leiame
 from theme import COR, cabecalho, rodape
 from ui import tabela
@@ -31,13 +32,14 @@ def estilo(fig, altura=360, legenda=True):
     return fig
 
 
+estado.barra_limpar("ar")
 with st.container(border=True):
     f1, f2, f3, f4 = st.columns([1, 1.2, 2, 1.3])
     cats = sorted(jogos_all["categoria"].unique(), reverse=True)
     categoria = f1.selectbox("Categoria", cats, key="ar_cat")
     j = jogos_all[jogos_all["categoria"] == categoria]
     anos_disp = sorted(j["ano"].unique(), reverse=True)
-    anos = f2.multiselect("Ano", anos_disp, default=anos_disp[:1], key="ar_ano")
+    anos = f2.multiselect("Ano", anos_disp, placeholder="Todos os anos", key="ar_ano")
     j = j[j["ano"].isin(anos)] if anos else j
     comps_disp = sorted(j["competicao_nome"].unique())
     comps = f3.multiselect("Competição", comps_disp, placeholder="Todas", key="ar_comp")
