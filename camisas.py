@@ -151,3 +151,31 @@ def padrao_de_numeracao(escalacao: pd.DataFrame) -> dict:
     if int(z.get("Variável", 0)):
         dist += f" · {int(z.get('Variável', 0))} fora da convenção"
     return {"nivel": f["nivel"], "convencionais": f["convencionais"], "total": len(linha), "distribuicao": dist}
+
+
+def insights_camisas(perfil: pd.DataFrame) -> list[str]:
+    """Frases automáticas sobre o que a numeração revela nos dados."""
+    if perfil.empty:
+        return []
+    out = []
+    tit = perfil[perfil["Camisa"] <= 11]
+    gk = perfil[perfil["% goleiro"] >= 90]
+    if len(gk):
+        out.append("**Goleiros:** camisa(s) " + ", ".join(str(n) for n in gk["Camisa"]) + " — "
+                   f"a 1 é goleiro em {perfil.loc[perfil['Camisa'] == 1, '% goleiro'].max():.0f}% das vezes.")
+    if len(tit):
+        top = tit.sort_values("Gols/jogo", ascending=False).iloc[0]
+        base = tit[tit["Camisa"].isin([2, 3, 4, 6])]["Gols/jogo"].mean()
+        mult = f" — {top['Gols/jogo'] / base:.0f}× mais que a média dos defensores (2, 3, 4 e 6)" if base and base > 0 else ""
+        out.append(f"**Quem mais marca:** a camisa {int(top['Camisa'])} ({top['Gols/jogo']:.2f} gols por jogo){mult}.")
+        cart = tit[tit["% goleiro"] < 50].sort_values("Amarelos/jogo", ascending=False).iloc[0]
+        out.append(f"**Mais advertida:** a camisa {int(cart['Camisa'])} ({cart['Amarelos/jogo']:.2f} amarelos por jogo).")
+    res = perfil[(perfil["Camisa"] >= 12) & (perfil["Camisa"] <= 22)]
+    if len(res):
+        out.append(f"**Reservas:** as camisas 12–22 começam o jogo em média em {res['% titular'].mean():.0f}% das vezes; "
+                   f"as 1–11, em {tit['% titular'].mean():.0f}%.")
+    livres = perfil[perfil["Camisa"] >= 23]
+    if len(livres):
+        out.append("**Numeração livre (23+):** aparecem com frequência, mas não seguem a convenção de posição — "
+                   "por isso a convenção vale sobretudo para as camisas 1 a 22.")
+    return out
