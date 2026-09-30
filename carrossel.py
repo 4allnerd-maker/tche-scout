@@ -8,6 +8,7 @@ import html
 import pandas as pd
 
 import escudos as es
+import fases
 import stats
 
 # ordem de exibição: (nome da competição, rótulo curto)
@@ -26,8 +27,7 @@ MAX_LINHAS = 12  # teto de linhas por slide: mantém o card compacto e os times 
 GRADE = "1.5rem 1.4rem minmax(0,1fr) 2.1rem 1.7rem 1.7rem 1.7rem 1.7rem 2.3rem"
 
 
-def _linha(pos: int, time: str, pts: int, j: int, v: int, e: int, d: int, sg: int, zona: str) -> str:
-    cor_zona = {"g1": "#0E6B3F", "g2": "#F2B705", "rz": "#C8102E"}.get(zona, "transparent")
+def _linha(pos: int, time: str, pts: int, j: int, v: int, e: int, d: int, sg: int, cor_zona: str) -> str:
     nome = html.escape(str(time))
 
     def _num(valor, cor="#5B6B62", peso=600):
@@ -68,9 +68,9 @@ def _slide(comp: str, rotulo: str, jogos: pd.DataFrame, ano: int) -> tuple[str, 
               (jogos["ano"] == ano) & (jogos["competicao_nome"] == comp)]
     if j.empty:
         return None
-    fases = sorted(j["fase_nome"].dropna().unique())
-    if fases:
-        j = j[j["fase_nome"] == fases[0]]
+    fases_disp = sorted(j["fase_nome"].dropna().unique())
+    if fases_disp:
+        j = j[j["fase_nome"] == fases_disp[0]]
     tabela = stats.classificacao(j)
     if tabela.empty:
         return None
@@ -78,16 +78,19 @@ def _slide(comp: str, rotulo: str, jogos: pd.DataFrame, ano: int) -> tuple[str, 
     visivel = tabela.head(MAX_LINHAS)
     linhas = "".join(
         _linha(int(r.Pos), r.Time, int(r.P), int(r.J), int(r.V), int(r.E), int(r.D), int(r.SG),
-              "g1" if r.Pos == 1 else ("g2" if r.Pos <= 4 else ("rz" if r.Pos > n - 2 else "")))
+              (fases.zona_classificacao(comp, int(r.Pos)) or (None, None, None))[0] or "transparent")
         for r in visivel.itertuples())
     rodape = (f'<div style="text-align:center;color:#8AA091;font-size:.72rem;padding:.35rem 0 0 0">'
               f'+{n - len(visivel)} times na tabela completa</div>') if n > len(visivel) else ""
+    legenda = fases.legenda(comp)
+    legenda_html = (f'<div style="text-align:center;color:#5B6B62;font-size:.68rem;padding:.3rem 0 0 0">'
+                    f'{legenda}</div>') if legenda else ""
     slide = (
         f'<div class="ts-slide"><div class="ts-slide-conteudo">'
         f'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem">'
         f'<span style="font-family:\'Archivo Black\',Inter;color:#0A3D26;font-size:1.05rem">{html.escape(rotulo)}</span>'
         f'<span style="color:#5B6B62;font-size:.78rem">{ano} · {n} times</span></div>'
-        f'{_cabecalho_linha()}{linhas}{rodape}</div></div>'
+        f'{_cabecalho_linha()}{linhas}{rodape}{legenda_html}</div></div>'
     )
     return slide, len(visivel)
 
@@ -145,7 +148,7 @@ def widget(jogos: pd.DataFrame) -> str | None:
     .ts-carousel .ts-cta {{ display:flex; align-items:center; justify-content:space-between; margin-top:.7rem;
       padding-top:.6rem; border-top:1px solid #EEF2EE; color:#0E6B3F; font-weight:700; font-size:.85rem; }}
     .ts-carousel .ts-stage {{ position: relative;
-      height: {30 + ALTURA_CABECALHO + maior_tabela * ALTURA_LINHA + 22}px; }}
+      height: {30 + ALTURA_CABECALHO + maior_tabela * ALTURA_LINHA + 44}px; }}
     .ts-carousel .ts-slide {{ position: absolute; inset: 0; opacity: 0; display:flex; flex-direction:column;
       justify-content:center; animation: tsCarrosselFade {total}s infinite; }}
     .ts-carousel .ts-slide-conteudo {{ width:100%; }}

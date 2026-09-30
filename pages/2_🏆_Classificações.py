@@ -4,6 +4,7 @@ import streamlit as st
 import data_loader as dl
 import escudos as es
 import estado
+import fases
 import leiame
 import stats
 from theme import COR, cabecalho, rodape
@@ -31,8 +32,8 @@ ano = f2.selectbox("Ano", sorted(j["ano"].unique(), reverse=True), index=None, p
 comps = sorted(j[j["ano"] == ano]["competicao_nome"].unique()) if ano is not None else []
 competicao = f3.selectbox("Competição", comps, index=None, placeholder="Escolha a competição", key="cls_comp",
                           disabled=ano is None)
-fases = sorted(j[(j["ano"] == ano) & (j["competicao_nome"] == competicao)]["fase_nome"].dropna().unique()) if competicao else []
-fase = f4.selectbox("Fase", ["Todas as fases"] + fases, index=None, placeholder="1ª fase (padrão)", key="cls_fase",
+fases_disp = sorted(j[(j["ano"] == ano) & (j["competicao_nome"] == competicao)]["fase_nome"].dropna().unique()) if competicao else []
+fase = f4.selectbox("Fase", ["Todas as fases"] + fases_disp, index=None, placeholder="1ª fase (padrão)", key="cls_fase",
                     disabled=competicao is None,
                     help="Sem escolher, mostra a 1ª fase; 'Todas as fases' soma todas (útil só para estatística).")
 if ano is None or competicao is None:
@@ -40,7 +41,7 @@ if ano is None or competicao is None:
     rodape()
     st.stop()
 j = j[(j["ano"] == ano) & (j["competicao_nome"] == competicao)]
-fase_uso = fase if fase is not None else (fases[0] if fases else "Todas as fases")
+fase_uso = fase if fase is not None else (fases_disp[0] if fases_disp else "Todas as fases")
 if fase_uso != "Todas as fases":
     j = j[j["fase_nome"] == fase_uso]
 
@@ -51,13 +52,27 @@ tab_class, tab_perfil, tab_minutos, tab_art = st.tabs(
     ["Classificação", "Perfil dos times", "Gols por minuto", "Artilharia"])
 
 with tab_class:
+    if fases.eh_mata_mata(fase_uso):
+        st.info(f"📊 **{fase_uso}** é uma fase eliminatória (mata-mata) — esta tabela soma só os jogos dessa etapa "
+                "entre os times que se enfrentam, não é uma classificação de pontos corridos como a 1ª fase.")
     classif = stats.classificacao(j)
+    ajuda_sit = None
+    if not fases.eh_mata_mata(fase_uso) and fases.ZONAS.get(competicao):
+        classif = classif.copy()
+        classif["Situação"] = classif["Pos"].apply(
+            lambda p: (fases.zona_classificacao(competicao, int(p)) or (None, None, None))[2] or "")
+        ajuda_sit = "Classificação/corte de fase já confirmado pelos confrontos publicados pela FGF"
     classif_v = es.inserir_coluna(classif, "Time")
+    ajuda_cols = {"P": "Pontos", "J": "Jogos", "V": "Vitórias", "E": "Empates", "D": "Derrotas", "GP": "Gols pró",
+                 "GC": "Gols contra", "SG": "Saldo de gols", "%": "Aproveitamento (%)",
+                 "WO": "Jogos decididos por W.O. (3x0)"}
+    if ajuda_sit:
+        ajuda_cols["Situação"] = ajuda_sit
     tabela_class = tabela(classif_v, "cls", ordenar_por="Pos", crescente=True, fixar="Time", exportar="tche-scout-classificacao",
-                          imagem_col="Escudo",
-                          ajuda={"P": "Pontos", "J": "Jogos", "V": "Vitórias", "E": "Empates", "D": "Derrotas", "GP": "Gols pró",
-                                 "GC": "Gols contra", "SG": "Saldo de gols", "%": "Aproveitamento (%)",
-                                 "WO": "Jogos decididos por W.O. (3x0)"})
+                          imagem_col="Escudo", ajuda=ajuda_cols)
+    legenda = fases.legenda_texto(competicao) if not fases.eh_mata_mata(fase_uso) else None
+    if legenda:
+        st.caption(f"Zonas de classificação: {legenda}")
     if "WO" in classif and classif["WO"].sum():
         st.caption("Critérios de ordenação: pontos, vitórias, saldo de gols e gols pró. "
                    "A coluna W.O. mostra jogos decididos por ausência do adversário.")

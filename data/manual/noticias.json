@@ -8,5 +8,25 @@
     "corpo": "O futebol gaúcho é gigante — Gauchão, Série A2, Série B, Copa FGF, categorias femininas — mas nunca teve um site de scout dedicado a ele. O Tchê Scout nasce para preencher essa lacuna: transforma as súmulas oficiais da Federação Gaúcha de Futebol em dados organizados, padronizados e consultáveis, atualizados automaticamente a cada rodada.\n\nA base já cobre calendário, classificações, perfil de times, arbitragem, elenco por camisa e posição, e agora também relatórios de scout em PDF com campo tático. Tudo gratuito e aberto.\n\nA ideia é simples: quem analisa futebol no Rio Grande do Sul merece as mesmas ferramentas de quem analisa as grandes ligas.",
     "autor": "Lucho Pahim",
     "tags": ["lançamento", "tchê scout"]
+  },
+  {
+    "id": "serie-a2-rodada-15-fecha-classificatoria-2026",
+    "data": "2026-09-30",
+    "categoria": "Resultados",
+    "titulo": "Série A2 2026: a rodada 15 encerra a fase classificatória",
+    "resumo": "Bagé 4 x 1 Brasil de Pelotas foi o resultado mais elástico da rodada que fechou a 1ª fase da Série A2. Agora é mata-mata.",
+    "corpo": "A 15ª rodada, disputada no dia 27/09, foi a última da fase classificatória da Gauchão Série A2 2026. Confira os resultados:\n\n- **Apafut 2 x 1 Lajeadense**\n- **Aimoré 1 x 1 Esportivo**\n- **Veranópolis 0 x 0 Passo Fundo**\n- **Gaúcho 0 x 1 Santa Cruz**\n- **Guarani-VA 3 x 1 União Frederiquense**\n- **Bagé 4 x 1 Brasil de Pelotas**\n- **Pelotas 0 x 0 Brasil de Farroupilha**\n- **Glória 1 x 1 Gramadense**\n\nCom a rodada encerrada, os 16 times da competição já têm sua posição final na tabela definida, e os 8 primeiros colocados avançam direto para as quartas de final — confira quem se classificou e os confrontos do mata-mata na outra notícia de hoje.",
+    "autor": "Tchê Scout",
+    "tags": ["Gauchão Série A2", "2026", "Rodada 15"]
+  },
+  {
+    "id": "serie-a2-classificados-quartas-final-2026",
+    "data": "2026-09-30",
+    "categoria": "Artigo",
+    "titulo": "Quem avança: os 8 classificados às quartas de final da Série A2 2026",
+    "resumo": "Passo Fundo termina na ponta com 30 pontos. Confira a tabela final da fase classificatória e os confrontos das quartas.",
+    "corpo": "Encerrada a fase classificatória (15 rodadas), a Gauchão Série A2 2026 já tem seus 8 classificados às quartas de final:\n\n1. **Passo Fundo** — 30 pontos\n2. **Veranópolis** — 26 pontos\n3. **Esportivo** — 25 pontos\n4. **Santa Cruz** — 25 pontos\n5. **Apafut** — 24 pontos\n6. **União Frederiquense** — 24 pontos\n7. **Brasil de Farroupilha** — 24 pontos\n8. **Brasil de Pelotas** — 22 pontos\n\nPasso Fundo termina a 1ª fase na ponta, com a melhor campanha (8 vitórias, 6 empates, só 1 derrota). O artilheiro da fase classificatória é **Patrick**, do próprio Passo Fundo, com 7 gols em 14 jogos.\n\n**Os confrontos das quartas de final (ida e volta):**\n\n- Apafut x Santa Cruz — ida 03/10, volta 10/10\n- Brasil de Farroupilha x Passo Fundo — ida 03/10, volta 10/10\n- Brasil de Pelotas x Esportivo — ida 03/10, volta 10/10\n- União Frederiquense x Veranópolis — ida 03/10, volta 11/10\n\nQuem soma mais gols nos dois jogos avança à semifinal, de acordo com o regulamento da FGF. Acompanhe os confrontos em tempo real na aba **Calendário** (filtrando pela fase 'Quartas de Final') e a tabela completa na aba **Classificações**.",
+    "autor": "Tchê Scout",
+    "tags": ["Gauchão Série A2", "2026", "Quartas de final", "Mata-mata"]
   }
 ]

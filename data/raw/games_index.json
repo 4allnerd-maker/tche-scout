@@ -10499,9 +10499,9 @@
     "sumula_id": null,
     "sumula_url": null,
     "data": "11/10/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "Santa Cruz",
-    "visitante": "APAFUT",
+    "situacao": "SEM_DADOS",
+    "mandante": null,
+    "visitante": null,
     "placar_mandante": null,
     "placar_visitante": null,
     "hora": "15:00",
@@ -10626,5 +10626,25 @@
     "placar_visitante": null,
     "hora": "16:00",
     "estadio": "RazaoInfo Vermelhão da Serra - Passo Fundo"
+  },
+  "santacruzxapafut-divisaodeacesso-10-10-2026": {
+    "slug": "santacruzxapafut-divisaodeacesso-10-10-2026",
+    "jogo_url": "https://fgf.com.br/jogo/santacruzxapafut-divisaodeacesso-10-10-2026",
+    "categoria": "profissional",
+    "competicao_id": 24,
+    "competicao_nome": "Gauchão Série A2",
+    "ano": 2026,
+    "fase_id": 4437,
+    "fase_nome": "Quartas de Final",
+    "sumula_id": null,
+    "sumula_url": null,
+    "data": "10/10/2026",
+    "situacao": "A_REALIZAR",
+    "mandante": "Santa Cruz",
+    "visitante": "APAFUT",
+    "placar_mandante": null,
+    "placar_visitante": null,
+    "hora": "15:00",
+    "estadio": "Plátanos - Santa Cruz do Sul"
   }
 }
