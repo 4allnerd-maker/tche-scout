@@ -36,6 +36,7 @@ ROOT = Path(__file__).resolve().parent.parent
 INDEX_PATH = ROOT / "data" / "raw" / "games_index.json"
 SUMULAS_DIR = ROOT / "data" / "raw" / "sumulas"
 CACHE_DIR = ROOT / "data" / "parsed"
+CORRECOES_PATH = ROOT / "data" / "manual" / "correcoes_resultado.json"
 OUT_DIR = ROOT / "data" / "processed"
 
 IDS_FEMININO = {59, 564, 708, 803}
@@ -115,6 +116,22 @@ def grava(nome: str, registros: list | dict) -> None:
 
 def categoria_do(meta: dict) -> str:
     return "Feminino" if meta["competicao_id"] in IDS_FEMININO or meta.get("categoria") == "feminino" else "Masculino"
+
+
+def aplica_correcoes(jogos: list, calendario: list) -> None:
+    """Sobrescreve placar/situação de jogos cujo resultado final foi decidido em julgamento do TJD-RS
+    (ou outra instância) e por isso diverge do que a súmula original registra — ver data/manual/correcoes_resultado.json
+    pro motivo e a fonte de cada correção. In-place."""
+    if not CORRECOES_PATH.exists():
+        return
+    correcoes = {c["jogo_id"]: c for c in json.loads(CORRECOES_PATH.read_text(encoding="utf-8"))}
+    if not correcoes:
+        return
+    for lista in (jogos, calendario):
+        for j in lista:
+            c = correcoes.get(j.get("jogo_id"))
+            if c:
+                j["gols_mandante"], j["gols_visitante"], j["situacao"] = c["gols_mandante"], c["gols_visitante"], c["situacao"]
 
 
 def main():
@@ -311,6 +328,7 @@ def main():
             if r["atleta_id"]:
                 r["jogador"] = exib_de.get(r["atleta_id"], r["jogador"])
 
+    aplica_correcoes(jogos, calendario)
     jogos.sort(key=lambda j: (datetime.strptime(j["data"], "%d/%m/%Y") if j["data"] else datetime.max, j["jogo_id"]))
     calendario.sort(key=lambda j: (datetime.strptime(j["data"], "%d/%m/%Y") if j["data"] else datetime.max, j["jogo_id"]))
     for nome, dados in (("jogos", jogos), ("calendario", calendario), ("jogadores_partida", partidas),
