@@ -8261,7 +8261,7 @@
     "placar_mandante": null,
     "placar_visitante": null,
     "hora": "15:00",
-    "estadio": "CT Futebol com Vida - Tres Passos"
+    "estadio": "CT Futvida - Viamao"
   },
   "gafarroupilhaxecnovohorizonte-segundadivisao-03-10-2026": {
     "slug": "gafarroupilhaxecnovohorizonte-segundadivisao-03-10-2026",
@@ -8764,7 +8764,7 @@
     "visitante": "FBC Riograndense",
     "placar_mandante": null,
     "placar_visitante": null,
-    "hora": "15:00",
+    "hora": "18:00",
     "estadio": "João Marimon Jr. - Panambi"
   },
   "serpanambixsaopaulo-segundadivisao-27-09-2026": {
@@ -10479,9 +10479,9 @@
     "sumula_id": null,
     "sumula_url": null,
     "data": "11/10/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "Passo Fundo",
-    "visitante": "Brasil de Farroupilha",
+    "situacao": "SEM_DADOS",
+    "mandante": null,
+    "visitante": null,
     "placar_mandante": null,
     "placar_visitante": null,
     "hora": "15:00",
@@ -10606,5 +10606,25 @@
     "placar_visitante": null,
     "hora": "15:00",
     "estadio": "Santa Lucia - Caxias do Sul"
+  },
+  "passofundoxbrasildefarroupilha-divisaodeacesso-10-10-2026": {
+    "slug": "passofundoxbrasildefarroupilha-divisaodeacesso-10-10-2026",
+    "jogo_url": "https://fgf.com.br/jogo/passofundoxbrasildefarroupilha-divisaodeacesso-10-10-2026",
+    "categoria": "profissional",
+    "competicao_id": 24,
+    "competicao_nome": "Gauchão Série A2",
+    "ano": 2026,
+    "fase_id": 4437,
+    "fase_nome": "Quartas de Final",
+    "sumula_id": null,
+    "sumula_url": null,
+    "data": "10/10/2026",
+    "situacao": "A_REALIZAR",
+    "mandante": "Passo Fundo",
+    "visitante": "Brasil de Farroupilha",
+    "placar_mandante": null,
+    "placar_visitante": null,
+    "hora": "16:00",
+    "estadio": "RazaoInfo Vermelhão da Serra - Passo Fundo"
   }
 }
