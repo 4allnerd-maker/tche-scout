@@ -6,12 +6,15 @@ from __future__ import annotations
 import streamlit as st
 
 # O que NÃO é apagado ao limpar: trabalho do usuário nesta visita e controle interno da navegação.
-PRESERVAR = {"posicoes_manuais", "formacoes_manuais", "_pagina_atual", "_manter_jogo"}
+PRESERVAR = {"posicoes_manuais", "formacoes_manuais", "_pagina_atual", "_manter_jogo", "_manter_time"}
 
 
-def limpar_filtros(manter_jogo: bool = False) -> None:
+CAMPOS_TIME = {"an_time", "an_cat", "an_ano", "an_comp"}
+
+
+def limpar_filtros(manter_jogo: bool = False, manter_time: bool = False) -> None:
     for k in list(st.session_state.keys()):
-        if k in PRESERVAR or (manter_jogo and k == "jogo_id"):
+        if k in PRESERVAR or (manter_jogo and k == "jogo_id") or (manter_time and k in CAMPOS_TIME):
             continue
         del st.session_state[k]
 
@@ -20,8 +23,9 @@ def controlar_navegacao(pagina: str) -> None:
     """Chame no roteador (app.py) a cada execução: ao mudar de aba, zera os filtros da aba anterior."""
     anterior = st.session_state.get("_pagina_atual")
     if anterior is not None and anterior != pagina:
-        manter = bool(st.session_state.pop("_manter_jogo", False))
-        limpar_filtros(manter_jogo=manter)
+        manter_jogo = bool(st.session_state.pop("_manter_jogo", False))
+        manter_time = bool(st.session_state.pop("_manter_time", False))
+        limpar_filtros(manter_jogo=manter_jogo, manter_time=manter_time)
     st.session_state["_pagina_atual"] = pagina
 
 

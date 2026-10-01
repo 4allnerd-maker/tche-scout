@@ -96,3 +96,16 @@ def abrir_jogo(jogo_id: str) -> None:
     st.session_state["jogo_id"] = str(jogo_id)
     st.session_state["_manter_jogo"] = True  # o roteador não apaga este pedido ao trocar de aba
     st.switch_page("pages/8_🧾_Jogo.py")
+
+
+def abrir_time(time: str, categoria: str | None = None, ano: int | None = None, competicao: str | None = None) -> None:
+    """Leva para a aba Análise já com o time (e filtros de categoria/ano/competição) escolhidos."""
+    st.session_state["an_time"] = str(time)
+    if categoria is not None:
+        st.session_state["an_cat"] = categoria
+    if ano is not None:
+        st.session_state["an_ano"] = int(ano)
+    if competicao is not None:
+        st.session_state["an_comp"] = [competicao]
+    st.session_state["_manter_time"] = True  # o roteador não apaga este pedido ao trocar de aba
+    st.switch_page("pages/5_🔬_Análise.py")

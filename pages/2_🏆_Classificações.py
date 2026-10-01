@@ -8,7 +8,7 @@ import fases
 import leiame
 import stats
 from theme import COR, cabecalho, rodape
-from ui import tabela
+from ui import abrir_time, linha_selecionada, tabela
 
 cabecalho("🏆 Classificações e scout dos times",
           "Tabela, perfil de cada time e em que momento do jogo os gols acontecem.")
@@ -51,6 +51,27 @@ gols_df, cartoes_df = dl.gols(), dl.cartoes()
 tab_class, tab_perfil, tab_minutos, tab_art = st.tabs(
     ["Classificação", "Perfil dos times", "Gols por minuto", "Artilharia"])
 
+@st.dialog("Ficha rápida do time")
+def _dialog_time() -> None:
+    time_sel = st.session_state.get("_cls_dialog_time")
+    if not time_sel or classif.empty or time_sel not in set(classif["Time"]):
+        st.info("Selecione um time na tabela.")
+        return
+    linha = classif[classif["Time"] == time_sel].iloc[0]
+    st.markdown(f'{es.img_tag(time_sel, 40)} &nbsp; **{time_sel}**', unsafe_allow_html=True)
+    m1, m2, m3, m4, m5 = st.columns(5)
+    m1.metric("Posição", f"{int(linha['Pos'])}º")
+    m2.metric("Pontos", int(linha["P"]))
+    m3.metric("Jogos", int(linha["J"]))
+    m4.metric("SG", int(linha["SG"]))
+    m5.metric("Aproveit.", f"{linha['%']:.0f}%")
+    if "Situação" in classif.columns and linha.get("Situação"):
+        st.caption(f"📊 {linha['Situação']}")
+    st.divider()
+    if st.button("🔬 Ver análise completa do time →", type="primary", key="cls_ir_analise"):
+        abrir_time(time_sel, categoria=categoria, ano=ano, competicao=competicao)
+
+
 with tab_class:
     if fases.eh_mata_mata(fase_uso):
         st.info(f"📊 **{fase_uso}** é uma fase eliminatória (mata-mata) — esta tabela soma só os jogos dessa etapa "
@@ -69,7 +90,13 @@ with tab_class:
     if ajuda_sit:
         ajuda_cols["Situação"] = ajuda_sit
     tabela_class = tabela(classif_v, "cls", ordenar_por="Pos", crescente=True, fixar="Time", exportar="tche-scout-classificacao",
-                          imagem_col="Escudo", ajuda=ajuda_cols)
+                          imagem_col="Escudo", ajuda=ajuda_cols, selecionavel=True)
+    sel_time = linha_selecionada("cls")
+    bcol, ccol = st.columns([1, 3])
+    if bcol.button("👁️ Ver ficha rápida do time", disabled=sel_time is None, type="primary", key="cls_abrir_time"):
+        st.session_state["_cls_dialog_time"] = sel_time["Time"]
+        _dialog_time()
+    ccol.caption("Clique numa linha da tabela pra selecionar o time.")
     legenda = fases.legenda_texto(competicao) if not fases.eh_mata_mata(fase_uso) else None
     if legenda:
         st.caption(f"Zonas de classificação: {legenda}")

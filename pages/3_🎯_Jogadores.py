@@ -11,7 +11,7 @@ import posicoes as po
 import posicoes_ui as pui
 import stats
 from theme import COR, cabecalho, rodape
-from ui import tabela
+from ui import linha_selecionada, tabela
 
 cabecalho("🎯 Jogadores", "Base de atletas dos campeonatos gaúchos, com nomes padronizados a partir das súmulas.")
 leiame.mostrar("jogadores")
@@ -75,19 +75,61 @@ k2.metric("Gols", int(painel["Gols"].sum()))
 k3.metric("Cartões amarelos", int(painel["Amarelos"].sum()))
 k4.metric("Cartões vermelhos", int(painel["Vermelhos"].sum()))
 
+def _render_ficha(escolhido, chave: str = "ficha") -> None:
+    linha = painel[painel["atleta_id"] == escolhido].iloc[0]
+    st.markdown(f'{es.img_tag(linha["Time"], 34)} &nbsp; **{linha["Atleta"]}** — {linha["Time"]}',
+               unsafe_allow_html=True)
+    cad = dl.atletas()
+    c = cad[cad["atleta_id"] == escolhido]
+    if not c.empty:
+        st.caption(f"Nome completo: {c.iloc[0]['nome_completo']} · Registro CBF: {escolhido} · "
+                   f"Equipes: {', '.join(c.iloc[0]['equipes'])}")
+    m1, m2, m3, m4, m5, m6 = st.columns(6)
+    m1.metric("Jogos", int(linha["Jogos"]))
+    m2.metric("Titular", int(linha["Titular"]))
+    m3.metric("Entrou", int(linha["Entrou"]))
+    m4.metric("Minutos", int(linha["Minutos"]))
+    m5.metric("Gols", int(linha["Gols"]))
+    m6.metric("🟨 / 🟥", f"{int(linha['Amarelos'])} / {int(linha['Vermelhos'])}")
+    hist = p[p["atleta_id"] == escolhido].sort_values("data", ascending=False).copy()
+    hist["Data"] = hist["data"]
+    hist["Confronto"] = (hist["time_mandante"] + " " + hist["gols_mandante"].astype(int).astype(str) + " x "
+                         + hist["gols_visitante"].astype(int).astype(str) + " " + hist["time_visitante"])
+    hist["Situação"] = hist.apply(lambda r: "Titular" if r["titular"] else ("Entrou" if r["entrou"] else "Banco"), axis=1)
+    out = hist[["Data", "competicao_nome", "Confronto", "equipe", "Situação", "minutos", "gols", "amarelos", "vermelhos"]]
+    out.columns = ["Data", "Competição", "Confronto", "Time", "Situação", "Min", "Gols", "🟨", "🟥"]
+    out_v = es.inserir_coluna(out, "Time")
+    tabela(out_v, chave, ordenar_por="Data", altura=360, imagem_col="Escudo")
+
+
+@st.dialog("Ficha rápida do atleta")
+def _dialog_ficha() -> None:
+    aid = st.session_state.get("_jog_dialog_id")
+    if aid is None or aid not in set(painel["atleta_id"]):
+        st.info("Selecione um atleta na tabela.")
+        return
+    _render_ficha(aid, chave="ficha_dialog")
+
+
 pui.aviso()
 tab_tab, tab_graf, tab_ficha, tab_cam, tab_pos = st.tabs(["Tabela de atletas", "Gráficos", "Ficha do atleta", "👕 Camisas", "📍 Posições"])
 
 with tab_tab:
     cols = ["Atleta", "Nome completo", "Time", "Times", "Posição", "Status da posição", "Relacionado", "Jogos", "Titular", "Entrou", "Banco", "Substituído",
-            "Minutos", "Gols", "G.C.", "Min/gol", "Amarelos", "Vermelhos"]
+            "Minutos", "Gols", "G.C.", "Min/gol", "Amarelos", "Vermelhos", "atleta_id"]
     painel_v = es.inserir_coluna(painel[cols], "Time")
     tabela(painel_v, "atl", ordenar_por="Gols", fixar="Atleta", altura=520, exportar="tche-scout-atletas",
-           imagem_col="Escudo",
+           imagem_col="Escudo", selecionavel=True, ocultar=["atleta_id"],
            ajuda={"Times": "Em quantos times o atleta atuou na seleção", "Relacionado": "Jogos em que constou na súmula",
                   "Jogos": "Titular + entrou durante o jogo", "Entrou": "Entrou como substituto",
                   "Banco": "Relacionado e não utilizado", "Substituído": "Saiu por substituição",
                   "G.C.": "Gols contra", "Min/gol": "Minutos jogados por gol marcado"})
+    sel = linha_selecionada("atl")
+    bcol, ccol = st.columns([1, 3])
+    if bcol.button("👁️ Ver ficha rápida", disabled=sel is None, type="primary", key="jog_abrir_ficha"):
+        st.session_state["_jog_dialog_id"] = sel["atleta_id"]
+        _dialog_ficha()
+    ccol.caption("Clique numa linha da tabela pra selecionar o atleta e ver a ficha num painel, sem sair da página.")
     st.caption("Minutos calculados a partir de titularidade, substituições e expulsões (jogo de 90 min). "
                "Assistências não constam nas súmulas oficiais. Nomes completos podem aparecer cortados: é como a FGF os publica.")
 
@@ -112,30 +154,7 @@ with tab_ficha:
         st.info("Nenhum atleta para exibir.")
     else:
         escolhido = st.selectbox("Atleta", opcoes.index, format_func=lambda a: opcoes[a], key="jog_ficha")
-        linha = painel[painel["atleta_id"] == escolhido].iloc[0]
-        st.markdown(f'{es.img_tag(linha["Time"], 34)} &nbsp; **{linha["Atleta"]}** — {linha["Time"]}',
-                   unsafe_allow_html=True)
-        cad = dl.atletas()
-        c = cad[cad["atleta_id"] == escolhido]
-        if not c.empty:
-            st.caption(f"Nome completo: {c.iloc[0]['nome_completo']} · Registro CBF: {escolhido} · "
-                       f"Equipes: {', '.join(c.iloc[0]['equipes'])}")
-        m1, m2, m3, m4, m5, m6 = st.columns(6)
-        m1.metric("Jogos", int(linha["Jogos"]))
-        m2.metric("Titular", int(linha["Titular"]))
-        m3.metric("Entrou", int(linha["Entrou"]))
-        m4.metric("Minutos", int(linha["Minutos"]))
-        m5.metric("Gols", int(linha["Gols"]))
-        m6.metric("🟨 / 🟥", f"{int(linha['Amarelos'])} / {int(linha['Vermelhos'])}")
-        hist = p[p["atleta_id"] == escolhido].sort_values("data", ascending=False).copy()
-        hist["Data"] = hist["data"]
-        hist["Confronto"] = (hist["time_mandante"] + " " + hist["gols_mandante"].astype(int).astype(str) + " x "
-                             + hist["gols_visitante"].astype(int).astype(str) + " " + hist["time_visitante"])
-        hist["Situação"] = hist.apply(lambda r: "Titular" if r["titular"] else ("Entrou" if r["entrou"] else "Banco"), axis=1)
-        out = hist[["Data", "competicao_nome", "Confronto", "equipe", "Situação", "minutos", "gols", "amarelos", "vermelhos"]]
-        out.columns = ["Data", "Competição", "Confronto", "Time", "Situação", "Min", "Gols", "🟨", "🟥"]
-        out_v = es.inserir_coluna(out, "Time")
-        tabela(out_v, "ficha", ordenar_por="Data", altura=360, imagem_col="Escudo")
+        _render_ficha(escolhido)
 
 with tab_cam:
     st.markdown("#### O que cada número costuma significar")
