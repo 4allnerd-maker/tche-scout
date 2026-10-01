@@ -83,13 +83,13 @@ st.markdown(
         <div style="flex:1; display:flex; align-items:center; justify-content:flex-end; gap:.6rem;">
           <span style="font-family:'Archivo Black',Inter; font-size:1.7rem">{html.escape(mand)}</span>
           <img src="{es.data_uri(mand, 150)}" alt="{html.escape(mand)}" style="height:50px;width:50px;object-fit:contain;
-            background:#fff;border-radius:50%;border:1px solid #DCE5DD;flex:0 0 auto;">
+            background:#fff;border-radius:50%;border:1px solid rgba(255,255,255,.15);flex:0 0 auto;">
         </div>
         <div style="font-family:'Archivo Black',Inter; font-size:3rem; color:#F2B705; white-space:nowrap">
           {int(r['gols_mandante'])} <span style="font-size:1.6rem">x</span> {int(r['gols_visitante'])}</div>
         <div style="flex:1; display:flex; align-items:center; justify-content:flex-start; gap:.6rem;">
           <img src="{es.data_uri(visit, 150)}" alt="{html.escape(visit)}" style="height:50px;width:50px;object-fit:contain;
-            background:#fff;border-radius:50%;border:1px solid #DCE5DD;flex:0 0 auto;">
+            background:#fff;border-radius:50%;border:1px solid rgba(255,255,255,.15);flex:0 0 auto;">
           <span style="font-family:'Archivo Black',Inter; font-size:1.7rem">{html.escape(visit)}</span>
         </div>
       </div>
@@ -129,10 +129,10 @@ with tabs[0]:
             x = e[e["Time"] == lado]
             fig.add_trace(go.Scatter(x=x["Min"], y=[y] * len(x), mode="text", text=x["icone"], textfont=dict(size=22),
                                      name=lado, hovertext=x["Evento"] + " · " + x["Atleta"], hoverinfo="text"))
-        fig.add_vline(x=45, line_dash="dot", line_color="#9AA9A0")
+        fig.add_vline(x=45, line_dash="dot", line_color="#6F8577")
         fig.update_yaxes(tickvals=[1, 0], ticktext=[mand, visit], range=[-.6, 1.6], showgrid=False)
-        fig.update_xaxes(title="Minuto", range=[-2, 100], gridcolor="#E6ECE7")
-        fig.update_layout(height=260, margin=dict(l=0, r=0, t=10, b=0), plot_bgcolor="white", showlegend=False)
+        fig.update_xaxes(title="Minuto", range=[-2, 100], gridcolor="rgba(255,255,255,.08)")
+        fig.update_layout(height=260, margin=dict(l=0, r=0, t=10, b=0), plot_bgcolor="rgba(0,0,0,0)", showlegend=False)
         st.plotly_chart(fig, width="stretch")
         e["Min"] = e["Min"].map(lambda m: "" if pd.isna(m) else f"{int(m)}'" if m <= 90 else f"90+{int(m - 90)}'")
         st.dataframe(e[["Min", "Time", "Evento", "Atleta", "Detalhe"]], hide_index=True, width="stretch",
@@ -154,7 +154,7 @@ with tabs[1]:
             st.markdown(f'#### {es.img_tag(equipe, 26)} &nbsp; {equipe}', unsafe_allow_html=True)
             if padrao_n["total"]:
                 st.markdown(f"**Padrão de numeração: {padrao_n['nivel']}** — {padrao_n['convencionais']} de {padrao_n['total']} titulares "
-                            f"de linha usam camisas 2–11<br/><small style='color:#5B6B62'>{padrao_n['distribuicao']}</small>",
+                            f"de linha usam camisas 2–11<br/><small style='color:#9FB3A6'>{padrao_n['distribuicao']}</small>",
                             unsafe_allow_html=True)
             pos = cm.posicoes_no_campo(e)
             if not pos.empty:

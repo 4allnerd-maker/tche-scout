@@ -25,10 +25,10 @@ gols_all, cartoes_all = dl.gols(), dl.cartoes()
 
 
 def estilo(fig, altura=360, legenda=True):
-    fig.update_layout(height=altura, margin=dict(l=0, r=0, t=30, b=0), plot_bgcolor="white", paper_bgcolor="white",
+    fig.update_layout(height=altura, margin=dict(l=0, r=0, t=30, b=0), plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
                       font=dict(family="Inter, sans-serif", color=COR["texto"]), showlegend=legenda,
                       legend=dict(orientation="h", y=1.12, x=0))
-    fig.update_yaxes(gridcolor="#E6ECE7", zeroline=False)
+    fig.update_yaxes(gridcolor="rgba(255,255,255,.08)", zeroline=False)
     fig.update_xaxes(showgrid=False)
     return fig
 
@@ -76,7 +76,7 @@ with tabs[0]:
     fig = go.Figure()
     fig.add_bar(y=top["Árbitro"], x=top["Amarelos/jogo"], orientation="h", name="Amarelos", marker_color=COR["dourado"])
     fig.add_bar(y=top["Árbitro"], x=top["Vermelhos/jogo"], orientation="h", name="Vermelhos", marker_color=COR["vermelho"])
-    fig.add_vline(x=media, line_dash="dot", line_color="#5B6B62", annotation_text=f"média {media:.2f}")
+    fig.add_vline(x=media, line_dash="dot", line_color="#9FB3A6", annotation_text=f"média {media:.2f}")
     fig.update_layout(barmode="stack", xaxis_title="Cartões por jogo")
     st.plotly_chart(estilo(fig, max(320, 26 * len(top))), width="stretch")
     st.markdown("#### Tabela completa")
@@ -90,7 +90,7 @@ with tabs[1]:
     arb = st.selectbox("Árbitro", nomes, key="ar_sel")
     mine = base[base["arbitro"] == arb].sort_values("data")
     linha = tab[tab["Árbitro"] == arb].iloc[0]
-    st.markdown(f"### {arb}  <small style='color:#5B6B62'>· {linha['Vínculo'] or 'vínculo n/d'}</small>", unsafe_allow_html=True)
+    st.markdown(f"### {arb}  <small style='color:#9FB3A6'>· {linha['Vínculo'] or 'vínculo n/d'}</small>", unsafe_allow_html=True)
     ma = st.columns(6)
     ma[0].metric("Jogos", int(linha["Jogos"]))
     ma[1].metric("Amarelos/jogo", linha["Amarelos/jogo"], f"{linha['Amarelos/jogo'] - base['amarelos'].mean():+.2f} vs média",

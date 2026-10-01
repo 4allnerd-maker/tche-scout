@@ -97,7 +97,7 @@ with tab_perfil:
         fig.add_bar(y=ordem["Time"], x=ordem["Gols contra/jogo"], name="Gols contra/jogo", orientation="h",
                     marker_color=COR["vermelho"])
         fig.update_layout(barmode="group", height=max(320, 34 * len(ordem)), margin=dict(l=0, r=0, t=10, b=0),
-                          legend=dict(orientation="h", y=1.05), plot_bgcolor="white")
+                          legend=dict(orientation="h", y=1.05), plot_bgcolor="rgba(0,0,0,0)")
         st.plotly_chart(fig, width="stretch")
 
 with tab_minutos:
@@ -110,7 +110,7 @@ with tab_minutos:
     if time:
         fig.add_bar(x=dist["Faixa"], y=dist["Sofridos"], name="Gols sofridos", marker_color=COR["vermelho"])
     fig.update_layout(barmode="group", height=380, margin=dict(l=0, r=0, t=10, b=0),
-                      xaxis_title="Minuto do jogo", yaxis_title="Gols", plot_bgcolor="white",
+                      xaxis_title="Minuto do jogo", yaxis_title="Gols", plot_bgcolor="rgba(0,0,0,0)",
                       legend=dict(orientation="h", y=1.08))
     st.plotly_chart(fig, width="stretch")
     tabela(dist, "faixas", ordenar_por="Faixa", crescente=True, com_controles=False)

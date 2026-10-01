@@ -24,10 +24,10 @@ gols_all, cartoes_all, partidas_all, subs_all = dl.gols(), dl.cartoes(), dl.part
 
 
 def estilo(fig, altura=360, legenda=True):
-    fig.update_layout(height=altura, margin=dict(l=0, r=0, t=30, b=0), plot_bgcolor="white", paper_bgcolor="white",
+    fig.update_layout(height=altura, margin=dict(l=0, r=0, t=30, b=0), plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
                       font=dict(family="Inter, sans-serif", color=COR["texto"]), showlegend=legenda,
                       legend=dict(orientation="h", y=1.12, x=0))
-    fig.update_yaxes(gridcolor="#E6ECE7", zeroline=False)
+    fig.update_yaxes(gridcolor="rgba(255,255,255,.08)", zeroline=False)
     fig.update_xaxes(showgrid=False)
     return fig
 
@@ -82,7 +82,7 @@ recorte = f"{mando}" + (f" · últimos {int(ultimos)} jogos" if ultimos else "")
 st.markdown(
     f'<div class="ts-hero" style="padding:1.2rem 1.6rem; display:flex; align-items:center; gap:1rem;">'
     f'<img src="{es.data_uri(time, 180)}" alt="{time}" style="height:64px;width:64px;object-fit:contain;background:#fff;'
-    f'border-radius:50%;border:1px solid #DCE5DD;flex:0 0 auto;">'
+    f'border-radius:50%;border:1px solid rgba(255,255,255,.15);flex:0 0 auto;">'
     f'<div><h1 style="font-size:2rem;margin:0">{time}</h1>'
     f'<p style="margin:.2rem 0 0 0">{", ".join(comps) or "Todas as competições"} · {ano} · {fase} · recorte: {recorte}</p></div></div>',
     unsafe_allow_html=True)
@@ -149,7 +149,7 @@ with tabs[0]:
                 fig.add_trace(go.Scatterpolar(r=list(tv.values()) + [list(tv.values())[0]], theta=eixos + [eixos[0]],
                                               name=time, line=dict(color=COR["verde"], width=3), fill="toself",
                                               fillcolor="rgba(14,107,63,.25)"))
-            fig.update_layout(polar=dict(radialaxis=dict(range=[0, 100], showticklabels=False, gridcolor="#E6ECE7")),
+            fig.update_layout(polar=dict(radialaxis=dict(range=[0, 100], showticklabels=False, gridcolor="rgba(255,255,255,.08)")),
                               height=380, margin=dict(l=30, r=30, t=20, b=20), legend=dict(orientation="h", y=-0.08))
             st.plotly_chart(fig, width="stretch")
             st.caption("100 = melhor time da seleção naquele eixo, 0 = pior. Defesa e Disciplina são invertidas "
@@ -212,7 +212,7 @@ with tabs[1]:
             m_ = sorted(g[(g["lado"] == lado)]["minuto"].dropna())
             fig.add_scatter(x=[0] + m_ + [95], y=[0] + list(range(1, len(m_) + 1)) + [len(m_)], mode="lines",
                             line=dict(color=cor, width=3, shape="hv"), name=nome)
-        fig.add_vline(x=45, line_dash="dot", line_color="#9AA9A0", annotation_text="Intervalo")
+        fig.add_vline(x=45, line_dash="dot", line_color="#6F8577", annotation_text="Intervalo")
         fig.update_layout(xaxis_title="Minuto", yaxis_title="Gols acumulados")
         st.plotly_chart(estilo(fig, 320), width="stretch")
 

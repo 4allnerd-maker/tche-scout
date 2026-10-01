@@ -37,5 +37,5 @@ def figura_campo(pos, titulo: str = "", altura: int = 520) -> go.Figure:
     fig.update_xaxes(range=[-2, 102], visible=False)
     fig.update_yaxes(range=[-3, 103], visible=False, scaleanchor="x", scaleratio=1.15)
     fig.update_layout(height=altura, margin=dict(l=0, r=0, t=34, b=0), title=dict(text=titulo, font=dict(size=15)),
-                      plot_bgcolor="white", paper_bgcolor="white")
+                      plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)")
     return fig

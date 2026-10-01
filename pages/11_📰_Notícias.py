@@ -41,8 +41,7 @@ if v.empty:
 def _card_css(p) -> str:
     ico = nt.ICONE_CAT.get(p["categoria"], "📰")
     data_fmt = p["data"].strftime("%d/%m/%Y") if pd.notna(p["data"]) else ""
-    tags = " ".join(f'<span class="ts-tag" style="background:{COR["fundo_suave"]};color:{COR["verde_escuro"]}">{t}</span>'
-                    for t in p["tags"][:3])
+    tags = " ".join(f'<span class="ts-tag">{t}</span>' for t in p["tags"][:3])
     return (f'<div class="ts-card" style="margin-bottom:.8rem"><div class="ico">{ico} '
             f'<span style="font-size:.8rem;color:{COR["texto_suave"]};font-family:Inter">{data_fmt} · {p["categoria"]}'
             f'{" · gerado automaticamente" if p["auto"] else ""}</span></div>'

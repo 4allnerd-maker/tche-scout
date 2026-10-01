@@ -95,7 +95,7 @@ with tab_graf:
     top = painel.sort_values("Gols", ascending=False).head(15).iloc[::-1]
     fig = go.Figure(go.Bar(x=top["Gols"], y=top["Atleta"] + " (" + top["Time"] + ")", orientation="h",
                            marker_color=COR["verde"]))
-    fig.update_layout(title="Maiores artilheiros", height=460, margin=dict(l=0, r=0, t=40, b=0), plot_bgcolor="white")
+    fig.update_layout(title="Maiores artilheiros", height=460, margin=dict(l=0, r=0, t=40, b=0), plot_bgcolor="rgba(0,0,0,0)")
     st.plotly_chart(fig, width="stretch")
     disc = painel.assign(Total=painel["Amarelos"] + painel["Vermelhos"] * 2).sort_values("Total", ascending=False).head(15).iloc[::-1]
     fig2 = go.Figure()
@@ -103,7 +103,7 @@ with tab_graf:
                  marker_color=COR["dourado"])
     fig2.add_bar(x=disc["Vermelhos"], y=disc["Atleta"] + " (" + disc["Time"] + ")", orientation="h", name="Vermelhos",
                  marker_color=COR["vermelho"])
-    fig2.update_layout(title="Mais cartões", barmode="stack", height=460, margin=dict(l=0, r=0, t=40, b=0), plot_bgcolor="white")
+    fig2.update_layout(title="Mais cartões", barmode="stack", height=460, margin=dict(l=0, r=0, t=40, b=0), plot_bgcolor="rgba(0,0,0,0)")
     st.plotly_chart(fig2, width="stretch")
 
 with tab_ficha:
@@ -149,7 +149,7 @@ with tab_cam:
         cores = perfil["Zona (convenção)"].map(cm.COR_ZONA)
         fig.add_bar(x=perfil["Camisa"].astype(str), y=perfil["Gols/jogo"], marker_color=cores,
                     text=perfil["Zona (convenção)"], hovertext=perfil["Função provável"])
-        fig.update_layout(height=340, margin=dict(l=0, r=0, t=30, b=0), plot_bgcolor="white",
+        fig.update_layout(height=340, margin=dict(l=0, r=0, t=30, b=0), plot_bgcolor="rgba(0,0,0,0)",
                           xaxis_title="Camisa", yaxis_title="Gols por jogo (atleta que atuou)", title="Gols por jogo de cada camisa")
         st.plotly_chart(fig, width="stretch")
         for t in cm.insights_camisas(perfil):
