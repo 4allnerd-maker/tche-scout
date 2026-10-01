@@ -8116,16 +8116,8 @@
     "ano": 2026,
     "fase_id": 4338,
     "fase_nome": "Classificatória",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "30/09/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "EC Novo Horizonte",
-    "visitante": "Clube 1992",
-    "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "15:00",
-    "estadio": "Arena Cruzeiro - Cachoeirinha"
+    "sumula_id": "58260",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/58260.pdf"
   },
   "ecnovohorizontexfutebolcomvida-segundadivisao-24-10-2026": {
     "slug": "ecnovohorizontexfutebolcomvida-segundadivisao-24-10-2026",
@@ -8252,16 +8244,8 @@
     "ano": 2026,
     "fase_id": 4338,
     "fase_nome": "Classificatória",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "30/09/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "Futebol Com Vida",
-    "visitante": "Panambi",
-    "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "15:00",
-    "estadio": "CT Futvida - Viamao"
+    "sumula_id": "58259",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/58259.pdf"
   },
   "gafarroupilhaxecnovohorizonte-segundadivisao-03-10-2026": {
     "slug": "gafarroupilhaxecnovohorizonte-segundadivisao-03-10-2026",
@@ -8356,16 +8340,8 @@
     "ano": 2026,
     "fase_id": 4338,
     "fase_nome": "Classificatória",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "30/09/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "Real Sc",
-    "visitante": "GA Farroupilha",
-    "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "15:00",
-    "estadio": "Modulo Esportivo Tramandai - Tramandai"
+    "sumula_id": "58261",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/58261.pdf"
   },
   "realscxriograndense-segundadivisao-12-09-2026": {
     "slug": "realscxriograndense-segundadivisao-12-09-2026",
@@ -8600,16 +8576,8 @@
     "ano": 2026,
     "fase_id": 4338,
     "fase_nome": "Classificatória",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "30/09/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "Cruz Alta",
-    "visitante": "Rio Grande",
-    "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "19:30",
-    "estadio": "Jair Juarez Lemos - Taquara"
+    "sumula_id": "58258",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/58258.pdf"
   },
   "s-e-r-cruzalta-xserpanambi-segundadivisao-24-10-2026": {
     "slug": "s-e-r-cruzalta-xserpanambi-segundadivisao-24-10-2026",
@@ -8692,16 +8660,8 @@
     "ano": 2026,
     "fase_id": 4338,
     "fase_nome": "Classificatória",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "30/09/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "São Paulo",
-    "visitante": "FBC Riograndense",
-    "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "19:00",
-    "estadio": "Aldo Dapuzzo - Rio Grande"
+    "sumula_id": "58262",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/58262.pdf"
   },
   "saopauloxs-e-r-cruzalta--segundadivisao-06-09-2026": {
     "slug": "saopauloxs-e-r-cruzalta--segundadivisao-06-09-2026",
@@ -8764,7 +8724,7 @@
     "visitante": "FBC Riograndense",
     "placar_mandante": null,
     "placar_visitante": null,
-    "hora": "18:00",
+    "hora": "16:00",
     "estadio": "João Marimon Jr. - Panambi"
   },
   "serpanambixsaopaulo-segundadivisao-27-09-2026": {
@@ -9159,9 +9119,9 @@
     "sumula_id": null,
     "sumula_url": null,
     "data": "03/10/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "União Forquetense",
-    "visitante": "Juventude",
+    "situacao": "SEM_DADOS",
+    "mandante": null,
+    "visitante": null,
     "placar_mandante": null,
     "placar_visitante": null,
     "hora": "15:00",
@@ -9868,8 +9828,8 @@
     "visitante": "Novo Hamburgo",
     "placar_mandante": null,
     "placar_visitante": null,
-    "hora": "15:00",
-    "estadio": "CT Hélio Dourado - Eldorado do Sul"
+    "hora": "11:00",
+    "estadio": "RGM SPORTS - Gravatai"
   },
   "internacionalxadergs-gauchaofemininosub17-10-10-2026": {
     "slug": "internacionalxadergs-gauchaofemininosub17-10-10-2026",
@@ -10646,5 +10606,25 @@
     "placar_visitante": null,
     "hora": "15:00",
     "estadio": "Plátanos - Santa Cruz do Sul"
+  },
+  "ecuniaoforquetensexjuventude-gauchaofeminino-11-10-2026": {
+    "slug": "ecuniaoforquetensexjuventude-gauchaofeminino-11-10-2026",
+    "jogo_url": "https://fgf.com.br/jogo/ecuniaoforquetensexjuventude-gauchaofeminino-11-10-2026",
+    "categoria": "feminino",
+    "competicao_id": 59,
+    "competicao_nome": "Gauchão Feminino",
+    "ano": 2026,
+    "fase_id": 4387,
+    "fase_nome": "2ª Fase",
+    "sumula_id": null,
+    "sumula_url": null,
+    "data": "11/10/2026",
+    "situacao": "A_REALIZAR",
+    "mandante": "União Forquetense",
+    "visitante": "Juventude",
+    "placar_mandante": null,
+    "placar_visitante": null,
+    "hora": "15:00",
+    "estadio": "Estádio Joaquim Slomp Filho - Caxias do Sul"
   }
 }
