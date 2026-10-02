@@ -7,7 +7,8 @@ import streamlit as st
 import carrossel
 import data_loader as dl
 import noticias as nt
-from config import AUTOR, AUTOR_FUNCAO, NOME, SLOGAN, WHATSAPP_EXIBIR, WHATSAPP_LINK
+from config import AUTOR, AUTOR_FUNCAO, NOME, SLOGAN
+from contato import botao_contato
 from theme import COR, rodape
 
 LOGO = base64.b64encode((Path(__file__).parent / "assets" / "logo.svg").read_bytes()).decode()
@@ -128,7 +129,7 @@ st.markdown(
 
 st.markdown("## Quem está por trás")
 st.markdown(
-    f"**{AUTOR}** — {AUTOR_FUNCAO}.  \n"
-    f"Contato: [{WHATSAPP_EXIBIR} (WhatsApp)]({WHATSAPP_LINK})"
+    f"**{AUTOR}** — {AUTOR_FUNCAO}."
 )
+botao_contato("💬 Falar comigo", chave="inicio")
 rodape()

@@ -1,6 +1,7 @@
 import streamlit as st
 
-from config import AUTOR, AUTOR_FUNCAO, EMAIL_CONTATO, WHATSAPP_EXIBIR, WHATSAPP_LINK
+from config import AUTOR, AUTOR_FUNCAO, EMAIL_CONTATO
+from contato import botao_contato
 from theme import cabecalho, rodape
 
 cabecalho("📣 Parcerias e anúncios",
@@ -20,14 +21,14 @@ st.markdown(
 c1, c2 = st.columns([3, 2])
 with c1:
     st.markdown("### Fale com a gente")
-    st.link_button("💬 Chamar no WhatsApp", WHATSAPP_LINK, type="primary")
-    st.markdown(f"**{AUTOR}**  \n{AUTOR_FUNCAO}  \nWhatsApp: {WHATSAPP_EXIBIR}")
+    botao_contato("💬 Falar no WhatsApp", chave="anuncie", type="primary")
+    st.markdown(f"**{AUTOR}**  \n{AUTOR_FUNCAO}")
     if EMAIL_CONTATO:
         st.markdown(f"E-mail: [{EMAIL_CONTATO}](mailto:{EMAIL_CONTATO}?subject=Parceria%20-%20T%C3%AAch%C3%AA%20Scout)")
 with c2:
     st.markdown(
         '<div class="ts-destaque"><b>Para clubes e analistas</b><br/>Em breve: versão com relatórios prontos '
-        "de adversário, comparativos de atletas e recortes sob medida. Quer participar do piloto? Chame no WhatsApp."
+        "de adversário, comparativos de atletas e recortes sob medida. Quer participar do piloto? Peça contato pelo botão ao lado."
         "</div>",
         unsafe_allow_html=True,
     )

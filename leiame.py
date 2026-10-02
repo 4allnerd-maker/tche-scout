@@ -93,4 +93,4 @@ def mostrar(chave: str) -> None:
     if texto:
         with st.expander(TITULO):
             st.markdown(texto)
-            st.caption("Encontrou algo estranho? Avise pelo WhatsApp da aba **Quem sou eu** — a base é reprocessada e corrigida.")
+            st.caption("Encontrou algo estranho? Avise pelo botão de contato da aba **Quem sou eu** — a base é reprocessada e corrigida.")

@@ -2,7 +2,8 @@ from pathlib import Path
 
 import streamlit as st
 
-from config import AUTOR, AUTOR_FUNCAO, WHATSAPP_EXIBIR, WHATSAPP_LINK
+from config import AUTOR, AUTOR_FUNCAO
+from contato import botao_contato
 from theme import cabecalho, rodape
 
 ASSETS = Path(__file__).resolve().parent.parent / "assets"
@@ -51,8 +52,7 @@ with col_b:
         """,
         unsafe_allow_html=True,
     )
-    st.link_button("💬 Falar comigo no WhatsApp", WHATSAPP_LINK, type="primary", width="stretch")
-    st.caption(f"{WHATSAPP_EXIBIR}")
+    botao_contato("💬 Falar comigo", chave="quem", type="primary", width="stretch")
 
 st.markdown("### A metodologia IEEA")
 st.markdown(
@@ -111,5 +111,6 @@ st.markdown(
     - **Ferramentas de dados sob medida** para o dia a dia do clube — como o próprio Tchê Scout.
     """
 )
-st.info(f"Quer conversar sobre o seu clube ou projeto? Chame no WhatsApp: {WHATSAPP_EXIBIR}.")
+st.info("Quer conversar sobre o seu clube ou projeto? Identifique-se e libere o contato por WhatsApp:")
+botao_contato("💬 Liberar contato por WhatsApp", chave="quem2")
 rodape()

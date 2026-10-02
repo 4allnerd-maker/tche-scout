@@ -1,7 +1,7 @@
 import streamlit as st
 
 import data_loader as dl
-from config import WHATSAPP_EXIBIR, WHATSAPP_LINK
+from contato import botao_contato
 from theme import cabecalho, rodape
 
 cabecalho("📘 Metodologia e limitações", "Como os números são feitos — e onde podem acontecer equívocos. Leia antes de tirar conclusões.")
@@ -92,5 +92,5 @@ st.markdown(
 
 st.markdown("### 7. Encontrou um erro?")
 st.markdown("Se um número parecer estranho, avise com o **jogo** e o **que estava errado** — a base é reprocessada e corrigida.")
-st.link_button(f"💬 Avisar pelo WhatsApp ({WHATSAPP_EXIBIR})", WHATSAPP_LINK)
+botao_contato("💬 Avisar sobre um erro", chave="metod")
 rodape()
