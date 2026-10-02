@@ -8259,9 +8259,9 @@
     "sumula_id": null,
     "sumula_url": null,
     "data": "03/10/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "GA Farroupilha",
-    "visitante": "EC Novo Horizonte",
+    "situacao": "SEM_DADOS",
+    "mandante": null,
+    "visitante": null,
     "placar_mandante": null,
     "placar_visitante": null,
     "hora": "15:00",
@@ -10626,5 +10626,25 @@
     "placar_visitante": null,
     "hora": "15:00",
     "estadio": "Estádio Joaquim Slomp Filho - Caxias do Sul"
+  },
+  "gafarroupilhaxecnovohorizonte-segundadivisao-14-10-2026": {
+    "slug": "gafarroupilhaxecnovohorizonte-segundadivisao-14-10-2026",
+    "jogo_url": "https://fgf.com.br/jogo/gafarroupilhaxecnovohorizonte-segundadivisao-14-10-2026",
+    "categoria": "profissional",
+    "competicao_id": 25,
+    "competicao_nome": "Gauchão Série B",
+    "ano": 2026,
+    "fase_id": 4338,
+    "fase_nome": "Classificatória",
+    "sumula_id": null,
+    "sumula_url": null,
+    "data": "14/10/2026",
+    "situacao": "A_REALIZAR",
+    "mandante": "GA Farroupilha",
+    "visitante": "EC Novo Horizonte",
+    "placar_mandante": null,
+    "placar_visitante": null,
+    "hora": "15:00",
+    "estadio": "Estrela D'alva - Bage"
   }
 }
