@@ -9480,16 +9480,8 @@
     "ano": 2026,
     "fase_id": 4401,
     "fase_nome": "1ª Fase",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "03/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "ADERGS",
-    "visitante": "Aimoré",
-    "placar_mandante": 3,
-    "placar_visitante": 2,
-    "hora": "15:00",
-    "estadio": "Campo Atlético Tapejarense - Tapejara"
+    "sumula_id": "58989",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/58989.pdf"
   },
   "adergsxecmarazul-gauchaofemininosub17-31-10-2026": {
     "slug": "adergsxecmarazul-gauchaofemininosub17-31-10-2026",
