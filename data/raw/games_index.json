@@ -9148,16 +9148,8 @@
     "ano": 2026,
     "fase_id": 4387,
     "fase_nome": "2ª Fase",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "03/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Grêmio",
-    "visitante": "Internacional",
-    "placar_mandante": 0,
-    "placar_visitante": 0,
-    "hora": "15:00",
-    "estadio": "Francisco Novelletto - Porto Alegre"
+    "sumula_id": "59130",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/59130.pdf"
   },
   "gremioxjuventude-gauchaofeminino-24-10-2026": {
     "slug": "gremioxjuventude-gauchaofeminino-24-10-2026",
@@ -10360,16 +10352,8 @@
     "ano": 2026,
     "fase_id": 4437,
     "fase_nome": "Quartas de Final",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "03/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Brasil de Farroupilha",
-    "visitante": "Passo Fundo",
-    "placar_mandante": 0,
-    "placar_visitante": 2,
-    "hora": "15:00",
-    "estadio": "Castanheiras - Farroupilha"
+    "sumula_id": "59339",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/59339.pdf"
   },
   "esportivoxgremioesportivobrasilsaf-divisaodeacesso-10-10-2026": {
     "slug": "esportivoxgremioesportivobrasilsaf-divisaodeacesso-10-10-2026",
