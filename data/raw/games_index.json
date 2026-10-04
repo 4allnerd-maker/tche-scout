@@ -8544,16 +8544,8 @@
     "ano": 2026,
     "fase_id": 4338,
     "fase_nome": "Classificatória",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "03/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Cruz Alta",
-    "visitante": "Futebol Com Vida",
-    "placar_mandante": 0,
-    "placar_visitante": 0,
-    "hora": "11:00",
-    "estadio": "Jair Juarez Lemos - Taquara"
+    "sumula_id": "58269",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/58269.pdf"
   },
   "s-e-r-cruzalta-xrealsc-segundadivisao-20-09-2026": {
     "slug": "s-e-r-cruzalta-xrealsc-segundadivisao-20-09-2026",
