@@ -8708,16 +8708,8 @@
     "ano": 2026,
     "fase_id": 4338,
     "fase_nome": "Classificatória",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "03/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Panambi",
-    "visitante": "FBC Riograndense",
-    "placar_mandante": 1,
-    "placar_visitante": 0,
-    "hora": "16:00",
-    "estadio": "João Marimon Jr. - Panambi"
+    "sumula_id": "58272",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/58272.pdf"
   },
   "serpanambixsaopaulo-segundadivisao-27-09-2026": {
     "slug": "serpanambixsaopaulo-segundadivisao-27-09-2026",
@@ -8995,11 +8987,11 @@
     "sumula_id": null,
     "sumula_url": null,
     "data": "03/10/2026",
-    "situacao": "A_REALIZAR",
+    "situacao": "SEM_SUMULA",
     "mandante": "Brasil de Farroupilha",
     "visitante": "Flamengo de São Pedro",
-    "placar_mandante": null,
-    "placar_visitante": null,
+    "placar_mandante": 1,
+    "placar_visitante": 0,
     "hora": "20:30",
     "estadio": "Castanheiras - Farroupilha"
   },
@@ -9728,16 +9720,8 @@
     "ano": 2026,
     "fase_id": 4401,
     "fase_nome": "1ª Fase",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "03/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Mar Azul",
-    "visitante": "Juventude",
-    "placar_mandante": 1,
-    "placar_visitante": 0,
-    "hora": "15:00",
-    "estadio": "Sady Schimidt - Campo Bom"
+    "sumula_id": "58992",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/58992.pdf"
   },
   "gremioxasminadecandiotafc-gauchaofemininosub17-10-10-2026": {
     "slug": "gremioxasminadecandiotafc-gauchaofemininosub17-10-10-2026",
