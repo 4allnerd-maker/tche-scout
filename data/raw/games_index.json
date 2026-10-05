@@ -8984,16 +8984,8 @@
     "ano": 2026,
     "fase_id": 4387,
     "fase_nome": "2ª Fase",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "03/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Brasil de Farroupilha",
-    "visitante": "Flamengo de São Pedro",
-    "placar_mandante": 1,
-    "placar_visitante": 0,
-    "hora": "20:30",
-    "estadio": "Castanheiras - Farroupilha"
+    "sumula_id": "59131",
+    "sumula_url": "https://www.fgf.com.br/public/sumulas/59131.pdf"
   },
   "brasildefarroupilhaxecuniaoforquetense-gauchaofeminino-24-10-2026": {
     "slug": "brasildefarroupilhaxecuniaoforquetense-gauchaofeminino-24-10-2026",
@@ -9772,16 +9764,8 @@
     "ano": 2026,
     "fase_id": 4401,
     "fase_nome": "1ª Fase",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "03/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Grêmio",
-    "visitante": "Novo Hamburgo",
-    "placar_mandante": 13,
-    "placar_visitante": 0,
-    "hora": "11:00",
-    "estadio": "RGM SPORTS - Gravatai"
+    "sumula_id": "58991",
+    "sumula_url": "https://www.fgf.com.br/public/sumulas/58991.pdf"
   },
   "internacionalxadergs-gauchaofemininosub17-10-10-2026": {
     "slug": "internacionalxadergs-gauchaofemininosub17-10-10-2026",
@@ -10308,16 +10292,8 @@
     "ano": 2026,
     "fase_id": 4437,
     "fase_nome": "Quartas de Final",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "03/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "APAFUT",
-    "visitante": "Santa Cruz",
-    "placar_mandante": 1,
-    "placar_visitante": 0,
-    "hora": "15:00",
-    "estadio": "SESI Caxias do Sul - Caxias do Sul"
+    "sumula_id": "59342",
+    "sumula_url": "https://www.fgf.com.br/public/sumulas/59342.pdf"
   },
   "brasildefarroupilhaxpassofundo-divisaodeacesso-03-10-2026": {
     "slug": "brasildefarroupilhaxpassofundo-divisaodeacesso-03-10-2026",
@@ -10360,16 +10336,8 @@
     "ano": 2026,
     "fase_id": 4437,
     "fase_nome": "Quartas de Final",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "03/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Brasil SAF",
-    "visitante": "Esportivo",
-    "placar_mandante": 0,
-    "placar_visitante": 0,
-    "hora": "19:00",
-    "estadio": "Bento Freitas - Pelotas"
+    "sumula_id": "59341",
+    "sumula_url": "https://www.fgf.com.br/public/sumulas/59341.pdf"
   },
   "passofundoxbrasildefarroupilha-divisaodeacesso-11-10-2026": {
     "slug": "passofundoxbrasildefarroupilha-divisaodeacesso-11-10-2026",
@@ -10420,16 +10388,8 @@
     "ano": 2026,
     "fase_id": 4437,
     "fase_nome": "Quartas de Final",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "03/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "União Frederiquense",
-    "visitante": "Veranópolis",
-    "placar_mandante": 2,
-    "placar_visitante": 0,
-    "hora": "19:00",
-    "estadio": "Arena União Frederiquense - Frederico Westphalen"
+    "sumula_id": "59340",
+    "sumula_url": "https://www.fgf.com.br/public/sumulas/59340.pdf"
   },
   "veranopolisxuniaofrederiquense-divisaodeacesso-11-10-2026": {
     "slug": "veranopolisxuniaofrederiquense-divisaodeacesso-11-10-2026",
