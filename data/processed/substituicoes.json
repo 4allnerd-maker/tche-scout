@@ -7547,5 +7547,15 @@
 {"jogo_id": "59340", "equipe": "Veranópolis", "minuto": 45.0, "entrou_id": "528804", "entrou": "Kaio Ellyson Silva", "saiu_id": "457514", "saiu": "Odivan Koerich"},
 {"jogo_id": "59340", "equipe": "Veranópolis", "minuto": 45.0, "entrou_id": "437150", "entrou": "Renan Metz", "saiu_id": "546058", "saiu": "Henrique Richetti Theophilo"},
 {"jogo_id": "59340", "equipe": "Veranópolis", "minuto": 55.0, "entrou_id": "550718", "entrou": "Matheus Vinicius Guimaraes", "saiu_id": "310932", "saiu": "Antonio Rosa Ribeiro"},
-{"jogo_id": "59340", "equipe": "Veranópolis", "minuto": 71.0, "entrou_id": "518717", "entrou": "Italo Barbosa de Andrade", "saiu_id": "539594", "saiu": "Natanael Nunes"}
+{"jogo_id": "59340", "equipe": "Veranópolis", "minuto": 71.0, "entrou_id": "518717", "entrou": "Italo Barbosa de Andrade", "saiu_id": "539594", "saiu": "Natanael Nunes"},
+{"jogo_id": "58271", "equipe": "Clube 1992", "minuto": 45.0, "entrou_id": "841852", "entrou": "Gustavo Aranha dos Santos", "saiu_id": "765973", "saiu": "Leonardo Correa Ferreira"},
+{"jogo_id": "58271", "equipe": "Clube 1992", "minuto": 45.0, "entrou_id": "925347", "entrou": "Lyann Dias Leboutte", "saiu_id": "799412", "saiu": "Enzo Kauã da Silva"},
+{"jogo_id": "58271", "equipe": "Clube 1992", "minuto": 45.0, "entrou_id": "827250", "entrou": "Adriel Ezequiel Nazario", "saiu_id": "769070", "saiu": "Gustavo Adriano da Silva Cen"},
+{"jogo_id": "58271", "equipe": "São Paulo", "minuto": 53.0, "entrou_id": "670346", "entrou": "Kaue da Silva Pereira", "saiu_id": "823705", "saiu": "Mathias da Silva"},
+{"jogo_id": "58271", "equipe": "São Paulo", "minuto": 53.0, "entrou_id": "769060", "entrou": "Diovani Segabinazzi", "saiu_id": "778947", "saiu": "Marcelo Henrique Costa da Si"},
+{"jogo_id": "58271", "equipe": "São Paulo", "minuto": 66.0, "entrou_id": "762542", "entrou": "Erick William Machado Porto", "saiu_id": "616607", "saiu": "Nicolas Amaral Louzada"},
+{"jogo_id": "58271", "equipe": "São Paulo", "minuto": 66.0, "entrou_id": "732868", "entrou": "Pedro Lucas Barros da Rosa", "saiu_id": "917237", "saiu": "Joao Victor dos Santos Pereira"},
+{"jogo_id": "58271", "equipe": "São Paulo", "minuto": 69.0, "entrou_id": "891882", "entrou": "Ray Luz Pereira", "saiu_id": "613397", "saiu": "Cauan Emanuel Gomes Nunes"},
+{"jogo_id": "58271", "equipe": "Clube 1992", "minuto": 80.0, "entrou_id": "820251", "entrou": "Guilherme Reis Fonseca da Si", "saiu_id": "800916", "saiu": "João Vitor Manica"},
+{"jogo_id": "58271", "equipe": "Clube 1992", "minuto": 87.0, "entrou_id": "657349", "entrou": "Augusto Meirelles Pinho", "saiu_id": "768320", "saiu": "Nicolas Cardoso Schmitz"}
 ]

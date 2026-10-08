@@ -8148,16 +8148,8 @@
     "ano": 2026,
     "fase_id": 4338,
     "fase_nome": "Classificatória",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "07/10/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "EC Novo Horizonte",
-    "visitante": "Real Sc",
-    "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "15:00",
-    "estadio": "Arena Cruzeiro - Cachoeirinha"
+    "sumula_id": "58255",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/58255.pdf"
   },
   "ecnovohorizontexs-e-r-cruzalta--segundadivisao-11-10-2026": {
     "slug": "ecnovohorizontexs-e-r-cruzalta--segundadivisao-11-10-2026",
@@ -8623,9 +8615,9 @@
     "sumula_id": null,
     "sumula_url": null,
     "data": "11/10/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "São Paulo",
-    "visitante": "Futebol Com Vida",
+    "situacao": "SEM_DADOS",
+    "mandante": null,
+    "visitante": null,
     "placar_mandante": null,
     "placar_visitante": null,
     "hora": "15:00",
@@ -9589,7 +9581,7 @@
     "placar_mandante": null,
     "placar_visitante": null,
     "hora": "10:00",
-    "estadio": "Campo da UCS - Caxias do Sul"
+    "estadio": "Campo da Linha 40 - Caxias do Sul"
   },
   "apafutxgremio-gauchaofemininosub17-17-10-2026": {
     "slug": "apafutxgremio-gauchaofemininosub17-17-10-2026",
@@ -10420,16 +10412,8 @@
     "ano": 2026,
     "fase_id": 4338,
     "fase_nome": "Classificatória",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "07/10/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "Clube 1992",
-    "visitante": "São Paulo",
-    "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "19:00",
-    "estadio": "Cristo Rei - Sao Leopoldo"
+    "sumula_id": "58271",
+    "sumula_url": "https://www.fgf.com.br/public/sumulas/58271.pdf"
   },
   "riograndexrealsc-segundadivisao-14-10-2026": {
     "slug": "riograndexrealsc-segundadivisao-14-10-2026",
@@ -10590,5 +10574,25 @@
     "placar_visitante": null,
     "hora": "15:00",
     "estadio": "Torquato Pontes - Rio Grande"
+  },
+  "saopauloxfutebolcomvida-segundadivisao-13-10-2026": {
+    "slug": "saopauloxfutebolcomvida-segundadivisao-13-10-2026",
+    "jogo_url": "https://fgf.com.br/jogo/saopauloxfutebolcomvida-segundadivisao-13-10-2026",
+    "categoria": "profissional",
+    "competicao_id": 25,
+    "competicao_nome": "Gauchão Série B",
+    "ano": 2026,
+    "fase_id": 4338,
+    "fase_nome": "Classificatória",
+    "sumula_id": null,
+    "sumula_url": null,
+    "data": "13/10/2026",
+    "situacao": "A_REALIZAR",
+    "mandante": "São Paulo",
+    "visitante": "Futebol Com Vida",
+    "placar_mandante": null,
+    "placar_visitante": null,
+    "hora": "19:30",
+    "estadio": "Aldo Dapuzzo - Rio Grande"
   }
 }

@@ -2046,5 +2046,9 @@
 {"jogo_id": "55360", "atleta_id": "952786", "jogador": "Helena", "equipe": "Grêmio", "equipe_creditada": "Grêmio", "tipo": "NR", "contra": false, "minuto": 27.0, "periodo": 1},
 {"jogo_id": "59342", "atleta_id": "323125", "jogador": "Adenilson", "equipe": "Apafut", "equipe_creditada": "Apafut", "tipo": "NR", "contra": false, "minuto": 11.0, "periodo": 1},
 {"jogo_id": "59340", "atleta_id": "653618", "jogador": "João Lucas", "equipe": "União Frederiquense", "equipe_creditada": "União Frederiquense", "tipo": "NR", "contra": false, "minuto": 3.0, "periodo": 1},
-{"jogo_id": "59340", "atleta_id": "618841", "jogador": "Joesley", "equipe": "União Frederiquense", "equipe_creditada": "União Frederiquense", "tipo": "NR", "contra": false, "minuto": 89.0, "periodo": 2}
+{"jogo_id": "59340", "atleta_id": "618841", "jogador": "Joesley", "equipe": "União Frederiquense", "equipe_creditada": "União Frederiquense", "tipo": "NR", "contra": false, "minuto": 89.0, "periodo": 2},
+{"jogo_id": "58271", "atleta_id": "613397", "jogador": "Cauan", "equipe": "São Paulo", "equipe_creditada": "São Paulo", "tipo": "NR", "contra": false, "minuto": 7.0, "periodo": 1},
+{"jogo_id": "58271", "atleta_id": "613397", "jogador": "Cauan", "equipe": "São Paulo", "equipe_creditada": "São Paulo", "tipo": "NR", "contra": false, "minuto": 38.0, "periodo": 1},
+{"jogo_id": "58271", "atleta_id": "833638", "jogador": "Rubens", "equipe": "Clube 1992", "equipe_creditada": "Clube 1992", "tipo": "NR", "contra": false, "minuto": 67.0, "periodo": 2},
+{"jogo_id": "58271", "atleta_id": "891882", "jogador": "Ray", "equipe": "São Paulo", "equipe_creditada": "São Paulo", "tipo": "NR", "contra": false, "minuto": 83.0, "periodo": 2}
 ]
