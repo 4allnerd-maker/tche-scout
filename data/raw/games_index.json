@@ -8131,13 +8131,11 @@
     "sumula_id": null,
     "sumula_url": null,
     "data": "24/10/2026",
-    "situacao": "A_REALIZAR",
+    "situacao": "WO",
     "mandante": "EC Novo Horizonte",
     "visitante": "Futebol Com Vida",
-    "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "15:00",
-    "estadio": "Arena Cruzeiro - Cachoeirinha"
+    "placar_mandante": 0,
+    "placar_visitante": 3
   },
   "ecnovohorizontexrealsc-segundadivisao-07-10-2026": {
     "slug": "ecnovohorizontexrealsc-segundadivisao-07-10-2026",
@@ -8163,13 +8161,11 @@
     "sumula_id": null,
     "sumula_url": null,
     "data": "11/10/2026",
-    "situacao": "A_REALIZAR",
+    "situacao": "WO",
     "mandante": "EC Novo Horizonte",
     "visitante": "Cruz Alta",
-    "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "15:00",
-    "estadio": "Arena Cruzeiro - Cachoeirinha"
+    "placar_mandante": 0,
+    "placar_visitante": 3
   },
   "ecnovohorizontexserpanambi-segundadivisao-13-09-2026": {
     "slug": "ecnovohorizontexserpanambi-segundadivisao-13-09-2026",
@@ -8595,13 +8591,11 @@
     "sumula_id": null,
     "sumula_url": null,
     "data": "18/10/2026",
-    "situacao": "A_REALIZAR",
+    "situacao": "WO",
     "mandante": "São Paulo",
     "visitante": "EC Novo Horizonte",
-    "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "15:00",
-    "estadio": "Aldo Dapuzzo - Rio Grande"
+    "placar_mandante": 3,
+    "placar_visitante": 0
   },
   "saopauloxfutebolcomvida-segundadivisao-11-10-2026": {
     "slug": "saopauloxfutebolcomvida-segundadivisao-11-10-2026",
@@ -9777,7 +9771,7 @@
     "placar_mandante": null,
     "placar_visitante": null,
     "hora": "10:00",
-    "estadio": "CT Futebol com Vida - Tres Passos"
+    "estadio": "CT Futvida - Viamao"
   },
   "internacionalxecmarazul-gauchaofemininosub17-21-10-2026": {
     "slug": "internacionalxecmarazul-gauchaofemininosub17-21-10-2026",
@@ -10527,13 +10521,11 @@
     "sumula_id": null,
     "sumula_url": null,
     "data": "14/10/2026",
-    "situacao": "A_REALIZAR",
+    "situacao": "WO",
     "mandante": "GA Farroupilha",
     "visitante": "EC Novo Horizonte",
-    "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "15:00",
-    "estadio": "Pedra Moura - Bage"
+    "placar_mandante": 3,
+    "placar_visitante": 0
   },
   "gafarroupilhaxriogrande-segundadivisao-10-10-2026": {
     "slug": "gafarroupilhaxriogrande-segundadivisao-10-10-2026",
