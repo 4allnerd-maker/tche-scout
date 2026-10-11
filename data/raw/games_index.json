@@ -10302,16 +10302,8 @@
     "ano": 2026,
     "fase_id": 4437,
     "fase_nome": "Quartas de Final",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "10/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Esportivo",
-    "visitante": "Brasil SAF",
-    "placar_mandante": 0,
-    "placar_visitante": 2,
-    "hora": "16:00",
-    "estadio": "Montanha dos Vinhedos - Bento Goncalves"
+    "sumula_id": "59345",
+    "sumula_url": "https://www.fgf.com.br/public/sumulas/59345.pdf"
   },
   "gremioesportivobrasilsafxesportivo-divisaodeacesso-03-10-2026": {
     "slug": "gremioesportivobrasilsafxesportivo-divisaodeacesso-03-10-2026",
