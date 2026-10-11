@@ -8372,16 +8372,8 @@
     "ano": 2026,
     "fase_id": 4338,
     "fase_nome": "Classificatória",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "10/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Real Sc",
-    "visitante": "Panambi",
-    "placar_mandante": 3,
-    "placar_visitante": 3,
-    "hora": "15:00",
-    "estadio": "Modulo Esportivo Tramandai - Tramandai"
+    "sumula_id": "58276",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/58276.pdf"
   },
   "riograndensexclube1992-segundadivisao-11-10-2026": {
     "slug": "riograndensexclube1992-segundadivisao-11-10-2026",
@@ -9575,7 +9567,7 @@
     "placar_mandante": null,
     "placar_visitante": null,
     "hora": "10:00",
-    "estadio": "Campo da Linha 40 - Caxias do Sul"
+    "estadio": "-"
   },
   "apafutxgremio-gauchaofemininosub17-17-10-2026": {
     "slug": "apafutxgremio-gauchaofemininosub17-17-10-2026",
@@ -9762,16 +9754,8 @@
     "ano": 2026,
     "fase_id": 4401,
     "fase_nome": "1ª Fase",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "10/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Internacional",
-    "visitante": "ADERGS",
-    "placar_mandante": 6,
-    "placar_visitante": 0,
-    "hora": "10:00",
-    "estadio": "CT Futvida - Viamao"
+    "sumula_id": "58996",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/58996.pdf"
   },
   "internacionalxecmarazul-gauchaofemininosub17-21-10-2026": {
     "slug": "internacionalxecmarazul-gauchaofemininosub17-21-10-2026",
