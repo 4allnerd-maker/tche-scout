@@ -10458,16 +10458,8 @@
     "ano": 2026,
     "fase_id": 4387,
     "fase_nome": "2ª Fase",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "11/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "União Forquetense",
-    "visitante": "Juventude",
-    "placar_mandante": 0,
-    "placar_visitante": 10,
-    "hora": "15:00",
-    "estadio": "Estádio Joaquim Slomp Filho - Caxias do Sul"
+    "sumula_id": "59129",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/59129.pdf"
   },
   "gafarroupilhaxecnovohorizonte-segundadivisao-14-10-2026": {
     "slug": "gafarroupilhaxecnovohorizonte-segundadivisao-14-10-2026",
@@ -10496,16 +10488,8 @@
     "ano": 2026,
     "fase_id": 4338,
     "fase_nome": "Classificatória",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "10/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "GA Farroupilha",
-    "visitante": "Rio Grande",
-    "placar_mandante": 2,
-    "placar_visitante": 1,
-    "hora": "15:00",
-    "estadio": "Pedra Moura - Bage"
+    "sumula_id": "58274",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/58274.pdf"
   },
   "riograndensexclube1992-segundadivisao-10-10-2026": {
     "slug": "riograndensexclube1992-segundadivisao-10-10-2026",
@@ -10516,16 +10500,8 @@
     "ano": 2026,
     "fase_id": 4338,
     "fase_nome": "Classificatória",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "10/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "FBC Riograndense",
-    "visitante": "Clube 1992",
-    "placar_mandante": 0,
-    "placar_visitante": 2,
-    "hora": "15:00",
-    "estadio": "Torquato Pontes - Rio Grande"
+    "sumula_id": "58279",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/58279.pdf"
   },
   "saopauloxfutebolcomvida-segundadivisao-13-10-2026": {
     "slug": "saopauloxfutebolcomvida-segundadivisao-13-10-2026",
