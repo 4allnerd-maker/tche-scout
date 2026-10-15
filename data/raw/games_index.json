@@ -9526,7 +9526,7 @@
     "visitante": "Juventude",
     "placar_mandante": null,
     "placar_visitante": null,
-    "hora": "15:00",
+    "hora": "10:00",
     "estadio": "Cristo Rei - Sao Leopoldo"
   },
   "apafutxadergs-gauchaofemininosub17-07-11-2026": {
@@ -9573,9 +9573,9 @@
     "sumula_id": null,
     "sumula_url": null,
     "data": "17/10/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "APAFUT",
-    "visitante": "Grêmio",
+    "situacao": "SEM_DADOS",
+    "mandante": null,
+    "visitante": null,
     "placar_mandante": null,
     "placar_visitante": null,
     "hora": "15:00",
@@ -10370,16 +10370,8 @@
     "ano": 2026,
     "fase_id": 4338,
     "fase_nome": "Classificatória",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "14/10/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "Rio Grande",
-    "visitante": "Real Sc",
-    "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "15:00",
-    "estadio": "Arthur Lawson - Rio Grande"
+    "sumula_id": "58273",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/58273.pdf"
   },
   "juventudexnovohamburgo-gauchaofemininosub17-12-10-2026": {
     "slug": "juventudexnovohamburgo-gauchaofemininosub17-12-10-2026",
@@ -10642,5 +10634,25 @@
     "placar_visitante": null,
     "hora": "16:00",
     "estadio": "Arena União Frederiquense - Frederico Westphalen"
+  },
+  "apafutxgremio-gauchaofemininosub17-18-10-2026": {
+    "slug": "apafutxgremio-gauchaofemininosub17-18-10-2026",
+    "jogo_url": "https://fgf.com.br/jogo/apafutxgremio-gauchaofemininosub17-18-10-2026",
+    "categoria": "feminino",
+    "competicao_id": 564,
+    "competicao_nome": "Gauchão Feminino Sub 17",
+    "ano": 2026,
+    "fase_id": 4401,
+    "fase_nome": "1ª Fase",
+    "sumula_id": null,
+    "sumula_url": null,
+    "data": "18/10/2026",
+    "situacao": "A_REALIZAR",
+    "mandante": "APAFUT",
+    "visitante": "Grêmio",
+    "placar_mandante": null,
+    "placar_visitante": null,
+    "hora": "11:00",
+    "estadio": "Estádio Municipal de Caxias do Sul - Caxias do Sul"
   }
 }
