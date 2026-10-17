@@ -10567,13 +10567,11 @@
     "sumula_id": null,
     "sumula_url": null,
     "data": "17/10/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "APAFUT",
-    "visitante": "Passo Fundo",
+    "situacao": "SEM_DADOS",
+    "mandante": null,
+    "visitante": null,
     "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "15:00",
-    "estadio": "Montanha dos Vinhedos - Bento Goncalves"
+    "placar_visitante": null
   },
   "gremioesportivobrasilsafxuniaofrederiquense-divisaodeacesso-24-10-2026": {
     "slug": "gremioesportivobrasilsafxuniaofrederiquense-divisaodeacesso-24-10-2026",
@@ -10587,13 +10585,11 @@
     "sumula_id": null,
     "sumula_url": null,
     "data": "24/10/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "Brasil SAF",
-    "visitante": "União Frederiquense",
+    "situacao": "SEM_DADOS",
+    "mandante": null,
+    "visitante": null,
     "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "20:00",
-    "estadio": "Bento Freitas - Pelotas"
+    "placar_visitante": null
   },
   "passofundoxapafut-divisaodeacesso-24-10-2026": {
     "slug": "passofundoxapafut-divisaodeacesso-24-10-2026",
@@ -10607,13 +10603,11 @@
     "sumula_id": null,
     "sumula_url": null,
     "data": "24/10/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "Passo Fundo",
-    "visitante": "APAFUT",
+    "situacao": "SEM_DADOS",
+    "mandante": null,
+    "visitante": null,
     "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "16:00",
-    "estadio": "RazaoInfo Vermelhão da Serra - Passo Fundo"
+    "placar_visitante": null
   },
   "uniaofrederiquensexgremioesportivobrasilsaf-divisaodeacesso-18-10-2026": {
     "slug": "uniaofrederiquensexgremioesportivobrasilsaf-divisaodeacesso-18-10-2026",
@@ -10627,13 +10621,11 @@
     "sumula_id": null,
     "sumula_url": null,
     "data": "18/10/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "União Frederiquense",
-    "visitante": "Brasil SAF",
+    "situacao": "SEM_DADOS",
+    "mandante": null,
+    "visitante": null,
     "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "16:00",
-    "estadio": "Arena União Frederiquense - Frederico Westphalen"
+    "placar_visitante": null
   },
   "apafutxgremio-gauchaofemininosub17-18-10-2026": {
     "slug": "apafutxgremio-gauchaofemininosub17-18-10-2026",
@@ -10647,12 +10639,10 @@
     "sumula_id": null,
     "sumula_url": null,
     "data": "18/10/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "APAFUT",
-    "visitante": "Grêmio",
+    "situacao": "SEM_DADOS",
+    "mandante": null,
+    "visitante": null,
     "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "11:00",
-    "estadio": "Estádio Municipal de Caxias do Sul - Caxias do Sul"
+    "placar_visitante": null
   }
 }
