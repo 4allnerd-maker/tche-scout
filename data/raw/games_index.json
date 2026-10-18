@@ -9646,16 +9646,8 @@
     "ano": 2026,
     "fase_id": 4401,
     "fase_nome": "1ª Fase",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "17/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Mar Azul",
-    "visitante": "As Mina de Candiota",
-    "placar_mandante": 8,
-    "placar_visitante": 0,
-    "hora": "15:00",
-    "estadio": "Sady Schimidt - Campo Bom"
+    "sumula_id": "59006",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/59006.pdf"
   },
   "ecmarazulxjuventude-gauchaofemininosub17-03-10-2026": {
     "slug": "ecmarazulxjuventude-gauchaofemininosub17-03-10-2026",
