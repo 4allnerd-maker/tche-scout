@@ -8289,7 +8289,7 @@
     "placar_mandante": null,
     "placar_visitante": null,
     "hora": "15:00",
-    "estadio": "Estrela D'alva - Bage"
+    "estadio": "Pedra Moura - Bage"
   },
   "gafarroupilhaxs-e-r-cruzalta--segundadivisao-26-09-2026": {
     "slug": "gafarroupilhaxs-e-r-cruzalta--segundadivisao-26-09-2026",
@@ -9546,7 +9546,7 @@
     "visitante": "Internacional",
     "placar_mandante": null,
     "placar_visitante": null,
-    "hora": "15:00",
+    "hora": "11:00",
     "estadio": "Pedra Moura - Bage"
   },
   "asminadecandiotafcxnovohamburgo-gauchaofemininosub17-31-10-2026": {
@@ -9634,16 +9634,8 @@
     "ano": 2026,
     "fase_id": 4401,
     "fase_nome": "1ª Fase",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "21/10/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "Grêmio",
-    "visitante": "Juventude",
-    "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "15:00",
-    "estadio": "RGM SPORTS - Gravatai"
+    "sumula_id": "59015",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/59015.pdf"
   },
   "gremioxnovohamburgo-gauchaofemininosub17-03-10-2026": {
     "slug": "gremioxnovohamburgo-gauchaofemininosub17-03-10-2026",
@@ -9678,16 +9670,8 @@
     "ano": 2026,
     "fase_id": 4401,
     "fase_nome": "1ª Fase",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "21/10/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "Internacional",
-    "visitante": "Mar Azul",
-    "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "15:00",
-    "estadio": "CT Futvida - Viamao"
+    "sumula_id": "59022",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/59022.pdf"
   },
   "internacionalxgremio-gauchaofemininosub17-31-10-2026": {
     "slug": "internacionalxgremio-gauchaofemininosub17-31-10-2026",
@@ -9790,16 +9774,8 @@
     "ano": 2026,
     "fase_id": 4401,
     "fase_nome": "1ª Fase",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "21/10/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "Novo Hamburgo",
-    "visitante": "Aimoré",
-    "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "15:00",
-    "estadio": "Estádio do Vale - Novo Hamburgo"
+    "sumula_id": "59026",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/59026.pdf"
   },
   "novohamburgoxecmarazul-gauchaofemininosub17-07-11-2026": {
     "slug": "novohamburgoxecmarazul-gauchaofemininosub17-07-11-2026",
