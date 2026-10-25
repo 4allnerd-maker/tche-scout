@@ -9082,16 +9082,8 @@
     "ano": 2026,
     "fase_id": 4387,
     "fase_nome": "2ª Fase",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "24/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Internacional",
-    "visitante": "Flamengo de São Pedro",
-    "placar_mandante": 9,
-    "placar_visitante": 0,
-    "hora": "15:00",
-    "estadio": "SESC Protásio Alves - Porto Alegre"
+    "sumula_id": "59136",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/59136.pdf"
   },
   "juventudexbrasildefarroupilha-gauchaofeminino-18-10-2026": {
     "slug": "juventudexbrasildefarroupilha-gauchaofeminino-18-10-2026",
@@ -9514,16 +9506,8 @@
     "ano": 2026,
     "fase_id": 4401,
     "fase_nome": "1ª Fase",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "24/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "As Mina de Candiota",
-    "visitante": "Internacional",
-    "placar_mandante": 0,
-    "placar_visitante": 13,
-    "hora": "11:00",
-    "estadio": "Pedra Moura - Bage"
+    "sumula_id": "59032",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/59032.pdf"
   },
   "asminadecandiotafcxnovohamburgo-gauchaofemininosub17-31-10-2026": {
     "slug": "asminadecandiotafcxnovohamburgo-gauchaofemininosub17-31-10-2026",
@@ -10468,16 +10452,8 @@
     "ano": 2026,
     "fase_id": 4473,
     "fase_nome": "Semifinal",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "24/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Passo Fundo",
-    "visitante": "APAFUT",
-    "placar_mandante": 3,
-    "placar_visitante": 1,
-    "hora": "16:00",
-    "estadio": "RazaoInfo Vermelhão da Serra - Passo Fundo"
+    "sumula_id": "59861",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/59861.pdf"
   },
   "uniaofrederiquensexgremioesportivobrasilsaf-divisaodeacesso-18-10-2026": {
     "slug": "uniaofrederiquensexgremioesportivobrasilsaf-divisaodeacesso-18-10-2026",
