@@ -9050,16 +9050,8 @@
     "ano": 2026,
     "fase_id": 4387,
     "fase_nome": "2ª Fase",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "24/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Grêmio",
-    "visitante": "Juventude",
-    "placar_mandante": 2,
-    "placar_visitante": 1,
-    "hora": "15:00",
-    "estadio": "Francisco Novelletto - Porto Alegre"
+    "sumula_id": "59137",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/59137.pdf"
   },
   "internacionalxbrasildefarroupilha-gauchaofeminino-26-09-2026": {
     "slug": "internacionalxbrasildefarroupilha-gauchaofeminino-26-09-2026",
@@ -10432,16 +10424,8 @@
     "ano": 2026,
     "fase_id": 4473,
     "fase_nome": "Semifinal",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "24/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Brasil SAF",
-    "visitante": "União Frederiquense",
-    "placar_mandante": 3,
-    "placar_visitante": 0,
-    "hora": "20:00",
-    "estadio": "Bento Freitas - Pelotas"
+    "sumula_id": "59862",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/59862.pdf"
   },
   "passofundoxapafut-divisaodeacesso-24-10-2026": {
     "slug": "passofundoxapafut-divisaodeacesso-24-10-2026",
