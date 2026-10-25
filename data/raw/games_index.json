@@ -8528,16 +8528,8 @@
     "ano": 2026,
     "fase_id": 4338,
     "fase_nome": "Classificatória",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "24/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Cruz Alta",
-    "visitante": "Panambi",
-    "placar_mandante": 2,
-    "placar_visitante": 0,
-    "hora": "15:00",
-    "estadio": "Jair Juarez Lemos - Taquara"
+    "sumula_id": "58288",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/58288.pdf"
   },
   "saopauloxecnovohorizonte-segundadivisao-18-10-2026": {
     "slug": "saopauloxecnovohorizonte-segundadivisao-18-10-2026",
