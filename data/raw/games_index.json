@@ -9610,8 +9610,8 @@
     "visitante": "Grêmio",
     "placar_mandante": null,
     "placar_visitante": null,
-    "hora": "15:00",
-    "estadio": "CT Futvida - Viamao"
+    "hora": "11:00",
+    "estadio": "SESC Protásio Alves - Porto Alegre"
   },
   "juventudexapafut-gauchaofemininosub17-31-10-2026": {
     "slug": "juventudexapafut-gauchaofemininosub17-31-10-2026",
@@ -10480,16 +10480,8 @@
     "ano": 2026,
     "fase_id": 4517,
     "fase_nome": "Final",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "28/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Brasil SAF",
-    "visitante": "Passo Fundo",
-    "placar_mandante": 1,
-    "placar_visitante": 1,
-    "hora": "20:00",
-    "estadio": "Bento Freitas - Pelotas"
+    "sumula_id": "60284",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/60284.pdf"
   },
   "passofundoxgremioesportivobrasilsaf-divisaodeacesso-01-11-2026": {
     "slug": "passofundoxgremioesportivobrasilsaf-divisaodeacesso-01-11-2026",
@@ -10583,9 +10575,9 @@
     "sumula_id": null,
     "sumula_url": null,
     "data": "01/11/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "Juventude",
-    "visitante": "Internacional",
+    "situacao": "SEM_DADOS",
+    "mandante": null,
+    "visitante": null,
     "placar_mandante": null,
     "placar_visitante": null,
     "hora": "15:00",
@@ -10630,5 +10622,25 @@
     "placar_visitante": null,
     "hora": "16:00",
     "estadio": "Castanheiras - Farroupilha"
+  },
+  "juventudexinternacional-gauchaofeminino-18-11-2026": {
+    "slug": "juventudexinternacional-gauchaofeminino-18-11-2026",
+    "jogo_url": "https://fgf.com.br/jogo/juventudexinternacional-gauchaofeminino-18-11-2026",
+    "categoria": "feminino",
+    "competicao_id": 59,
+    "competicao_nome": "Gauchão Feminino",
+    "ano": 2026,
+    "fase_id": 4516,
+    "fase_nome": "Semifinal",
+    "sumula_id": null,
+    "sumula_url": null,
+    "data": "18/11/2026",
+    "situacao": "A_REALIZAR",
+    "mandante": "Juventude",
+    "visitante": "Internacional",
+    "placar_mandante": null,
+    "placar_visitante": null,
+    "hora": "15:00",
+    "estadio": "CFAC Juventude - Caxias do Sul"
   }
 }
