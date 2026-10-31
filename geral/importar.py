@@ -108,7 +108,42 @@ def le(csv: Path) -> pd.DataFrame:
     return pd.read_csv(csv, low_memory=False) if csv.stat().st_size > 5 else pd.DataFrame()
 
 
-def jogadores(df: pd.DataFrame, liga_id: str, nome_liga: str, aviso: list[str]) -> list[dict]:
+APELIDOS_CSV = ROOT / "geral" / "apelidos.csv"
+PARTICULAS = {"de", "da", "do", "dos", "das", "e", "di", "del", "van", "von", "la", "le"}
+
+
+def chave_jogador(nome, nascimento) -> str:
+    """Identifica o atleta independente do clube (quem troca de time mantém o mesmo apelido)."""
+    return slug(f"{nome}-{nascimento}")
+
+
+def nome_curto_auto(nome: str) -> str:
+    """Sugestão automática: primeiro nome + último sobrenome. Apelidos reais vão em geral/apelidos.csv."""
+    palavras = [p for p in str(nome).split() if p.lower() not in PARTICULAS]
+    if len(palavras) <= 1:
+        return palavras[0] if palavras else str(nome)
+    return f"{palavras[0]} {palavras[-1]}"
+
+
+def le_apelidos() -> dict[str, str]:
+    if not APELIDOS_CSV.exists():
+        return {}
+    df = pd.read_csv(APELIDOS_CSV, sep=";", encoding="utf-8-sig", dtype=str).fillna("")
+    return {r["chave"]: r["apelido"].strip() for _, r in df.iterrows() if r["apelido"].strip()}
+
+
+def grava_apelidos(candidatos: dict[str, dict], existentes: dict[str, str]) -> int:
+    """Reescreve geral/apelidos.csv: atletas com 450+ minutos (ou já com apelido), preservando o que foi preenchido."""
+    linhas = [c for c in candidatos.values() if c["min"] >= 450 or c["chave"] in existentes]
+    linhas.sort(key=lambda c: -c["min"])
+    df = pd.DataFrame([{"chave": c["chave"], "nome_completo": c["nome"], "clube": c["clube"], "liga": c["liga"],
+                        "minutos": int(c["min"]), "sugestao_automatica": nome_curto_auto(c["nome"]),
+                        "apelido": existentes.get(c["chave"], "")} for c in linhas])
+    df.to_csv(APELIDOS_CSV, sep=";", index=False, encoding="utf-8-sig")
+    return len(df)
+
+
+def jogadores(df: pd.DataFrame, liga_id: str, nome_liga: str, aviso: list[str], apelidos: dict[str, str]) -> list[dict]:
     saida = []
     for _, r in df.iterrows():
         nome, pos = r.get("full_name"), posicao(r.get("position"))
@@ -127,6 +162,9 @@ def jogadores(df: pd.DataFrame, liga_id: str, nome_liga: str, aviso: list[str]) 
         reg = {"id": slug(f"{nome}-{r.get('birthday_GMT')}-{clube}"), "nome": str(nome).strip(), "posicao": pos,
                "nascimento": limpa(r.get("birthday_GMT")), "liga": nome_liga, "liga_id": liga_id,
                "temporada": int(r["season"])}
+        reg["chave"] = chave_jogador(nome, r.get("birthday_GMT"))
+        reg["apelido"] = apelidos.get(reg["chave"])
+        reg["nome_curto"] = reg["apelido"] or nome_curto_auto(reg["nome"])
         for col, campo in JOGADOR.items():
             reg[campo] = limpa(r.get(col))
         reg["tem_avancadas"] = reg["xg"] is not None
@@ -219,14 +257,19 @@ def main() -> int:
     for pasta in ("liga", "jogadores"):
         shutil.rmtree(OUT_DIR / pasta, ignore_errors=True)
         (OUT_DIR / pasta).mkdir(parents=True, exist_ok=True)
-    indice, avisos = [], []
+    indice, avisos, candidatos, apelidos = [], [], {}, le_apelidos()
     for (liga_id, ano), arq in sorted(achados.items()):
         nome = LIGAS.get(liga_id, liga_id.replace("-", " ").title())
         chave = f"{liga_id}-{ano}"
         l = resumo(le(arq["league"])) if "league" in arq else {}
         ts = times(le(arq["teams"]), le(arq["teams2"]) if "teams2" in arq else pd.DataFrame()) if "teams" in arq else []
         js = jogos(le(arq["matches"])) if "matches" in arq else []
-        jg = jogadores(le(arq["players"]), liga_id, nome, avisos) if "players" in arq else []
+        jg = jogadores(le(arq["players"]), liga_id, nome, avisos, apelidos) if "players" in arq else []
+        for j in jg:
+            c = candidatos.setdefault(j["chave"], {"chave": j["chave"], "nome": j["nome"], "clube": j["clube"],
+                                                   "liga": j["liga"], "min": 0})
+            if (j["min"] or 0) > c["min"]:
+                c.update(clube=j["clube"], liga=j["liga"], min=j["min"] or 0)
         (OUT_DIR / "liga" / f"{chave}.json").write_text(json.dumps(
             {"id": liga_id, "chave": chave, "nome": nome, "temporada": int(ano), "resumo": l, "times": ts, "jogos": js},
             ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
@@ -242,6 +285,8 @@ def main() -> int:
         ensure_ascii=False, indent=1), encoding="utf-8")
     (OUT_DIR / "jogadores.json").unlink(missing_ok=True)
     (OUT_DIR / "meta.json").unlink(missing_ok=True)
+    print(f"\nApelidos: {grava_apelidos(candidatos, apelidos)} atletas em {APELIDOS_CSV.name} "
+          f"({len(apelidos)} com apelido preenchido)")
     print(f"\nOK: {len(indice)} liga(s)/temporada(s), {sum(i['jogadores'] for i in indice)} jogadores -> {OUT_DIR}")
     if avisos:
         print(f"\n{len(avisos)} linha(s) de jogador descartada(s):")
