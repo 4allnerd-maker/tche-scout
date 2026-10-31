@@ -5,3 +5,7 @@ __pycache__/
 
 # Os PDFs das sumulas e o cache do parser (data/parsed) SAO versionados de proposito:
 # o robo diario (GitHub Actions) so baixa/processa as sumulas novas de cada rodada.
+
+# CSVs do FootyStats Premium: licenciados, nao versionar (repositorio publico)
+dados_geral/csv/*.csv
+site/dados/
