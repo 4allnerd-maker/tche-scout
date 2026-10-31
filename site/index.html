@@ -3,172 +3,33 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tchê Scout · Módulo Geral — Jogadores</title>
-<meta name="description" content="Ranking e avaliação de jogadores das ligas brasileiras: gols, assistências, xG, xA, desarmes e mais, por posição e por 90 minutos.">
+<title>Tchê Scout · Geral — Ligas brasileiras</title>
+<meta name="description" content="Classificação, estatísticas de times e ranking de jogadores das ligas brasileiras: Brasileirão, Copa do Brasil e estaduais.">
 <link rel="icon" href="assets/logo.svg">
-<style>
-:root{--bg:#0D1B14;--card:#132620;--borda:#24392C;--txt:#EAF2EC;--soft:#9FB3A6;--verde:#2ECC71;--ouro:#F2C230;--verm:#FF5468}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;line-height:1.45}
-a{color:var(--verde)}
-header{display:flex;align-items:center;gap:1rem;padding:.9rem 1.2rem;border-bottom:1px solid var(--borda);background:#0A1510;position:sticky;top:0;z-index:5}
-header img{height:42px}
-header .marca{font-weight:800;font-size:1.15rem}
-header .marca span{color:var(--ouro)}
-nav{margin-left:auto;display:flex;gap:.4rem;flex-wrap:wrap}
-nav a{padding:.4rem .8rem;border-radius:8px;text-decoration:none;color:var(--soft);font-size:.92rem}
-nav a.ativo{background:var(--card);color:var(--txt);border:1px solid var(--borda)}
-main{max-width:1200px;margin:0 auto;padding:1.2rem}
-h1{font-size:1.9rem;margin:.2rem 0 .2rem;background:linear-gradient(90deg,var(--verde),var(--ouro));-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block}
-.sub{color:var(--soft);margin:0 0 1rem}
-.filtros{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.7rem;background:var(--card);border:1px solid var(--borda);border-radius:14px;padding:1rem;margin-bottom:1rem}
-label{display:block;font-size:.78rem;color:var(--soft);margin-bottom:.2rem}
-select,input[type=search],input[type=number]{width:100%;background:#0D1B14;color:var(--txt);border:1px solid var(--borda);border-radius:8px;padding:.5rem .6rem;font:inherit}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.7rem;margin-bottom:1rem}
-.kpi{background:var(--card);border:1px solid var(--borda);border-radius:12px;padding:.7rem 1rem}
-.kpi b{display:block;font-size:1.6rem;color:var(--verde)}
-.kpi span{color:var(--soft);font-size:.8rem}
-.painel{background:var(--card);border:1px solid var(--borda);border-radius:14px;padding:1rem;margin-bottom:1rem}
-.painel h2{margin:.1rem 0 .7rem;font-size:1.1rem}
-.barra{display:grid;grid-template-columns:1.6rem minmax(120px,230px) 1fr 3.6rem;gap:.6rem;align-items:center;margin:.35rem 0;font-size:.9rem;cursor:pointer}
-.barra:hover .nome{color:var(--ouro)}
-.barra .pos{color:var(--soft);text-align:right}
-.barra .nome{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.barra .nome small{color:var(--soft)}
-.barra .trilho{background:#0D1B14;border-radius:99px;height:12px;overflow:hidden}
-.barra .trilho i{display:block;height:100%;background:linear-gradient(90deg,var(--verde),var(--ouro));border-radius:99px}
-.barra .val{text-align:right;font-weight:700;color:var(--verde)}
-.tabela-wrap{overflow:auto;max-height:560px;border-radius:10px;border:1px solid var(--borda)}
-table{border-collapse:collapse;width:100%;font-size:.88rem}
-th,td{padding:.45rem .6rem;text-align:right;white-space:nowrap}
-th:first-child,td:first-child,th:nth-child(2),td:nth-child(2),th:nth-child(3),td:nth-child(3){text-align:left}
-thead th{position:sticky;top:0;background:#0A1510;color:var(--soft);cursor:pointer;user-select:none;z-index:1}
-thead th.ord{color:var(--ouro)}
-tbody tr{border-top:1px solid var(--borda);cursor:pointer}
-tbody tr:hover{background:#17302466}
-.tag{display:inline-block;font-size:.72rem;padding:.05rem .45rem;border-radius:99px;border:1px solid var(--borda);color:var(--soft)}
-.aviso{color:var(--soft);font-size:.82rem;margin:.6rem 0}
-dialog{background:var(--card);color:var(--txt);border:1px solid var(--borda);border-radius:16px;max-width:680px;width:92%;padding:1.2rem}
-dialog::backdrop{background:#000a}
-dialog h3{margin:.1rem 0}
-.grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.6rem;margin:1rem 0}
-.grade div{background:#0D1B14;border:1px solid var(--borda);border-radius:10px;padding:.5rem .7rem}
-.grade b{display:block;font-size:1.25rem;color:var(--verde)}
-.grade span{font-size:.75rem;color:var(--soft)}
-button{background:var(--verde);color:#06150c;border:0;border-radius:8px;padding:.5rem 1rem;font-weight:700;cursor:pointer}
-footer{border-top:1px solid var(--borda);color:var(--soft);font-size:.82rem;padding:1.2rem;text-align:center;margin-top:2rem}
-@media(max-width:640px){.barra{grid-template-columns:1.4rem 1fr 3.2rem}.barra .trilho{display:none}}
-</style>
+<link rel="stylesheet" href="assets/estilo.css">
 </head>
 <body>
-<header>
-  <img src="assets/logo.svg" alt="Tchê Scout">
-  <div class="marca">Tchê <span>Scout</span> · Geral</div>
-  <nav>
-    <a class="ativo" href="#">Jogadores</a>
-    <a href="#" title="Em breve">Ligas (em breve)</a>
-    <a href="https://tchescout.streamlit.app" target="_blank" rel="noopener">Painel FGF ↗</a>
-  </nav>
-</header>
 <main>
-  <h1>Jogadores</h1>
-  <p class="sub" id="sub">Carregando dados…</p>
-
-  <section class="filtros">
-    <div><label for="fLiga">Liga / temporada</label><select id="fLiga"></select></div>
-    <div><label for="fPos">Posição</label><select id="fPos"><option value="">Todas</option><option>Goleiro</option><option>Defensor</option><option>Meia</option><option>Atacante</option></select></div>
-    <div><label for="fClube">Clube</label><select id="fClube"><option value="">Todos</option></select></div>
-    <div><label for="fMin">Mínimo de minutos</label><input id="fMin" type="number" min="0" step="90" value="900"></div>
-    <div><label for="fMetrica">Ranking por</label><select id="fMetrica"></select></div>
-    <div><label for="fBusca">Buscar jogador</label><input id="fBusca" type="search" placeholder="Nome…"></div>
-  </section>
-
-  <section class="kpis" id="kpis"></section>
-
-  <section class="painel"><h2 id="tituloTop">Top 10</h2><div id="top"></div>
-    <p class="aviso" id="avisoMetrica"></p></section>
-
-  <section class="painel"><h2>Tabela de jogadores <span class="tag" id="contagem"></span></h2>
-    <div class="tabela-wrap"><table id="tabela"><thead></thead><tbody></tbody></table></div>
-    <p class="aviso">Clique no cabeçalho para ordenar e numa linha para ver a ficha do jogador. Métricas “por 90” só aparecem para quem tem 90 minutos ou mais.</p></section>
+  <h1>Ligas brasileiras</h1>
+  <p class="sub" id="sub">Carregando…</p>
+  <h2 class="sec">Nacionais</h2><div class="cards" id="nacionais"></div>
+  <h2 class="sec">Estaduais</h2><div class="cards" id="estaduais"></div>
+  <p class="aviso">Versão piloto, temporada 2026. As ligas pequenas têm estatísticas de times e jogos; o ranking de jogadores só existe onde a fonte traz dados de atletas.</p>
 </main>
-<dialog id="ficha"><div id="fichaCorpo"></div><p style="text-align:right;margin:.5rem 0 0"><button onclick="document.getElementById('ficha').close()">Fechar</button></p></dialog>
-<footer id="rodape">Estatísticas de scout — não é conteúdo de apostas. Projeto independente, sem vínculo com federações ou clubes.</footer>
-
+<script src="assets/comum.js"></script>
 <script>
-const METRICAS = {
-  gols:["Gols","int"], assist:["Assistências","int"], xg:["xG (gols esperados)","dec"], xa:["xA (assist. esperadas)","dec"],
-  gols_90:["Gols por 90","dec"], assist_90:["Assistências por 90","dec"], xg_90:["xG por 90","dec"], xa_90:["xA por 90","dec"],
-  chutes_90:["Chutes por 90","dec"], passes_chave_90:["Passes-chave por 90","dec"], desarmes_90:["Desarmes por 90","dec"],
-  nota:["Nota média","dec"], min:["Minutos","int"], jogos:["Jogos","int"], amarelos:["Cartões amarelos","int"],
-  defesas:["Defesas (goleiros)","int"], jogos_sem_sofrer:["Jogos sem sofrer gol","int"]
-};
-const COLS = [["nome","Jogador"],["clube","Clube"],["posicao","Pos."],["idade","Idade"],["jogos","J"],["min","Min"],["gols","Gols"],["assist","Ass."],
-  ["xg","xG"],["xa","xA"],["chutes","Chutes"],["passes_pct","Passes %"],["desarmes","Desarmes"],["nota","Nota"]];
-let DADOS=[], META=null, ordem={campo:"gols",dir:-1};
-const $=id=>document.getElementById(id);
-const fmt=(v,t)=>v==null?"–":(t==="int"?Math.round(v).toLocaleString("pt-BR"):v.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2}));
-const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-
-async function iniciar(){
-  try{
-    [META,DADOS]=await Promise.all([fetch("dados/meta.json").then(r=>r.json()),fetch("dados/jogadores.json").then(r=>r.json())]);
-  }catch(e){ $("sub").textContent="Não foi possível carregar os dados. Rode geral/importar.py e abra o site por um servidor."; return; }
-  $("fLiga").innerHTML=META.ligas.map(l=>`<option value="${l.id}|${l.temporada}">${esc(l.nome)} ${l.temporada}</option>`).join("");
-  $("fMetrica").innerHTML=Object.entries(METRICAS).map(([k,[n]])=>`<option value="${k}">${n}</option>`).join("");
-  $("fMetrica").value="gols";
-  $("sub").textContent=`${META.jogadores.toLocaleString("pt-BR")} jogadores · dados de ${META.fonte} · atualizado em ${META.gerado_em}`;
-  ["fLiga","fPos","fClube","fMin","fMetrica","fBusca"].forEach(id=>$(id).addEventListener(id==="fBusca"||id==="fMin"?"input":"change",()=>{
-    if(id==="fLiga") preencheClubes(); if(id==="fMetrica"){ordem={campo:$("fMetrica").value,dir:-1};} desenha();}));
-  preencheClubes(); desenha();
-}
-function base(){const [l,t]=$("fLiga").value.split("|");return DADOS.filter(j=>j.liga_id===l&&String(j.temporada)===t);}
-function preencheClubes(){
-  const clubes=[...new Set(base().map(j=>j.clube).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"pt"));
-  $("fClube").innerHTML='<option value="">Todos</option>'+clubes.map(c=>`<option>${esc(c)}</option>`).join("");
-}
-function filtrado(){
-  const pos=$("fPos").value, clube=$("fClube").value, min=+$("fMin").value||0, q=$("fBusca").value.trim().toLowerCase();
-  return base().filter(j=>(!pos||j.posicao===pos)&&(!clube||j.clube===clube)&&(j.min||0)>=min&&(!q||j.nome.toLowerCase().includes(q)));
-}
-function desenha(){
-  const lista=filtrado(), m=$("fMetrica").value, [nomeM,tipo]=METRICAS[m];
-  const soma=k=>lista.reduce((a,j)=>a+(j[k]||0),0);
-  $("kpis").innerHTML=[["Jogadores",lista.length],["Gols",soma("gols")],["Assistências",soma("assist")],["Cartões amarelos",soma("amarelos")]]
-    .map(([n,v])=>`<div class="kpi"><b>${v.toLocaleString("pt-BR")}</b><span>${n}</span></div>`).join("");
-  const top=lista.filter(j=>j[m]!=null).sort((a,b)=>b[m]-a[m]).slice(0,10), max=top.length?top[0][m]||1:1;
-  $("tituloTop").textContent=`Top 10 — ${nomeM}`;
-  $("top").innerHTML=top.length?top.map((j,i)=>`<div class="barra" data-id="${j.id}"><span class="pos">${i+1}</span>
-    <span class="nome">${esc(j.nome)} <small>${esc(j.clube)} · ${esc(j.posicao)}</small></span>
-    <span class="trilho"><i style="width:${Math.max(3,(j[m]/max)*100)}%"></i></span><span class="val">${fmt(j[m],tipo)}</span></div>`).join(""):"<p class='aviso'>Nenhum jogador com esse filtro.</p>";
-  const semAv=lista.filter(j=>!j.tem_avancadas).length;
-  $("avisoMetrica").textContent=semAv&&["xg","xa","xg_90","xa_90","nota","desarmes_90","chutes_90","passes_chave_90"].includes(m)
-    ?`${semAv} jogador(es) do filtro não têm estatísticas avançadas na fonte e ficam fora desse ranking.`:"";
-  const campo=ordem.campo; const ord=[...lista].sort((a,b)=>{const x=a[campo],y=b[campo];
-    if(x==null&&y==null)return 0; if(x==null)return 1; if(y==null)return -1;
-    return (typeof x==="string"?x.localeCompare(y,"pt"):x-y)*ordem.dir;});
-  $("contagem").textContent=`${ord.length} jogadores`;
-  $("tabela").querySelector("thead").innerHTML="<tr>"+COLS.map(([c,n])=>`<th data-c="${c}" class="${c===campo?"ord":""}">${n}${c===campo?(ordem.dir<0?" ↓":" ↑"):""}</th>`).join("")+"</tr>";
-  $("tabela").querySelector("tbody").innerHTML=ord.slice(0,300).map(j=>`<tr data-id="${j.id}">`+COLS.map(([c])=>{
-    const v=j[c]; if(c==="nome"||c==="clube"||c==="posicao")return `<td>${esc(v)}</td>`;
-    return `<td>${["xg","xa","nota"].includes(c)?fmt(v,"dec"):(c==="passes_pct"?(v==null?"–":Math.round(v)+"%"):fmt(v,"int"))}</td>`;}).join("")+"</tr>").join("");
-  document.querySelectorAll("#tabela th").forEach(th=>th.onclick=()=>{const c=th.dataset.c;
-    ordem=ordem.campo===c?{campo:c,dir:-ordem.dir}:{campo:c,dir:(typeof lista[0]?.[c]==="string"?1:-1)};desenha();});
-  document.querySelectorAll("[data-id]").forEach(el=>el.onclick=()=>ficha(el.dataset.id));
-}
-function ficha(id){
-  const j=DADOS.find(x=>x.id===id&&x.liga_id===$("fLiga").value.split("|")[0]); if(!j)return;
-  const item=(n,v,t="int")=>v==null?"":`<div><b>${fmt(v,t)}</b><span>${n}</span></div>`;
-  $("fichaCorpo").innerHTML=`<h3>${esc(j.nome)}</h3>
-    <p class="aviso">${esc(j.clube)} · ${esc(j.posicao)} · ${j.idade??"?"} anos · ${esc(j.nacionalidade??"")} ${j.camisa?`· camisa ${j.camisa}`:""}<br>${esc(j.liga)} ${j.temporada}</p>
-    <div class="grade">${item("Jogos",j.jogos)}${item("Titular",j.titular)}${item("Minutos",j.min)}${item("Gols",j.gols)}${item("Assistências",j.assist)}
-    ${item("xG",j.xg,"dec")}${item("xA",j.xa,"dec")}${item("Chutes",j.chutes)}${item("Passes-chave",j.passes_chave)}${item("Passes certos %",j.passes_pct,"dec")}
-    ${item("Desarmes",j.desarmes)}${item("Interceptações",j.interceptacoes)}${item("Duelos ganhos %",j.duelos_pct,"dec")}${item("Nota média",j.nota,"dec")}
-    ${j.posicao==="Goleiro"?item("Defesas",j.defesas)+item("Sem sofrer gol",j.jogos_sem_sofrer):""}${item("Amarelos",j.amarelos)}${item("Vermelhos",j.vermelhos)}</div>
-    ${j.tem_avancadas?"":"<p class='aviso'>Sem estatísticas avançadas na fonte para este jogador.</p>"}`;
-  $("ficha").showModal();
-}
-iniciar();
+cabecalho("home");
+const NAC = ["serie-a","serie-b","serie-c","serie-d","copa-do-brasil","supercopa-do-brasil"];
+getJSON("dados/ligas.json").then(d => {
+  $("sub").textContent = `${d.ligas.length} competições · dados de ${d.fonte} · atualizado em ${d.gerado_em}`;
+  const card = l => `<div class="liga"><h3>${esc(l.nome)} ${l.temporada}</h3>
+    <p>${l.times} times · ${l.jogos}/${l.jogos_total} jogos realizados</p>
+    <div class="prog"><i style="width:${Math.round(100 * l.jogos / Math.max(1, l.jogos_total))}%"></i></div>
+    <div class="links"><a href="liga.html?c=${l.chave}">Times e jogos</a>
+    ${l.jogadores ? `<a href="jogadores.html?c=${l.chave}">Jogadores (${l.jogadores})</a>` : `<span class="tag">sem dados de jogadores</span>`}</div></div>`;
+  const nac = d.ligas.filter(l => NAC.includes(l.id)), est = d.ligas.filter(l => !NAC.includes(l.id));
+  $("nacionais").innerHTML = nac.map(card).join(""); $("estaduais").innerHTML = est.map(card).join("");
+}).catch(() => $("sub").textContent = "Não foi possível carregar os dados. Rode geral/importar.py e abra o site por um servidor.");
 </script>
 </body>
 </html>

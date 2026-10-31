@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tchê Scout · Geral — Liga</title>
+<link rel="icon" href="assets/logo.svg">
+<link rel="stylesheet" href="assets/estilo.css">
+</head>
+<body>
+<main>
+  <h1 id="titulo">Liga</h1>
+  <p class="sub" id="sub">Carregando…</p>
+  <section class="kpis" id="kpis"></section>
+  <div class="abas" id="abas"><button data-a="times" class="ativo">Times</button><button data-a="faixas">Gols por minuto</button><button data-a="jogos">Jogos</button></div>
+
+  <section id="aba-times" class="painel">
+    <h2>Times <span class="tag" id="nTimes"></span></h2>
+    <div class="tabela-wrap"><table id="tabela"><thead></thead><tbody></tbody></table></div>
+    <p class="aviso" id="avisoPos"></p>
+  </section>
+  <section id="aba-faixas" class="painel" hidden><h2>Gols por faixa de minuto (toda a liga)</h2><div id="faixas"></div>
+    <p class="aviso">Total de gols marcados em cada intervalo, somando todos os jogos da competição.</p></section>
+  <section id="aba-jogos" class="painel" hidden>
+    <div class="filtros" style="margin-bottom:.6rem"><div><label for="jTime">Time</label><select id="jTime"><option value="">Todos</option></select></div>
+    <div><label for="jStatus">Situação</label><select id="jStatus"><option value="realizado">Realizados</option><option value="agendado">Próximos</option><option value="">Todos</option></select></div></div>
+    <div id="jogos"></div></section>
+</main>
+<dialog id="ficha"><div id="fichaCorpo"></div><p style="text-align:right;margin:.5rem 0 0"><button onclick="$('ficha').close()">Fechar</button></p></dialog>
+<script src="assets/comum.js"></script>
+<script>
+cabecalho("home");
+const chave = new URLSearchParams(location.search).get("c");
+let L, ordem = { campo: "pts", dir: -1 };
+const COLS = [["pos","#"],["nome","Time",1],["pts","Pts"],["j","J"],["v","V"],["e","E"],["d","D"],["gp","GP"],["gc","GC"],["sg","SG"],
+  ["xg_pro","xG pró"],["xg_contra","xG contra"],["chutes_jogo","Chutes/j"],["posse","Posse %"],["escanteios_jogo","Escant./j"],["cartoes_jogo","Cartões/j"],["sem_sofrer","Sem sofrer"]];
+const DEC = ["xg_pro","xg_contra","chutes_jogo","escanteios_jogo","cartoes_jogo"];
+
+getJSON(`dados/liga/${encodeURIComponent(chave)}.json`).then(d => { L = d; iniciar(); })
+  .catch(() => $("sub").textContent = "Liga não encontrada. Volte para a página inicial.");
+
+function iniciar() {
+  document.title = `Tchê Scout · ${L.nome} ${L.temporada}`;
+  $("titulo").textContent = `${L.nome} ${L.temporada}`;
+  const r = L.resumo || {};
+  $("sub").innerHTML = `${r.status ? esc(r.status) + " · " : ""}${r.jogos_feitos ?? "?"} de ${r.jogos_total ?? "?"} jogos${r.rodada ? ` · rodada ${r.rodada}/${r.rodadas_total}` : ""}
+    · <a href="jogadores.html?c=${L.chave}">ver jogadores</a>`;
+  const k = [["Média de gols", r.media_gols, "dec"], ["Gols da casa/jogo", r.gols_casa, "dec"], ["Gols do visitante/jogo", r.gols_fora, "dec"],
+    ["Ambos marcam %", r.ambos_marcam_pct, "int"], ["Jogos sem sofrer %", r.sem_sofrer_pct, "int"], ["Escanteios/jogo", r.escanteios_jogo, "dec"],
+    ["Cartões/jogo", r.cartoes_jogo, "dec"], ["xG/jogo", r.xg_jogo, "dec"]].filter(x => x[1] != null);
+  $("kpis").innerHTML = k.map(([n, v, t]) => `<div class="kpi"><b>${fmt(v, t)}</b><span>${n}</span></div>`).join("");
+  document.querySelectorAll("#abas button").forEach(b => b.onclick = () => {
+    document.querySelectorAll("#abas button").forEach(x => x.classList.toggle("ativo", x === b));
+    ["times", "faixas", "jogos"].forEach(a => $("aba-" + a).hidden = a !== b.dataset.a);
+  });
+  const temPos = L.times.some(t => t.pos);
+  ordem = temPos ? { campo: "pos", dir: 1 } : { campo: "pts", dir: -1 };
+  $("avisoPos").textContent = temPos ? "Posição segundo a fonte (inclui os critérios de desempate da competição)." :
+    "Esta competição não tem tabela única (grupos ou mata-mata): a lista está ordenada por pontos conquistados.";
+  desenhaTimes(); desenhaFaixas();
+  $("jTime").innerHTML += [...new Set(L.times.map(t => t.nome))].sort((a, b) => a.localeCompare(b, "pt")).map(n => `<option>${esc(n)}</option>`).join("");
+  ["jTime", "jStatus"].forEach(i => $(i).onchange = desenhaJogos); desenhaJogos();
+}
+function desenhaTimes() {
+  const lista = [...L.times].sort((a, b) => {
+    const x = a[ordem.campo], y = b[ordem.campo];
+    if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1;
+    return (typeof x === "string" ? x.localeCompare(y, "pt") : x - y) * ordem.dir;
+  });
+  $("nTimes").textContent = lista.length;
+  $("tabela").querySelector("thead").innerHTML = "<tr>" + COLS.map(([c, n, l]) =>
+    `<th data-c="${c}" class="${l ? "l" : ""} ${c === ordem.campo ? "ord" : ""}">${n}${c === ordem.campo ? (ordem.dir < 0 ? " ↓" : " ↑") : ""}</th>`).join("") + "</tr>";
+  $("tabela").querySelector("tbody").innerHTML = lista.map(t => `<tr data-n="${esc(t.nome)}">` + COLS.map(([c, , l]) => {
+    const v = t[c]; const cls = (l ? "l " : "") + (c === "pts" ? "pts" : "");
+    return `<td class="${cls}">${c === "nome" ? esc(v) : (c === "posse" ? (v == null ? "–" : fmt(v) + "%") : fmt(v, DEC.includes(c) ? "dec" : "int"))}</td>`;
+  }).join("") + "</tr>").join("");
+  document.querySelectorAll("#tabela th").forEach(th => th.onclick = () => {
+    const c = th.dataset.c; ordem = ordem.campo === c ? { campo: c, dir: -ordem.dir } : { campo: c, dir: c === "nome" || c === "pos" ? 1 : -1 }; desenhaTimes(); });
+  document.querySelectorAll("#tabela tbody tr").forEach(tr => tr.onclick = () => fichaTime(tr.dataset.n));
+}
+function desenhaFaixas() {
+  const f = (L.resumo || {}).faixas || [], max = Math.max(1, ...f.map(x => x.gols));
+  $("faixas").innerHTML = f.length ? f.map(x => `<div class="faixa"><span>${x.faixa}'</span><span class="trilho"><i style="width:${100 * x.gols / max}%"></i></span><b>${x.gols}</b></div>`).join("")
+    : "<p class='aviso'>Sem dados de minutos para esta competição.</p>";
+}
+function desenhaJogos() {
+  const t = $("jTime").value, s = $("jStatus").value;
+  let j = L.jogos.filter(x => (!t || x.casa === t || x.fora === t) && (!s || x.status === s));
+  j = s === "agendado" ? j : [...j].reverse();
+  $("jogos").innerHTML = j.slice(0, 200).map(x => {
+    const feito = x.status === "realizado", d = x.data ? x.data.slice(8, 10) + "/" + x.data.slice(5, 7) + " " + x.data.slice(11) : "";
+    const xg = feito && x.xg_casa != null ? `xG ${fmt(x.xg_casa, "dec")} x ${fmt(x.xg_fora, "dec")}` : "";
+    return `<div class="jogo ${feito ? "" : "futuro"}"><span class="data">${d}<small>${x.rodada ? "rodada " + x.rodada : ""}</small></span>
+      <span class="casa">${esc(x.casa)}</span><span class="placar">${feito ? `${x.gols_casa} x ${x.gols_fora}` : "x"}<small>${xg}</small></span><span>${esc(x.fora)}</span></div>`;
+  }).join("") || "<p class='aviso'>Nenhum jogo com esse filtro.</p>";
+}
+function fichaTime(nome) {
+  const t = L.times.find(x => x.nome === nome); if (!t) return;
+  const item = (n, v, tp = "int") => v == null ? "" : `<div><b>${fmt(v, tp)}</b><span>${n}</span></div>`;
+  const faixas = ["0-10", "11-20", "21-30", "31-40", "41-50", "51-60", "61-70", "71-80", "81-90"];
+  const maxF = Math.max(1, ...t.gols_pro_faixa, ...t.gols_contra_faixa);
+  const bar = (arr, cls) => arr.map((g, i) => `<div class="faixa ${cls}"><span>${faixas[i]}'</span><span class="trilho"><i style="width:${100 * g / maxF}%"></i></span><b>${g}</b></div>`).join("");
+  $("fichaCorpo").innerHTML = `<h3>${esc(t.nome)}</h3><p class="aviso">${esc(L.nome)} ${L.temporada}${t.pos ? ` · ${t.pos}º lugar` : ""}</p>
+    <div class="grade">${item("Pontos", t.pts)}${item("Jogos", t.j)}${item("Vitórias", t.v)}${item("Empates", t.e)}${item("Derrotas", t.d)}${item("Gols pró", t.gp)}${item("Gols contra", t.gc)}
+    ${item("xG pró/jogo", t.xg_pro, "dec")}${item("xG contra/jogo", t.xg_contra, "dec")}${item("Chutes/jogo", t.chutes_jogo, "dec")}${item("No alvo/jogo", t.chutes_alvo_jogo, "dec")}
+    ${item("Posse %", t.posse)}${item("Escanteios/jogo", t.escanteios_jogo, "dec")}${item("Cartões/jogo", t.cartoes_jogo, "dec")}${item("Jogos sem sofrer", t.sem_sofrer)}${item("Público médio", t.publico_medio)}</div>
+    <h4 style="margin:.4rem 0">Gols marcados por faixa de minuto</h4>${bar(t.gols_pro_faixa, "")}
+    <h4 style="margin:.8rem 0 .4rem">Gols sofridos por faixa de minuto</h4>${bar(t.gols_contra_faixa, "contra")}`;
+  $("ficha").showModal();
+}
+</script>
+</body>
+</html>
