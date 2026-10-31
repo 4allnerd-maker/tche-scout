@@ -24,6 +24,8 @@ from pathlib import Path
 
 import pandas as pd
 
+import skills
+
 ROOT = Path(__file__).resolve().parent.parent
 CSV_DIR = ROOT / "dados_geral" / "csv"
 OUT_DIR = ROOT / "site" / "dados"
@@ -108,6 +110,7 @@ def le(csv: Path) -> pd.DataFrame:
     return pd.read_csv(csv, low_memory=False) if csv.stat().st_size > 5 else pd.DataFrame()
 
 
+TIMES_CSV = ROOT / "geral" / "times_peso.csv"
 APELIDOS_CSV = ROOT / "geral" / "apelidos.csv"
 PARTICULAS = {"de", "da", "do", "dos", "das", "e", "di", "del", "van", "von", "la", "le"}
 
@@ -159,6 +162,9 @@ def jogadores(df: pd.DataFrame, liga_id: str, nome_liga: str, aviso: list[str], 
         if jogos > 0 and gols > 5 * jogos:
             aviso.append(f"{liga_id}: {nome} — {gols} gols em {jogos} jogo(s), dado inconsistente")
             continue
+        if pd.notna(r.get("minutes_played_overall")) and r["minutes_played_overall"] < 0:
+            aviso.append(f"{liga_id}: {nome} — minutos negativos na fonte, dado inconsistente")
+            continue
         reg = {"id": slug(f"{nome}-{r.get('birthday_GMT')}-{clube}"), "nome": str(nome).strip(), "posicao": pos,
                "nascimento": limpa(r.get("birthday_GMT")), "liga": nome_liga, "liga_id": liga_id,
                "temporada": int(r["season"])}
@@ -168,6 +174,7 @@ def jogadores(df: pd.DataFrame, liga_id: str, nome_liga: str, aviso: list[str], 
         for col, campo in JOGADOR.items():
             reg[campo] = limpa(r.get(col))
         reg["tem_avancadas"] = reg["xg"] is not None
+        reg["_m"] = skills.metricas(r, reg["min"] or 0)
         min_ = reg["min"] or 0
         for campo in ("gols", "assist", "xg", "xa", "chutes", "desarmes", "passes_chave"):
             v = reg.get(campo)
@@ -249,6 +256,94 @@ def resumo(l: pd.DataFrame) -> dict:
     }
 
 
+def le_times_peso() -> dict[str, dict]:
+    """geral/times_peso.csv: colunas editáveis por clube (classe_manual, temporadas_serie_a, peso_clube 0-100, observacao)."""
+    if not TIMES_CSV.exists():
+        return {}
+    df = pd.read_csv(TIMES_CSV, sep=";", encoding="utf-8-sig", dtype=str).fillna("")
+    saida = {}
+    for _, r in df.iterrows():
+        num = lambda v: float(v.replace(",", ".")) if v.strip() else None  # noqa: E731
+        saida[r["time"]] = {"classe_manual": r["classe_manual"].strip().upper() or None,
+                            "temporadas_serie_a": num(r["temporadas_serie_a"]), "peso_clube": num(r["peso_clube"])}
+    return saida
+
+
+def grava_times_peso(classes: dict[str, str], ligas: dict[str, list], existentes: dict[str, dict]) -> int:
+    ant = pd.read_csv(TIMES_CSV, sep=";", encoding="utf-8-sig", dtype=str).fillna("").set_index("time").to_dict("index")         if TIMES_CSV.exists() else {}
+    linhas = [{"time": t, "classe_automatica": classes.get(t, "D"), "ligas_em_2026": " | ".join(ligas.get(t, [])),
+               "classe_manual": ant.get(t, {}).get("classe_manual", ""),
+               "temporadas_serie_a": ant.get(t, {}).get("temporadas_serie_a", ""),
+               "peso_clube": ant.get(t, {}).get("peso_clube", ""), "observacao": ant.get(t, {}).get("observacao", "")}
+              for t in sorted(set(classes) | set(ligas))]
+    pd.DataFrame(linhas).to_csv(TIMES_CSV, sep=";", index=False, encoding="utf-8-sig")
+    return len(linhas)
+
+
+MIN_JOGOS_TIME = 5  # com menos jogos do time na competição, o papel não é calculado (amostra curta demais)
+FAIXAS_PAPEL = [(75, "Titular absoluto"), (55, "Titular"), (35, "Rodízio"), (15, "Reserva"), (0, "Elenco")]
+
+
+def papel_no_time(jogadores_liga: list[dict], times_liga: list[dict]) -> None:
+    """Papel do jogador no time pela participação nos MINUTOS do time na competição (jogos do time x 90)."""
+    jogos_time = {t["nome"]: t["j"] for t in times_liga if t.get("j")}
+    for j in jogadores_liga:
+        tj = jogos_time.get(j["clube"])
+        j["jogos_time"], j["pct_minutos"], j["pct_titular"], j["papel"] = tj, None, None, None
+        if not tj or tj < MIN_JOGOS_TIME or j["min"] is None:
+            continue
+        pct = max(0.0, min(100.0, 100 * j["min"] / (tj * 90)))
+        j["pct_minutos"] = round(pct)
+        if j.get("titular") is not None:
+            j["pct_titular"] = round(min(100.0, 100 * j["titular"] / tj))
+        j["papel"] = next(nome for corte, nome in FAIXAS_PAPEL if pct >= corte)
+
+
+def classes_dos_times(liga_json: dict) -> dict[str, str]:
+    """Classe do time = a melhor série nacional em que aparece (A, B, C ou D); estaduais e demais = D."""
+    ordem = {"serie-a": "A", "serie-b": "B", "serie-c": "C", "serie-d": "D"}
+    classes: dict[str, str] = {}
+    for liga_id in ("serie-d", "serie-c", "serie-b", "serie-a"):  # a última a escrever (a melhor) vence
+        for d in liga_json.values():
+            if d["id"] == liga_id:
+                for t in d["times"]:
+                    classes[t["nome"]] = ordem[liga_id]
+    return classes
+
+
+def times_globais(liga_json: dict, classes: dict[str, str]) -> dict:
+    """Perfil de cada time em TODAS as competições juntas, separado pela classe do adversário (A/B/C/D)."""
+    acc: dict[str, dict[str, dict]] = {}
+    ligas: dict[str, set] = {}
+    for d in liga_json.values():
+        for j in d["jogos"]:
+            if j["status"] != "realizado" or j["gols_casa"] is None:
+                continue
+            for lado, outro in (("casa", "fora"), ("fora", "casa")):
+                nome, adv = j[lado], j[outro]
+                ligas.setdefault(nome, set()).add(d["nome"])
+                a = acc.setdefault(nome, {}).setdefault(classes.get(adv, "D"), {
+                    "j": 0, "v": 0, "e": 0, "d": 0, "gp": 0, "gc": 0, "xgp": [], "xgc": [], "chutes": [], "chutes_sofridos": [], "posse": []})
+                gp, gc = j[f"gols_{lado}"], j[f"gols_{outro}"]
+                a["j"] += 1; a["gp"] += gp; a["gc"] += gc
+                a["v" if gp > gc else ("e" if gp == gc else "d")] += 1
+                for campo, chave in (("xgp", f"xg_{lado}"), ("xgc", f"xg_{outro}"), ("chutes", f"chutes_{lado}"),
+                                     ("chutes_sofridos", f"chutes_{outro}"), ("posse", f"posse_{lado}")):
+                    if j.get(chave) is not None:
+                        a[campo].append(j[chave])
+    saida = {}
+    for nome, por_classe in acc.items():
+        vs = {}
+        for c, a in por_classe.items():
+            m = lambda xs: round(sum(xs) / len(xs), 2) if xs else None  # noqa: E731
+            vs[c] = {"j": a["j"], "v": a["v"], "e": a["e"], "d": a["d"], "gp": a["gp"], "gc": a["gc"],
+                     "pts": a["v"] * 3 + a["e"], "aproveitamento": round(100 * (a["v"] * 3 + a["e"]) / (3 * a["j"])),
+                     "xg_pro": m(a["xgp"]), "xg_contra": m(a["xgc"]), "chutes": m(a["chutes"]),
+                     "chutes_sofridos": m(a["chutes_sofridos"]), "posse": m(a["posse"])}
+        saida[nome] = {"classe": classes.get(nome, "D"), "ligas": sorted(ligas.get(nome, [])), "vs": vs}
+    return saida
+
+
 def main() -> int:
     achados = lista_csv()
     if not achados:
@@ -257,7 +352,7 @@ def main() -> int:
     for pasta in ("liga", "jogadores"):
         shutil.rmtree(OUT_DIR / pasta, ignore_errors=True)
         (OUT_DIR / pasta).mkdir(parents=True, exist_ok=True)
-    indice, avisos, candidatos, apelidos = [], [], {}, le_apelidos()
+    indice, avisos, candidatos, apelidos, por_liga, liga_json = [], [], {}, le_apelidos(), {}, {}
     for (liga_id, ano), arq in sorted(achados.items()):
         nome = LIGAS.get(liga_id, liga_id.replace("-", " ").title())
         chave = f"{liga_id}-{ano}"
@@ -270,16 +365,43 @@ def main() -> int:
                                                    "liga": j["liga"], "min": 0})
             if (j["min"] or 0) > c["min"]:
                 c.update(clube=j["clube"], liga=j["liga"], min=j["min"] or 0)
-        (OUT_DIR / "liga" / f"{chave}.json").write_text(json.dumps(
-            {"id": liga_id, "chave": chave, "nome": nome, "temporada": int(ano), "resumo": l, "times": ts, "jogos": js},
-            ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-        if jg:
-            (OUT_DIR / "jogadores" / f"{chave}.json").write_text(json.dumps(jg, ensure_ascii=False, separators=(",", ":")),
-                                                                  encoding="utf-8")
+        liga_json[chave] = {"id": liga_id, "chave": chave, "nome": nome, "temporada": int(ano), "resumo": l, "times": ts, "jogos": js}
+        por_liga[chave] = jg
         indice.append({"chave": chave, "id": liga_id, "nome": nome, "temporada": int(ano), "times": len(ts),
                        "jogos": len([j for j in js if j["status"] == "realizado"]), "jogos_total": len(js),
                        "jogadores": len(jg), "progresso": l.get("progresso"), "status": l.get("status")})
         print(f"{chave:28} times={len(ts):3} jogos={len(js):4} jogadores={len(jg):4}")
+    pesos = le_times_peso()
+    classes = classes_dos_times(liga_json)
+    for t, v in pesos.items():
+        if v["classe_manual"] in ("A", "B", "C", "D"):
+            classes[t] = v["classe_manual"]
+    for d in liga_json.values():
+        for t in d["times"]:
+            t["classe"] = classes.get(t["nome"], "D")
+        for j in d["jogos"]:
+            j["classe_casa"], j["classe_fora"] = classes.get(j["casa"], "D"), classes.get(j["fora"], "D")
+        (OUT_DIR / "liga" / f"{d['chave']}.json").write_text(json.dumps(d, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    globais = times_globais(liga_json, classes)
+    for t, g in globais.items():
+        g["temporadas_serie_a"], g["peso_clube"] = pesos.get(t, {}).get("temporadas_serie_a"), pesos.get(t, {}).get("peso_clube")
+    (OUT_DIR / "times.json").write_text(json.dumps(globais, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    print(f"Times: {grava_times_peso(classes, {t: g['ligas'] for t, g in globais.items()}, pesos)} em {TIMES_CSV.name} "
+          f"({sum(1 for v in pesos.values() if v['peso_clube'] is not None)} com peso preenchido)")
+    for chave, jg in por_liga.items():
+        papel_no_time(jg, liga_json[chave]["times"])
+    todos = [j for jg in por_liga.values() for j in jg]
+    skills.avalia(todos)  # notas, OVR, índices e rankings: calculados com todas as ligas juntas
+    for chave, jg in por_liga.items():
+        if jg:
+            (OUT_DIR / "jogadores" / f"{chave}.json").write_text(json.dumps(jg, ensure_ascii=False, separators=(",", ":")),
+                                                                  encoding="utf-8")
+    avaliados = [j for j in todos if j["ovr"] is not None]
+    (OUT_DIR / "ranking.json").write_text(json.dumps(
+        {"min_minutos": skills.MIN_MINUTOS, "categorias": {k: v[0] for k, v in skills.CATEGORIAS.items()},
+         "indices": {k: v[0] for k, v in skills.INDICES.items()}, "atributos": {k: v[0] for k, v in skills.ATRIBUTOS.items()},
+         "jogadores": avaliados}, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    print(f"Notas: {len(avaliados)} jogadores com {skills.MIN_MINUTOS}+ minutos receberam OVR")
     (OUT_DIR / "ligas.json").write_text(json.dumps(
         {"gerado_em": datetime.now().strftime("%d/%m/%Y %H:%M"), "fonte": "FootyStats", "ligas": indice},
         ensure_ascii=False, indent=1), encoding="utf-8")

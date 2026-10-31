@@ -26,7 +26,7 @@
     <div><label for="jStatus">Situação</label><select id="jStatus"><option value="realizado">Realizados</option><option value="agendado">Próximos</option><option value="">Todos</option></select></div></div>
     <div id="jogos"></div></section>
 </main>
-<dialog id="ficha"><div id="fichaCorpo"></div><p style="text-align:right;margin:.5rem 0 0"><button onclick="$('ficha').close()">Fechar</button></p></dialog>
+<dialog id="ficha" class="larga"><div id="fichaCorpo"></div><p style="text-align:right;margin:.5rem 0 0"><button onclick="$('ficha').close()">Fechar</button></p></dialog>
 <script src="assets/comum.js"></script>
 <script>
 cabecalho("home");
@@ -94,18 +94,25 @@ function desenhaJogos() {
       <span class="casa">${esc(x.casa)}</span><span class="placar">${feito ? `${x.gols_casa} x ${x.gols_fora}` : "x"}<small>${xg}</small></span><span>${esc(x.fora)}</span></div>`;
   }).join("") || "<p class='aviso'>Nenhum jogo com esse filtro.</p>";
 }
-function fichaTime(nome) {
+let TIMES_GLOBAL = null;
+async function fichaTime(nome) {
   const t = L.times.find(x => x.nome === nome); if (!t) return;
+  if (!TIMES_GLOBAL) { try { TIMES_GLOBAL = await getJSON("dados/times.json"); } catch (e) { TIMES_GLOBAL = {}; } }
+  const g = TIMES_GLOBAL[nome];
+  const nomes = { A: "A", B: "B", C: "C", D: "D" };
+  const vs = g ? `<h4 style="margin:.8rem 0 .4rem">Desempenho por classe do adversário <span class="tag">todas as competições</span></h4>
+    <table class="tab-classe"><thead><tr><th class="l">Adversário</th><th>J</th><th>V</th><th>E</th><th>D</th><th>Aprov.</th><th>GP</th><th>GC</th><th>xG pró</th><th>xG contra</th><th>Posse</th></tr></thead><tbody>` +
+    ["A", "B", "C", "D"].map(c => { const v = g.vs[c]; return v ? `<tr><td class="l"><span class="selo classe-${c}">${c}</span></td><td>${v.j}</td><td>${v.v}</td><td>${v.e}</td><td>${v.d}</td><td><b>${v.aproveitamento}%</b></td><td>${v.gp}</td><td>${v.gc}</td><td>${fmt(v.xg_pro, "dec")}</td><td>${fmt(v.xg_contra, "dec")}</td><td>${v.posse == null ? "–" : Math.round(v.posse) + "%"}</td></tr>` : `<tr><td class="l"><span class="selo classe-${c}">${c}</span></td><td colspan="10" style="text-align:left;color:var(--soft)">sem jogos</td></tr>`; }).join("") + "</tbody></table>" : "";
   const item = (n, v, tp = "int") => v == null ? "" : `<div><b>${fmt(v, tp)}</b><span>${n}</span></div>`;
   const faixas = ["0-10", "11-20", "21-30", "31-40", "41-50", "51-60", "61-70", "71-80", "81-90"];
   const maxF = Math.max(1, ...t.gols_pro_faixa, ...t.gols_contra_faixa);
   const bar = (arr, cls) => arr.map((g, i) => `<div class="faixa ${cls}"><span>${faixas[i]}'</span><span class="trilho"><i style="width:${100 * g / maxF}%"></i></span><b>${g}</b></div>`).join("");
-  $("fichaCorpo").innerHTML = `<h3>${esc(t.nome)}</h3><p class="aviso">${esc(L.nome)} ${L.temporada}${t.pos ? ` · ${t.pos}º lugar` : ""}</p>
+  $("fichaCorpo").innerHTML = `<h3>${esc(t.nome)}</h3><p class="aviso">${esc(L.nome)} ${L.temporada}${t.pos ? ` · ${t.pos}º lugar` : ""} · classe do time <span class="selo classe-${t.classe || "D"}">${t.classe || "D"}</span></p>
     <div class="grade">${item("Pontos", t.pts)}${item("Jogos", t.j)}${item("Vitórias", t.v)}${item("Empates", t.e)}${item("Derrotas", t.d)}${item("Gols pró", t.gp)}${item("Gols contra", t.gc)}
     ${item("xG pró/jogo", t.xg_pro, "dec")}${item("xG contra/jogo", t.xg_contra, "dec")}${item("Chutes/jogo", t.chutes_jogo, "dec")}${item("No alvo/jogo", t.chutes_alvo_jogo, "dec")}
     ${item("Posse %", t.posse)}${item("Escanteios/jogo", t.escanteios_jogo, "dec")}${item("Cartões/jogo", t.cartoes_jogo, "dec")}${item("Jogos sem sofrer", t.sem_sofrer)}${item("Público médio", t.publico_medio)}</div>
     <h4 style="margin:.4rem 0">Gols marcados por faixa de minuto</h4>${bar(t.gols_pro_faixa, "")}
-    <h4 style="margin:.8rem 0 .4rem">Gols sofridos por faixa de minuto</h4>${bar(t.gols_contra_faixa, "contra")}`;
+    <h4 style="margin:.8rem 0 .4rem">Gols sofridos por faixa de minuto</h4>${bar(t.gols_contra_faixa, "contra")}${vs}`;
   $("ficha").showModal();
 }
 </script>

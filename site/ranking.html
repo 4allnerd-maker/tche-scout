@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tchê Scout · Geral — Ranking de jogadores</title>
+<meta name="description" content="Ranking de jogadores das ligas brasileiras com nota geral (OVR), categorias e índices de ofensividade, defensividade e construção.">
+<link rel="icon" href="assets/logo.svg">
+<link rel="stylesheet" href="assets/estilo.css">
+</head>
+<body>
+<main>
+  <h1>Ranking de jogadores</h1>
+  <p class="sub" id="sub">Carregando…</p>
+  <section class="filtros">
+    <div><label for="fPos">Posição</label><select id="fPos"><option value="">Todas</option><option>Goleiro</option><option>Defensor</option><option>Meia</option><option>Atacante</option></select></div>
+    <div><label for="fClasse">Classe da competição</label><select id="fClasse"><option value="">Todas</option><option value="A">A · Série A e Copa do Brasil</option><option value="B">B · Série B</option><option value="C">C · Série C</option><option value="D">D · Série D e estaduais</option></select></div>
+    <div><label for="fLiga">Liga</label><select id="fLiga"><option value="">Todas</option></select></div>
+    <div><label for="fClube">Clube</label><select id="fClube"><option value="">Todos</option></select></div>
+    <div><label for="fOrd">Ordenar por</label><select id="fOrd"></select></div>
+    <div><label for="fPapel">Papel no time</label><select id="fPapel"><option value="">Todos</option><option>Titular absoluto</option><option>Titular</option><option>Rodízio</option><option>Reserva</option><option>Elenco</option></select></div>
+    <div><label for="fMin">Mínimo de minutos</label><input id="fMin" type="number" min="450" step="90" value="900"></div>
+    <div><label for="fBusca">Buscar jogador</label><input id="fBusca" type="search" placeholder="Nome…"></div>
+  </section>
+  <section class="painel">
+    <h2>Jogadores <span class="tag" id="contagem"></span></h2>
+    <div class="tabela-wrap"><table id="tabela"><thead></thead><tbody></tbody></table></div>
+    <p class="aviso">Notas de 30 a 99, comparando jogadores da mesma função em todas as ligas juntas (a nota existe a partir de <span id="min"></span> minutos; o filtro acima, com 900 por padrão, evita amostras pequenas). A <b>classe</b> mostra o nível da competição em que a nota foi obtida: o mesmo OVR numa classe menor pode ser menor numa classe maior. Clique numa linha para abrir a ficha.</p>
+  </section>
+</main>
+<dialog id="ficha" class="larga"><div id="fichaCorpo"></div><p style="text-align:right;margin:.5rem 0 0"><button onclick="$('ficha').close()">Fechar</button></p></dialog>
+<script src="assets/comum.js"></script>
+<script src="assets/ficha.js"></script>
+<script>
+cabecalho("ranking");
+const ORDENS = { ovr: "OVR", finalizacao: "Finalização", criacao: "Criação", passe: "Passe", drible: "Drible e posse", defesa: "Defesa", duelos: "Duelos e físico",
+  goleiro: "Goleiro", ofensividade: "Ofensividade", defensividade: "Defensividade", construcao: "Construção", agressividade: "Agressividade" };
+const COLS = [["#", ""], ["jogador", "Jogador"], ["clube", "Clube"], ["liga", "Liga"], ["classe", "Cl."], ["pos", "Pos."], ["papel", "Papel"], ["ovr", "OVR"], ["finalizacao", "FIN"], ["criacao", "CRI"],
+  ["passe", "PAS"], ["drible", "DRI"], ["defesa", "DEF"], ["duelos", "DUE"], ["goleiro", "GOL"], ["ofensividade", "Ofens."], ["defensividade", "Defens."], ["construcao", "Constr."], ["agressividade", "Agress."]];
+let TODOS = [], ordem = "ovr";
+const valor = (j, k) => k === "ovr" ? j.ovr : (j.notas?.categorias?.[k] ?? j.indices?.[k] ?? null);
+getJSON("dados/ranking.json").then(d => {
+  TODOS = d.jogadores; $("min").textContent = d.min_minutos;
+  $("sub").textContent = `${TODOS.length.toLocaleString("pt-BR")} jogadores avaliados`;
+  $("fOrd").innerHTML = Object.entries(ORDENS).map(([k, n]) => `<option value="${k}">${n}</option>`).join("");
+  $("fLiga").innerHTML += [...new Set(TODOS.map(j => j.liga))].sort((a, b) => a.localeCompare(b, "pt")).map(l => `<option>${esc(l)}</option>`).join("");
+  clubes(); ["fPos", "fClasse", "fLiga", "fClube", "fOrd", "fBusca", "fMin", "fPapel"].forEach(i => $(i).addEventListener(["fBusca", "fMin"].includes(i) ? "input" : "change", () => { if (["fLiga", "fClasse", "fPos"].includes(i)) clubes(); desenha(); }));
+  desenha();
+}).catch(() => $("sub").textContent = "Não foi possível carregar os dados. Rode geral/importar.py e abra o site por um servidor.");
+function base() { return TODOS.filter(j => (!$("fPos").value || j.posicao === $("fPos").value) && (!$("fClasse").value || j.classe === $("fClasse").value) && (!$("fLiga").value || j.liga === $("fLiga").value) && (j.min || 0) >= (+$("fMin").value || 0) && (!$("fPapel").value || j.papel === $("fPapel").value)); }
+function clubes() { const atual = $("fClube").value, l = [...new Set(base().map(j => j.clube))].sort((a, b) => a.localeCompare(b, "pt"));
+  $("fClube").innerHTML = '<option value="">Todos</option>' + l.map(c => `<option>${esc(c)}</option>`).join(""); if (l.includes(atual)) $("fClube").value = atual; }
+function desenha() {
+  const q = $("fBusca").value.trim().toLowerCase(), k = $("fOrd").value;
+  const lista = base().filter(j => (!$("fClube").value || j.clube === $("fClube").value) && (!q || j.nome.toLowerCase().includes(q) || (j.nome_curto || "").toLowerCase().includes(q)))
+    .filter(j => valor(j, k) != null).sort((a, b) => valor(b, k) - valor(a, k));
+  $("contagem").textContent = `${lista.length} jogadores`;
+  $("tabela").querySelector("thead").innerHTML = "<tr>" + COLS.map(([c, n]) => `<th class="${["jogador", "clube", "liga"].includes(c) ? "l" : ""} ${c === k ? "ord" : ""}">${n}</th>`).join("") + "</tr>";
+  const cel = v => `<td style="color:${corNota(v)};font-weight:700">${v ?? "–"}</td>`;
+  $("tabela").querySelector("tbody").innerHTML = lista.slice(0, 400).map((j, i) => `<tr data-i="${TODOS.indexOf(j)}"><td>${i + 1}</td>
+    <td class="l" title="${esc(j.nome)}">${esc(j.nome_curto || j.nome)}</td><td class="l">${esc(j.clube)}</td><td class="l">${esc(j.liga)}</td><td>${selo(j.classe)}</td><td>${esc(j.posicao.slice(0, 3))}</td><td style="color:${PAPEL_COR[j.papel] || "#6F8577"};font-size:.78rem">${j.papel ?? "–"}</td>
+    ${cel(j.ovr)}${["finalizacao", "criacao", "passe", "drible", "defesa", "duelos", "goleiro"].map(c => cel(j.notas?.categorias?.[c])).join("")}
+    ${["ofensividade", "defensividade", "construcao", "agressividade"].map(c => cel(j.indices?.[c])).join("")}</tr>`).join("");
+  document.querySelectorAll("#tabela tbody tr").forEach(tr => tr.onclick = () => abrirFicha(TODOS[+tr.dataset.i]));
+}
+</script>
+</body>
+</html>

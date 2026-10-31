@@ -26,8 +26,9 @@
     <div class="tabela-wrap"><table id="tabela"><thead></thead><tbody></tbody></table></div>
     <p class="aviso">Clique no cabeçalho para ordenar e numa linha para ver a ficha do jogador. Métricas “por 90” só aparecem para quem tem 90 minutos ou mais.</p></section>
 </main>
-<dialog id="ficha"><div id="fichaCorpo"></div><p style="text-align:right;margin:.5rem 0 0"><button onclick="$('ficha').close()">Fechar</button></p></dialog>
+<dialog id="ficha" class="larga"><div id="fichaCorpo"></div><p style="text-align:right;margin:.5rem 0 0"><button onclick="$('ficha').close()">Fechar</button></p></dialog>
 <script src="assets/comum.js"></script>
+<script src="assets/ficha.js"></script>
 <script>
 cabecalho("jogadores");
 const METRICAS = {
@@ -38,7 +39,7 @@ const METRICAS = {
   defesas:["Defesas (goleiros)","int"], jogos_sem_sofrer:["Jogos sem sofrer gol","int"]
 };
 const AVANCADAS = ["xg","xa","xg_90","xa_90","nota","desarmes_90","chutes_90","passes_chave_90"];
-const COLS = [["nome_curto","Jogador"],["clube","Clube"],["posicao","Pos."],["idade","Idade"],["jogos","J"],["min","Min"],["gols","Gols"],["assist","Ass."],
+const COLS = [["nome_curto","Jogador"],["clube","Clube"],["posicao","Pos."],["idade","Idade"],["classe","Cl."],["ovr","OVR"],["jogos","J"],["min","Min"],["gols","Gols"],["assist","Ass."],
   ["xg","xG"],["xa","xA"],["chutes","Chutes"],["passes_pct","Passes %"],["desarmes","Desarmes"],["nota","Nota"]];
 let DADOS = [], INDICE = [], ordem = { campo: "gols", dir: -1 };
 
@@ -86,24 +87,14 @@ function desenha() {
   $("contagem").textContent = `${ord.length} jogadores`;
   $("tabela").querySelector("thead").innerHTML = "<tr>" + COLS.map(([c, n]) => `<th data-c="${c}" class="${["nome_curto","clube","posicao"].includes(c) ? "l" : ""} ${c === campo ? "ord" : ""}">${n}${c === campo ? (ordem.dir < 0 ? " ↓" : " ↑") : ""}</th>`).join("") + "</tr>";
   $("tabela").querySelector("tbody").innerHTML = ord.slice(0, 300).map(j => `<tr data-id="${j.id}">` + COLS.map(([c]) => {
-    const v = j[c]; if (["nome_curto","clube","posicao"].includes(c)) return `<td class="l" title="${esc(j.nome)}">${esc(v)}</td>`;
+    const v = j[c]; if (c === "classe") return `<td>${selo(v)}</td>`; if (c === "ovr") return `<td style="color:${corNota(v)};font-weight:800">${v ?? "–"}</td>`;
+    if (["nome_curto","clube","posicao"].includes(c)) return `<td class="l" title="${esc(j.nome)}">${esc(v)}</td>`;
     return `<td>${["xg","xa","nota"].includes(c) ? fmt(v, "dec") : (c === "passes_pct" ? (v == null ? "–" : Math.round(v) + "%") : fmt(v))}</td>`; }).join("") + "</tr>").join("");
   document.querySelectorAll("#tabela th").forEach(th => th.onclick = () => { const c = th.dataset.c;
     ordem = ordem.campo === c ? { campo: c, dir: -ordem.dir } : { campo: c, dir: typeof lista[0]?.[c] === "string" ? 1 : -1 }; desenha(); });
   document.querySelectorAll("[data-id]").forEach(el => el.onclick = () => ficha(el.dataset.id));
 }
-function ficha(id) {
-  const j = DADOS.find(x => x.id === id); if (!j) return;
-  const item = (n, v, t = "int") => v == null ? "" : `<div><b>${fmt(v, t)}</b><span>${n}</span></div>`;
-  $("fichaCorpo").innerHTML = `<h3>${esc(j.nome_curto || j.nome)}</h3>
-    <p class="aviso">${j.nome_curto !== j.nome ? esc(j.nome) + "<br>" : ""}${esc(j.clube)} · ${esc(j.posicao)} · ${j.idade ?? "?"} anos · ${esc(j.nacionalidade ?? "")} ${j.camisa ? `· camisa ${j.camisa}` : ""}<br>${esc(j.liga)} ${j.temporada}</p>
-    <div class="grade">${item("Jogos", j.jogos)}${item("Titular", j.titular)}${item("Minutos", j.min)}${item("Gols", j.gols)}${item("Assistências", j.assist)}
-    ${item("xG", j.xg, "dec")}${item("xA", j.xa, "dec")}${item("Chutes", j.chutes)}${item("Passes-chave", j.passes_chave)}${item("Passes certos %", j.passes_pct, "dec")}
-    ${item("Desarmes", j.desarmes)}${item("Interceptações", j.interceptacoes)}${item("Duelos ganhos %", j.duelos_pct, "dec")}${item("Nota média", j.nota, "dec")}
-    ${j.posicao === "Goleiro" ? item("Defesas", j.defesas) + item("Sem sofrer gol", j.jogos_sem_sofrer) : ""}${item("Amarelos", j.amarelos)}${item("Vermelhos", j.vermelhos)}</div>
-    ${j.tem_avancadas ? "" : "<p class='aviso'>Sem estatísticas avançadas na fonte para este jogador.</p>"}`;
-  $("ficha").showModal();
-}
+function ficha(id) { const j = DADOS.find(x => x.id === id); if (j) abrirFicha(j); }
 iniciar();
 </script>
 </body>
