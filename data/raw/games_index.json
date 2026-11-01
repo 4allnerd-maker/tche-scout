@@ -10612,16 +10612,8 @@
     "ano": 2026,
     "fase_id": 4516,
     "fase_nome": "Semifinal",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "31/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Brasil de Farroupilha",
-    "visitante": "Grêmio",
-    "placar_mandante": 0,
-    "placar_visitante": 2,
-    "hora": "16:00",
-    "estadio": "Castanheiras - Farroupilha"
+    "sumula_id": "60280",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/60280.pdf"
   },
   "juventudexinternacional-gauchaofeminino-18-11-2026": {
     "slug": "juventudexinternacional-gauchaofeminino-18-11-2026",
