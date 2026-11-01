@@ -9602,16 +9602,8 @@
     "ano": 2026,
     "fase_id": 4401,
     "fase_nome": "1ª Fase",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "31/10/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Internacional",
-    "visitante": "Grêmio",
-    "placar_mandante": 2,
-    "placar_visitante": 1,
-    "hora": "11:00",
-    "estadio": "SESC Protásio Alves - Porto Alegre"
+    "sumula_id": "59036",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/59036.pdf"
   },
   "juventudexapafut-gauchaofemininosub17-31-10-2026": {
     "slug": "juventudexapafut-gauchaofemininosub17-31-10-2026",
