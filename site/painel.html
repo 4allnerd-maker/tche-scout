@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel · Tchê Scout</title>
+<link rel="icon" href="assets/logo.svg">
+<link rel="stylesheet" href="assets/estilo.css">
+</head>
+<body>
+<main>
+  <h1 id="ola">Painel</h1>
+  <p class="sub" id="status"></p>
+  <h2 class="sec">Escolha o módulo</h2>
+  <section class="modulos">
+    <article class="modulo">
+      <span class="tag">Gratuito · aberto</span><h3>Módulo FGF</h3>
+      <p>Súmulas oficiais da Federação Gaúcha: calendário, classificação, jogos, atletas e arbitragem.</p>
+      <p><a class="botao sec" id="btn-fgf" href="#" target="_blank" rel="noopener">Abrir o módulo FGF ↗</a></p>
+    </article>
+    <article class="modulo premium">
+      <span class="tag ouro">Premium · scout de atletas</span><h3>Módulo Premium</h3>
+      <p>Ranking e ficha estilo videogame dos atletas de todas as ligas do banco.</p>
+      <p><a class="botao" href="ranking.html">Ranking de atletas</a> <a class="botao sec" href="jogadores.html">Lista por liga</a></p>
+      <p class="aviso" id="limite" hidden></p>
+    </article>
+  </section>
+  <section id="planos" class="painel" hidden>
+    <h2>Libere o módulo Premium completo</h2>
+    <p>Ranking completo, ficha de todos os atletas, todas as ligas e os índices de ofensividade, defensividade e construção.</p>
+    <p class="preco"><span id="preco"></span><small id="periodo"></small></p>
+    <p id="cta"></p>
+  </section>
+  <section id="admin" class="painel" hidden><h2>Administrador</h2><p>Você tem acesso total e não depende de assinatura. Para atualizar os dados, rode <code>python geral/importar.py</code> e suba a pasta de dados.</p></section>
+</main>
+<script src="assets/config.js"></script>
+<script src="assets/comum.js"></script>
+<script src="assets/auth.js"></script>
+<script>
+cabecalho("");
+$("btn-fgf").href = CONFIG.URL_FGF;
+exigirLogin().then(s => {
+  $("ola").textContent = "Olá, " + s.nome.split(" ")[0] + "!";
+  const admin = s.papel === "admin";
+  $("status").textContent = admin ? "Conta de administrador" : (s.premium ? "Plano Premium ativo" + (s.assinatura_ate ? " até " + s.assinatura_ate.split("-").reverse().join("/") : "") : "Plano gratuito");
+  $("admin").hidden = !admin;
+  if (!s.premium) {
+    $("limite").hidden = false; $("limite").textContent = "No plano gratuito você vê o top " + CONFIG.LIMITE_GRATIS_RANKING + " do ranking e a Série A.";
+    $("planos").hidden = false; $("preco").textContent = CONFIG.PRECO; $("periodo").textContent = CONFIG.PERIODO;
+    $("cta").innerHTML = CONFIG.CHECKOUT_URL ? `<a class="botao grande" href="${CONFIG.CHECKOUT_URL}">Assinar o Premium</a>`
+      : `<span class="tag">O pagamento será liberado em breve</span> Avise-me em <a href="mailto:${CONFIG.EMAIL}?subject=Lista%20de%20espera%20Premium">${CONFIG.EMAIL}</a>.`;
+  }
+}).catch(() => {});
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentos legais · Tchê Scout</title>
+<link rel="icon" href="assets/logo.svg">
+<link rel="stylesheet" href="assets/estilo.css">
+</head>
+<body>
+<main class="estreito"><article class="painel texto" id="doc">Carregando…</article></main>
+<script src="assets/config.js"></script>
+<script src="assets/comum.js"></script>
+<script>
+cabecalho("");
+const DOCS = { privacidade: "legal/privacidade.md", cookies: "legal/cookies.md", termos: "legal/termos.md" };
+const doc = new URLSearchParams(location.search).get("doc");
+/* conversor mínimo de Markdown (títulos, listas, tabelas, negrito, links): só para os nossos próprios textos */
+function md(t) {
+  const inl = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\*(.+?)\*/g, "<i>$1</i>").replace(/\[([^\]]+)\]\((https?:[^)\s]+|mailto:[^)\s]+)\)/g, '<a href="$2">$1</a>');
+  const out = []; let lista = false, tab = false;
+  const fecha = () => { if (lista) { out.push("</ul>"); lista = false; } if (tab) { out.push("</tbody></table>"); tab = false; } };
+  for (const l of t.split("\n")) {
+    if (/^\s*$/.test(l)) { fecha(); continue; }
+    if (/^>/.test(l)) continue;
+    let m;
+    if ((m = l.match(/^(#{1,3})\s+(.*)/))) { fecha(); out.push(`<h${m[1].length}>${inl(m[2])}</h${m[1].length}>`); }
+    else if (/^\s*[-*]\s+/.test(l)) { if (!lista) { fecha(); out.push("<ul>"); lista = true; } out.push("<li>" + inl(l.replace(/^\s*[-*]\s+/, "")) + "</li>"); }
+    else if (/^\|/.test(l)) { if (/^\|[\s:-|]+$/.test(l)) continue; const c = l.split("|").slice(1, -1).map(x => inl(x.trim()));
+      if (!tab) { fecha(); out.push("<table><thead><tr>" + c.map(x => "<th>" + x + "</th>").join("") + "</tr></thead><tbody>"); tab = true; } else out.push("<tr>" + c.map(x => "<td>" + x + "</td>").join("") + "</tr>"); }
+    else { fecha(); out.push("<p>" + inl(l) + "</p>"); }
+  }
+  fecha(); return out.join("\n");
+}
+fetch(DOCS[doc] || DOCS.privacidade).then(r => r.ok ? r.text() : Promise.reject()).then(t => $("doc").innerHTML = md(t)).catch(() => $("doc").textContent = "Documento não encontrado.");
+</script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+Options -Indexes
+<FilesMatch "^(_base\.php|config\.exemplo\.php|LEIA-ME\.txt)$">
+    Require all denied
+</FilesMatch>

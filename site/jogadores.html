@@ -27,7 +27,9 @@
     <p class="aviso">Clique no cabeçalho para ordenar e numa linha para ver a ficha do jogador. Métricas “por 90” só aparecem para quem tem 90 minutos ou mais.</p></section>
 </main>
 <dialog id="ficha" class="larga"><div id="fichaCorpo"></div><p style="text-align:right;margin:.5rem 0 0"><button onclick="$('ficha').close()">Fechar</button></p></dialog>
+<script src="assets/config.js"></script>
 <script src="assets/comum.js"></script>
+<script src="assets/auth.js"></script>
 <script src="assets/ficha.js"></script>
 <script>
 cabecalho("jogadores");
@@ -44,8 +46,8 @@ const COLS = [["nome_curto","Jogador"],["clube","Clube"],["posicao","Pos."],["id
 let DADOS = [], INDICE = [], ordem = { campo: "gols", dir: -1 };
 
 async function iniciar() {
-  try { INDICE = (await getJSON("dados/ligas.json")).ligas.filter(l => l.jogadores > 0); }
-  catch (e) { $("sub").textContent = "Não foi possível carregar os dados. Rode geral/importar.py e abra o site por um servidor."; return; }
+  try { await exigirLogin(); INDICE = (await dados("ligas")).ligas.filter(l => l.jogadores > 0); }
+  catch (e) { if (e.message !== "login") $("sub").textContent = e.message || "Não foi possível carregar os dados."; return; }
   const pedida = new URLSearchParams(location.search).get("c");
   $("fLiga").innerHTML = INDICE.map(l => `<option value="${l.chave}">${esc(l.nome)} ${l.temporada} (${l.jogadores})</option>`).join("");
   if (pedida && INDICE.some(l => l.chave === pedida)) $("fLiga").value = pedida;
@@ -58,7 +60,10 @@ async function iniciar() {
 }
 async function carrega() {
   const l = INDICE.find(x => x.chave === $("fLiga").value);
-  DADOS = await getJSON(`dados/jogadores/${encodeURIComponent(l.chave)}.json`);
+  try { DADOS = await dados(`jogadores/${l.chave}`); }
+  catch (e) { if (e.message === "login") return; $("sub").innerHTML = ""; $("sub").insertAdjacentHTML("afterbegin", bannerPremium(e.premium ? "Esta liga é exclusiva do plano Premium." : esc(e.message))); DADOS = []; desenha(); return; }
+  document.querySelectorAll(".banner-premium").forEach(b => b.remove());
+  if (DADOS.limitado) $("sub").insertAdjacentHTML("afterend", bannerPremium(`Plano gratuito: mostrando ${DADOS.length} de ${DADOS.total.toLocaleString("pt-BR")} jogadores. Assine o Premium para ver todos.`));
   $("sub").textContent = `${l.nome} ${l.temporada} · ${DADOS.length.toLocaleString("pt-BR")} jogadores · dados de FootyStats`;
   $("fMin").value = Math.round(0.3 * Math.max(0, ...DADOS.map(j => j.min || 0)) / 90) * 90;
   const clubes = [...new Set(DADOS.map(j => j.clube).filter(Boolean))].sort((a, b) => a.localeCompare(b, "pt"));

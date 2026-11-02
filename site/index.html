@@ -3,33 +3,113 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tchê Scout · Geral — Ligas brasileiras</title>
-<meta name="description" content="Classificação, estatísticas de times e ranking de jogadores das ligas brasileiras: Brasileirão, Copa do Brasil e estaduais.">
+<title>Tchê Scout — Scout de atletas do futebol brasileiro</title>
+<meta name="description" content="Notas, rankings e fichas estilo videogame para avaliar atletas das ligas brasileiras. Módulo FGF gratuito e módulo Premium de scout de atletas.">
 <link rel="icon" href="assets/logo.svg">
 <link rel="stylesheet" href="assets/estilo.css">
 </head>
 <body>
-<main>
-  <h1>Ligas brasileiras</h1>
-  <p class="sub" id="sub">Carregando…</p>
-  <h2 class="sec">Nacionais</h2><div class="cards" id="nacionais"></div>
-  <h2 class="sec">Estaduais</h2><div class="cards" id="estaduais"></div>
-  <p class="aviso">Versão piloto, temporada 2026. As ligas pequenas têm estatísticas de times e jogos; o ranking de jogadores só existe onde a fonte traz dados de atletas.</p>
+<main class="landing">
+  <section class="hero-l">
+    <img src="assets/logo.svg" alt="Tchê Scout" class="hero-logo">
+    <div>
+      <h1>Scout de atletas do futebol brasileiro</h1>
+      <p class="lead"><b>Escolha o jogador certo com dados, não com achismo.</b> Notas de 30 a 99, rankings por função e fichas estilo videogame para
+        avaliar atletas das Séries A, B, C e D, da Copa do Brasil e dos estaduais — mais o módulo gratuito com as súmulas oficiais da Federação Gaúcha.</p>
+      <p><a class="botao grande" href="entrar.html?cadastro=1">Criar minha conta</a> <a class="botao sec grande" href="entrar.html">Já tenho conta</a></p>
+      <p class="aviso">Estatísticas de scout — não é conteúdo de apostas.</p>
+    </div>
+  </section>
+
+  <h2 class="sec c">Dois módulos, um só lugar</h2>
+  <section class="modulos">
+    <article class="modulo">
+      <span class="tag">Gratuito · aberto</span>
+      <h3>Módulo FGF</h3>
+      <p>Tudo o que sai das súmulas oficiais da Federação Gaúcha de Futebol: calendário, classificação, jogos, atletas, árbitros e relatórios — atualizado a cada rodada.</p>
+      <ul><li>Gauchão, Série A2, Série B, Copa FGF e feminino</li><li>Perfil de times e gols por minuto</li><li>Análise de jogos e de arbitragem</li></ul>
+      <p><a class="botao sec" id="btn-fgf" href="#" target="_blank" rel="noopener">Abrir o módulo FGF ↗</a></p>
+    </article>
+    <article class="modulo premium">
+      <span class="tag ouro">Premium · scout de atletas</span>
+      <h3>Módulo Premium</h3>
+      <p>O foco é o atleta: nota geral (OVR), notas por categoria, índices de ofensividade e defensividade, papel no time e ranking por função, em todas as ligas brasileiras do banco.</p>
+      <ul><li>Ficha estilo videogame de cada jogador</li><li>Ranking filtrável por posição, classe e liga</li><li>Dados por 90 minutos e comparação entre funções</li></ul>
+      <p><a class="botao" href="entrar.html?cadastro=1">Começar</a></p>
+    </article>
+  </section>
+
+  <h2 class="sec c">Veja como é a ficha</h2>
+  <p class="sub c">Exemplo ilustrativo, com números inventados — não é um jogador real.</p>
+  <section class="exemplo">
+    <div class="fifa" style="max-width:900px;margin:0 auto">
+      <aside style="border-top:6px solid #FF5468">
+        <div class="topo"><div><div class="ovr" style="color:#9BE564">78</div><small>OVR</small></div><div class="posbox" style="background:#FF5468">ATA</div></div>
+        <div class="avatar" style="background:linear-gradient(160deg,#FF546855,#0D1B14)">AE</div>
+        <h3>Atleta Exemplo</h3><p class="clube">Clube Exemplo <span class="selo classe-B">B</span></p>
+        <p class="papel" style="border-color:#2ECC71;color:#2ECC71">Titular absoluto</p>
+        <div class="minutos"><i><u style="width:84%;background:#2ECC71"></u></i><small>84% dos minutos do time</small></div>
+      </aside>
+      <section>
+        <div class="idx">
+          <div class="ind"><span>Ofensividade</span><i><u style="width:82%;background:#2ECC71"></u></i><b>82</b></div>
+          <div class="ind"><span>Defensividade</span><i><u style="width:48%;background:#FF9F43"></u></i><b>48</b></div>
+          <div class="ind"><span>Construção</span><i><u style="width:66%;background:#F2C230"></u></i><b>66</b></div>
+          <div class="ind"><span>Agressividade</span><i><u style="width:58%;background:#FFB020"></u></i><b>58</b></div></div>
+        <div class="chips"><span>#12 <small>de 1.767 no geral</small></span><span>#4 <small>de 409 atacantes</small></span></div>
+        <div class="cats">
+          <div class="cat"><div class="cat-topo"><b style="color:#2ECC71">88</b><span>FINALIZAÇÃO</span></div>
+            <div class="at"><span>Gols/90</span><em>0,62</em><b style="color:#2ECC71">90</b><i><u style="width:90%;background:#2ECC71"></u></i></div>
+            <div class="at"><span>xG/90</span><em>0,58</em><b style="color:#2ECC71">86</b><i><u style="width:86%;background:#2ECC71"></u></i></div></div>
+          <div class="cat"><div class="cat-topo"><b style="color:#F2C230">64</b><span>CRIAÇÃO</span></div>
+            <div class="at"><span>Assistências/90</span><em>0,14</em><b style="color:#F2C230">62</b><i><u style="width:62%;background:#F2C230"></u></i></div>
+            <div class="at"><span>Passes-chave/90</span><em>1,1</em><b style="color:#F2C230">66</b><i><u style="width:66%;background:#F2C230"></u></i></div></div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <h2 class="sec c">Como a nota é calculada</h2>
+  <section class="passos">
+    <div class="passo"><b>1</b><h4>Por 90 minutos</h4><p>Cada atributo é medido por 90 minutos jogados, para comparar quem joga muito com quem joga pouco.</p></div>
+    <div class="passo"><b>2</b><h4>Contra a mesma função</h4><p>A nota de 30 a 99 compara o atleta só com goleiros, defensores, meias ou atacantes, em todas as ligas juntas.</p></div>
+    <div class="passo"><b>3</b><h4>Classe da competição</h4><p>Cada nota vem com a classe do campeonato (A, B, C ou D), para ler o OVR no nível certo.</p></div>
+    <div class="passo"><b>4</b><h4>Papel no time</h4><p>Os minutos do atleta frente aos do time mostram se ele é titular, rodízio, reserva ou elenco.</p></div>
+  </section>
+
+  <h2 class="sec c" id="planos">Planos</h2>
+  <section class="planos">
+    <article class="plano">
+      <h3>Gratuito</h3><p class="preco">R$ 0</p>
+      <ul><li>Módulo FGF completo</li><li>Conta gratuita com vitrine do módulo Premium</li><li>Top 25 do ranking e a Série A</li></ul>
+      <p><a class="botao sec" href="entrar.html?cadastro=1">Criar conta grátis</a></p>
+    </article>
+    <article class="plano destaque">
+      <span class="tag ouro">Recomendado</span>
+      <h3>Premium</h3><p class="preco"><span id="preco"></span><small id="periodo"></small></p>
+      <ul><li>Tudo do plano gratuito</li><li>Ranking completo de todas as ligas</li><li>Ficha estilo videogame de todos os atletas</li><li>Índices, papel no time e classes A–D</li><li>Atualizações de dados</li></ul>
+      <p><a class="botao" id="btn-assinar" href="entrar.html?cadastro=1">Quero ser Premium</a></p>
+    </article>
+  </section>
+
+  <h2 class="sec c">Perguntas frequentes</h2>
+  <section class="faq">
+    <details><summary>De onde vêm os dados?</summary><p>Do módulo FGF, direto das súmulas oficiais da Federação Gaúcha de Futebol; do módulo Premium, de estatísticas de scout do FootyStats. Tudo é reprocessado e padronizado pelo Tchê Scout.</p></details>
+    <details><summary>A nota é absoluta?</summary><p>Não. É uma posição relativa entre os atletas da mesma função que estão no banco de dados. Por isso a classe da competição acompanha o OVR.</p></details>
+    <details><summary>Tem conteúdo de apostas?</summary><p>Não. É um projeto de análise de desempenho, sem odds nem apostas.</p></details>
+    <details><summary>Posso cancelar quando quiser?</summary><p>Sim. A assinatura não tem fidelidade; o acesso vale até o fim do período pago.</p></details>
+    <details><summary>Quem está por trás?</summary><p>João Paulo Pahim Moreira, o “Lucho Pahim”, analista de dados independente e scout.</p></details>
+  </section>
 </main>
+<script src="assets/config.js"></script>
 <script src="assets/comum.js"></script>
+<script src="assets/auth.js"></script>
 <script>
 cabecalho("home");
-const NAC = ["serie-a","serie-b","serie-c","serie-d","copa-do-brasil","supercopa-do-brasil"];
-getJSON("dados/ligas.json").then(d => {
-  $("sub").textContent = `${d.ligas.length} competições · dados de ${d.fonte} · atualizado em ${d.gerado_em}`;
-  const card = l => `<div class="liga"><h3>${esc(l.nome)} ${l.temporada}</h3>
-    <p>${l.times} times · ${l.jogos}/${l.jogos_total} jogos realizados</p>
-    <div class="prog"><i style="width:${Math.round(100 * l.jogos / Math.max(1, l.jogos_total))}%"></i></div>
-    <div class="links"><a href="liga.html?c=${l.chave}">Times e jogos</a>
-    ${l.jogadores ? `<a href="jogadores.html?c=${l.chave}">Jogadores (${l.jogadores})</a>` : `<span class="tag">sem dados de jogadores</span>`}</div></div>`;
-  const nac = d.ligas.filter(l => NAC.includes(l.id)), est = d.ligas.filter(l => !NAC.includes(l.id));
-  $("nacionais").innerHTML = nac.map(card).join(""); $("estaduais").innerHTML = est.map(card).join("");
-}).catch(() => $("sub").textContent = "Não foi possível carregar os dados. Rode geral/importar.py e abra o site por um servidor.");
+$("btn-fgf").href = CONFIG.URL_FGF;
+$("preco").textContent = CONFIG.PRECO; $("periodo").textContent = CONFIG.PERIODO;
+if (CONFIG.CHECKOUT_URL) $("btn-assinar").textContent = "Assinar o Premium";
+else $("btn-assinar").textContent = "Entrar na lista de espera";
 </script>
 </body>
 </html>

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entrar · Tchê Scout</title>
+<link rel="icon" href="assets/logo.svg">
+<link rel="stylesheet" href="assets/estilo.css">
+</head>
+<body>
+<main class="estreito">
+  <h1 id="titulo">Entrar</h1>
+  <div class="abas"><button id="aba-entrar" class="ativo">Entrar</button><button id="aba-cadastro">Criar conta</button></div>
+
+  <form id="form-entrar" class="painel" autocomplete="on">
+    <label for="e-email">E-mail</label><input id="e-email" type="email" required autocomplete="email">
+    <label for="e-senha" style="margin-top:.7rem">Senha</label><input id="e-senha" type="password" required autocomplete="current-password">
+    <p class="erro" id="erro-entrar" role="alert"></p>
+    <button type="submit" class="botao">Entrar</button>
+  </form>
+
+  <form id="form-cadastro" class="painel" autocomplete="on" hidden>
+    <label for="c-nome">Nome</label><input id="c-nome" type="text" required minlength="2" maxlength="80" autocomplete="name">
+    <label for="c-email" style="margin-top:.7rem">E-mail</label><input id="c-email" type="email" required autocomplete="email">
+    <label for="c-senha" style="margin-top:.7rem">Senha (mínimo 8 caracteres)</label><input id="c-senha" type="password" required minlength="8" maxlength="72" autocomplete="new-password">
+    <label class="aceite"><input id="c-aceite" type="checkbox" required> Li e aceito os <a href="legal.html?doc=termos" target="_blank">Termos de uso</a> e a <a href="legal.html?doc=privacidade" target="_blank">Política de Privacidade</a>.</label>
+    <p class="erro" id="erro-cadastro" role="alert"></p>
+    <button type="submit" class="botao">Criar conta</button>
+  </form>
+  <p class="aviso" id="dev" hidden></p>
+</main>
+<script src="assets/config.js"></script>
+<script src="assets/comum.js"></script>
+<script src="assets/auth.js"></script>
+<script>
+cabecalho("");
+const q = new URLSearchParams(location.search);
+const destino = () => { const n = q.get("next") || "painel.html"; return /^[a-z0-9_-]+\.html(\?[a-z0-9=&_%.-]*)?$/i.test(n) ? n : "painel.html"; };
+function aba(cadastro) {
+  $("form-entrar").hidden = cadastro; $("form-cadastro").hidden = !cadastro; $("titulo").textContent = cadastro ? "Criar conta" : "Entrar";
+  $("aba-entrar").classList.toggle("ativo", !cadastro); $("aba-cadastro").classList.toggle("ativo", cadastro);
+}
+$("aba-entrar").onclick = () => aba(false); $("aba-cadastro").onclick = () => aba(true); aba(q.get("cadastro") === "1");
+if (DEV) { $("dev").hidden = false; $("dev").textContent = "Modo de teste (localhost): o login real só existe no site publicado. Use ?dev=admin, ?dev=premium ou ?dev=gratis em qualquer página para simular um usuário."; }
+async function enviarForm(e, url, corpo, erroEl) {
+  e.preventDefault(); $(erroEl).textContent = ""; const b = e.target.querySelector("button[type=submit]"); b.disabled = true;
+  try { if (DEV) { localStorage.setItem("dev", "premium"); } else { await enviar(url, corpo()); } location.href = destino(); }
+  catch (x) { $(erroEl).textContent = x.message; b.disabled = false; }
+}
+$("form-entrar").onsubmit = e => enviarForm(e, "api/login.php", () => ({ email: $("e-email").value.trim(), senha: $("e-senha").value }), "erro-entrar");
+$("form-cadastro").onsubmit = e => enviarForm(e, "api/cadastro.php", () => ({ nome: $("c-nome").value.trim(), email: $("c-email").value.trim(), senha: $("c-senha").value, aceite: $("c-aceite").checked }), "erro-cadastro");
+</script>
+</body>
+</html>

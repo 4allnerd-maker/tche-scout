@@ -29,7 +29,9 @@
   </section>
 </main>
 <dialog id="ficha" class="larga"><div id="fichaCorpo"></div><p style="text-align:right;margin:.5rem 0 0"><button onclick="$('ficha').close()">Fechar</button></p></dialog>
+<script src="assets/config.js"></script>
 <script src="assets/comum.js"></script>
+<script src="assets/auth.js"></script>
 <script src="assets/ficha.js"></script>
 <script>
 cabecalho("ranking");
@@ -39,14 +41,14 @@ const COLS = [["#", ""], ["jogador", "Jogador"], ["clube", "Clube"], ["liga", "L
   ["passe", "PAS"], ["drible", "DRI"], ["defesa", "DEF"], ["duelos", "DUE"], ["goleiro", "GOL"], ["ofensividade", "Ofens."], ["defensividade", "Defens."], ["construcao", "Constr."], ["agressividade", "Agress."]];
 let TODOS = [], ordem = "ovr";
 const valor = (j, k) => k === "ovr" ? j.ovr : (j.notas?.categorias?.[k] ?? j.indices?.[k] ?? null);
-getJSON("dados/ranking.json").then(d => {
-  TODOS = d.jogadores; $("min").textContent = d.min_minutos;
+exigirLogin().then(() => dados("ranking")).then(d => {
+  TODOS = d.jogadores; if (d.limitado) $("sub").insertAdjacentHTML("afterend", bannerPremium(`Plano gratuito: mostrando os ${d.jogadores.length} melhores de ${d.total.toLocaleString("pt-BR")}. Assine o Premium para ver o ranking completo.`)); $("min").textContent = d.min_minutos;
   $("sub").textContent = `${TODOS.length.toLocaleString("pt-BR")} jogadores avaliados`;
   $("fOrd").innerHTML = Object.entries(ORDENS).map(([k, n]) => `<option value="${k}">${n}</option>`).join("");
   $("fLiga").innerHTML += [...new Set(TODOS.map(j => j.liga))].sort((a, b) => a.localeCompare(b, "pt")).map(l => `<option>${esc(l)}</option>`).join("");
   clubes(); ["fPos", "fClasse", "fLiga", "fClube", "fOrd", "fBusca", "fMin", "fPapel"].forEach(i => $(i).addEventListener(["fBusca", "fMin"].includes(i) ? "input" : "change", () => { if (["fLiga", "fClasse", "fPos"].includes(i)) clubes(); desenha(); }));
   desenha();
-}).catch(() => $("sub").textContent = "Não foi possível carregar os dados. Rode geral/importar.py e abra o site por um servidor.");
+}).catch(e => { if (e.message !== "login") $("sub").textContent = e.message || "Não foi possível carregar os dados."; });
 function base() { return TODOS.filter(j => (!$("fPos").value || j.posicao === $("fPos").value) && (!$("fClasse").value || j.classe === $("fClasse").value) && (!$("fLiga").value || j.liga === $("fLiga").value) && (j.min || 0) >= (+$("fMin").value || 0) && (!$("fPapel").value || j.papel === $("fPapel").value)); }
 function clubes() { const atual = $("fClube").value, l = [...new Set(base().map(j => j.clube))].sort((a, b) => a.localeCompare(b, "pt"));
   $("fClube").innerHTML = '<option value="">Todos</option>' + l.map(c => `<option>${esc(c)}</option>`).join(""); if (l.includes(atual)) $("fClube").value = atual; }
