@@ -11,6 +11,8 @@
 <main>
   <h1 id="ola">Painel</h1>
   <p class="sub" id="status"></p>
+  <div id="aviso-prazo"></div>
+
   <h2 class="sec">Escolha o módulo</h2>
   <section class="modulos">
     <article class="modulo">
@@ -25,13 +27,34 @@
       <p class="aviso" id="limite" hidden></p>
     </article>
   </section>
-  <section id="planos" class="painel" hidden>
-    <h2>Libere o módulo Premium completo</h2>
-    <p>Ranking completo, ficha de todos os atletas, todas as ligas e os índices de ofensividade, defensividade e construção.</p>
-    <p class="preco"><span id="preco"></span><small id="periodo"></small></p>
-    <p id="cta"></p>
+
+  <section id="demo" class="painel" hidden>
+    <h2>Demonstração completa de <span class="demo-min"></span> minutos</h2>
+    <p>Quer ver o módulo Premium inteiro antes de assinar? Peça a demonstração: nós liberamos o acesso total por <span class="demo-min"></span> minutos e você decide depois. Uma por conta.</p>
+    <p><button class="botao" id="btn-demo">Pedir a demonstração</button> <span id="demo-msg" class="aviso"></span></p>
   </section>
-  <section id="admin" class="painel" hidden><h2>Administrador</h2><p>Você tem acesso total e não depende de assinatura. Para atualizar os dados, rode <code>python geral/importar.py</code> e suba a pasta de dados.</p></section>
+
+  <section id="planos" class="painel" hidden>
+    <h2>Assine o Premium com Pix</h2>
+    <p>Pague pelo Pix e o acesso é liberado após a confirmação. Sem cartão e sem cobrança automática.</p>
+    <div class="planos">
+      <article class="plano"><h3>Mensal</h3><p class="preco"><span id="pm"></span><small>/ 30 dias</small></p><p><button class="botao" data-plano="mensal">Pagar com Pix</button></p></article>
+      <article class="plano destaque"><span class="tag ouro" id="selo"></span><h3>Anual</h3><p class="preco"><span id="pa"></span><small>/ 365 dias</small></p><p><button class="botao" data-plano="anual">Pagar com Pix</button></p></article>
+    </div>
+    <div id="checkout" class="painel" hidden>
+      <h3 id="ck-titulo"></h3>
+      <ol class="aviso">
+        <li>No app do seu banco, escolha <b>Pix → Pix Copia e Cola</b> e cole o código abaixo.</li>
+        <li>Confira o valor e a identificação do recebedor e pague.</li>
+        <li>Volte aqui e clique em <b>Já paguei</b>. Conferimos o Pix e liberamos o acesso.</li>
+      </ol>
+      <textarea id="ck-codigo" readonly rows="4"></textarea>
+      <p><button class="botao sec" id="ck-copiar">Copiar código</button> <button class="botao" id="ck-paguei">Já paguei</button> <span id="ck-msg" class="aviso"></span></p>
+      <p class="aviso" id="ck-ref"></p>
+    </div>
+  </section>
+
+  <section id="admin" class="painel" hidden><h2>Administrador</h2><p>Você tem acesso total e não depende de assinatura. <a class="botao" href="admin.html">Abrir painel do administrador</a></p></section>
 </main>
 <script src="assets/config.js"></script>
 <script src="assets/comum.js"></script>
@@ -39,18 +62,45 @@
 <script>
 cabecalho("");
 $("btn-fgf").href = CONFIG.URL_FGF;
+document.querySelectorAll(".demo-min").forEach(e => e.textContent = CONFIG.DEMO_MINUTOS);
+const P = CONFIG.PLANOS; $("pm").textContent = brl(P.mensal.valor); $("pa").textContent = brl(P.anual.valor);
+$("selo").textContent = "Economize " + brl(economiaAnual()) + " (" + descontoAnual() + "%)";
+const dataBR = d => String(d).slice(0, 10).split("-").reverse().join("/");
+let pedido = null;
+
 exigirLogin().then(s => {
   $("ola").textContent = "Olá, " + s.nome.split(" ")[0] + "!";
-  const admin = s.papel === "admin";
-  $("status").textContent = admin ? "Conta de administrador" : (s.premium ? "Plano Premium ativo" + (s.assinatura_ate ? " até " + s.assinatura_ate.split("-").reverse().join("/") : "") : "Plano gratuito");
+  const admin = s.papel === "admin", demo = !!s.demo_ate, assinante = !!s.assinatura_ate && s.premium && !admin;
+  $("status").textContent = admin ? "Conta de administrador" : demo ? "Demonstração completa ativa" : assinante ? (s.assinatura_ate >= "2090" ? "Acesso Premium vitalício" : "Plano Premium ativo até " + dataBR(s.assinatura_ate)) : "Plano gratuito";
   $("admin").hidden = !admin;
-  if (!s.premium) {
-    $("limite").hidden = false; $("limite").textContent = "No plano gratuito você vê o top " + CONFIG.LIMITE_GRATIS_RANKING + " do ranking e a Série A.";
-    $("planos").hidden = false; $("preco").textContent = CONFIG.PRECO; $("periodo").textContent = CONFIG.PERIODO;
-    $("cta").innerHTML = CONFIG.CHECKOUT_URL ? `<a class="botao grande" href="${CONFIG.CHECKOUT_URL}">Assinar o Premium</a>`
-      : `<span class="tag">O pagamento será liberado em breve</span> Avise-me em <a href="mailto:${CONFIG.EMAIL}?subject=Lista%20de%20espera%20Premium">${CONFIG.EMAIL}</a>.`;
+  if (assinante && s.dias_restantes != null && s.dias_restantes <= 5)
+    $("aviso-prazo").innerHTML = `<div class="banner-premium"><b>⏰ Seu acesso termina ${s.dias_restantes === 0 ? "hoje" : "em " + s.dias_restantes + " dia(s)"} (${dataBR(s.assinatura_ate)}).</b> Renove abaixo para não perder o acesso.</div>`;
+  if (!s.premium || demo || assinante) {
+    $("planos").hidden = false;
+    if (assinante) $("planos").querySelector("h2").textContent = "Renovar ou trocar de plano";
   }
+  if (!s.premium && !admin) { $("limite").hidden = false; $("limite").textContent = "No plano gratuito você vê o top " + CONFIG.LIMITE_GRATIS_RANKING + " do ranking e a Série A."; }
+  if (!s.premium && !admin && !s.demo_usada) {
+    $("demo").hidden = false;
+    if (s.demo_pedida) { $("btn-demo").disabled = true; $("demo-msg").textContent = "Pedido enviado. Você será avisado quando for liberado."; }
+  }
+  const q = new URLSearchParams(location.search).get("plano"); if (P[q] && !admin) setTimeout(() => iniciar(q), 300);
 }).catch(() => {});
+
+$("btn-demo").onclick = async () => { $("btn-demo").disabled = true; try { const r = await enviar("api/demo.php"); $("demo-msg").textContent = r.mensagem; } catch (e) { $("demo-msg").textContent = e.message; } };
+
+async function iniciar(plano) {
+  $("ck-msg").textContent = "";
+  try {
+    pedido = await enviar("api/pix.php", { acao: "criar", plano });
+    $("checkout").hidden = false; $("ck-titulo").textContent = `Plano ${P[plano].nome} — ${brl(pedido.valor)} (${pedido.dias} dias)`;
+    $("ck-codigo").value = pedido.copia_cola; $("ck-ref").textContent = "Referência do pedido: " + pedido.referencia; $("ck-paguei").disabled = false;
+    $("checkout").scrollIntoView({ behavior: "smooth" });
+  } catch (e) { $("checkout").hidden = false; $("ck-titulo").textContent = "Não foi possível gerar o Pix"; $("ck-codigo").value = ""; $("ck-msg").textContent = e.message; $("ck-paguei").disabled = true; }
+}
+document.querySelectorAll("[data-plano]").forEach(b => b.onclick = () => iniciar(b.dataset.plano));
+$("ck-copiar").onclick = async () => { try { await navigator.clipboard.writeText($("ck-codigo").value); $("ck-msg").textContent = "Código copiado."; } catch (e) { $("ck-codigo").select(); $("ck-msg").textContent = "Selecione e copie o código."; } };
+$("ck-paguei").onclick = async () => { $("ck-paguei").disabled = true; try { const r = await enviar("api/pix.php", { acao: "avisar", id: pedido.id }); $("ck-msg").textContent = r.mensagem; } catch (e) { $("ck-msg").textContent = e.message; $("ck-paguei").disabled = false; } };
 </script>
 </body>
 </html>

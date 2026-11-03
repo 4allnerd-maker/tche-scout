@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Administrador · Tchê Scout</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/logo.svg">
+<link rel="stylesheet" href="assets/estilo.css">
+</head>
+<body>
+<main>
+  <h1>Administrador</h1>
+  <p class="sub" id="sub">Carregando…</p>
+  <section class="painel"><h2>Pagamentos Pix aguardando conferência <span class="tag" id="n-pg"></span></h2>
+    <p class="aviso">Confira o Pix no app do banco (valor e referência) e clique em confirmar: o acesso é liberado pelos dias do plano.</p>
+    <div class="tabela-wrap"><table id="t-pg"><thead></thead><tbody></tbody></table></div></section>
+  <section class="painel"><h2>Pedidos de demonstração <span class="tag" id="n-demo"></span></h2>
+    <div class="tabela-wrap"><table id="t-demo"><thead></thead><tbody></tbody></table></div></section>
+  <section class="painel"><h2>Contatos: apoio, parcerias e clubes <span class="tag" id="n-int"></span></h2>
+    <div class="tabela-wrap"><table id="t-int"><thead></thead><tbody></tbody></table></div></section>
+  <section class="painel"><h2>Liberar acesso manualmente</h2>
+    <div class="filtros"><div><label for="c-email">E-mail do usuário</label><input id="c-email" type="email"></div>
+    <div><label for="c-dias">Dias de acesso</label><input id="c-dias" type="number" min="1" max="400" value="30"></div>
+    <div><label>&nbsp;</label><label class="aceite" style="margin:.3rem 0"><input id="c-vit" type="checkbox"> Acesso vitalício (apoiador/investidor)</label></div>
+    <div style="align-self:end"><button class="botao" id="c-ok">Liberar</button></div></div><p class="aviso" id="c-msg"></p></section>
+  <section class="painel"><h2>Usuários <span class="tag" id="n-us"></span></h2>
+    <div class="tabela-wrap"><table id="t-us"><thead></thead><tbody></tbody></table></div></section>
+</main>
+<script src="assets/config.js"></script>
+<script src="assets/comum.js"></script>
+<script src="assets/auth.js"></script>
+<script>
+cabecalho("");
+const dh = d => d ? String(d).slice(0, 16).replace("T", " ").split(" ").map((p, i) => i === 0 ? p.split("-").reverse().join("/") : p).join(" ") : "–";
+const tabela = (id, cols, linhas) => { $(id).querySelector("thead").innerHTML = "<tr>" + cols.map(c => `<th class="l">${c}</th>`).join("") + "</tr>";
+  $(id).querySelector("tbody").innerHTML = linhas.join("") || `<tr><td class="l" colspan="${cols.length}" style="color:var(--soft)">Nada por aqui.</td></tr>`; };
+async function carregar() {
+  const d = await enviar("api/admin.php", { acao: "listar" });
+  $("sub").textContent = "Atualizado em " + dh(d.agora);
+  $("n-pg").textContent = d.pagamentos.length;
+  tabela("t-pg", ["Quando", "Cliente", "Plano", "Valor", "Situação", ""], d.pagamentos.map(p => `<tr><td class="l">${dh(p.criado_em)}</td><td class="l">${esc(p.nome)}<br><small>${esc(p.email)}</small></td>
+    <td class="l">${esc(p.plano)} (${p.dias} dias)</td><td class="l">${brl(+p.valor)}</td><td class="l">${p.status === "informado" ? "<b style='color:var(--ouro)'>Informou que pagou</b>" : "Aguardando"}</td>
+    <td class="l"><button class="botao" data-pg="${p.id}">Confirmar pagamento</button></td></tr>`));
+  const pend = d.usuarios.filter(u => u.demo_pedido_em && !u.demo_ate); $("n-demo").textContent = pend.length;
+  tabela("t-demo", ["Pedido em", "Usuário", ""], pend.map(u => `<tr><td class="l">${dh(u.demo_pedido_em)}</td><td class="l">${esc(u.nome)}<br><small>${esc(u.email)}</small></td>
+    <td class="l"><button class="botao" data-demo="${u.id}">Liberar ${CONFIG.DEMO_MINUTOS} min</button></td></tr>`));
+  $("n-int").textContent = d.interesses.length;
+  tabela("t-int", ["Quando", "Tipo", "Contato", "Organização", "Mensagem"], d.interesses.map(i => `<tr><td class="l">${dh(i.criado_em)}</td><td class="l"><b>${esc(i.tipo)}</b></td><td class="l">${esc(i.nome)}<br><small>${esc(i.email)}</small></td><td class="l">${esc(i.organizacao)}</td><td class="l" style="white-space:normal;min-width:240px">${esc(i.mensagem)}</td></tr>`));
+  $("n-us").textContent = d.usuarios.length;
+  tabela("t-us", ["Nome", "E-mail", "Papel", "Assinatura até", "Demonstração", "Criado em", "Último acesso"], d.usuarios.map(u => `<tr><td class="l">${esc(u.nome)}</td><td class="l">${esc(u.email)}</td><td class="l">${u.papel}</td>
+    <td class="l">${u.assinatura_ate ? dh(u.assinatura_ate).slice(0, 10) : "–"}</td><td class="l">${u.demo_ate ? dh(u.demo_ate) : (u.demo_pedido_em ? "pedida" : "–")}</td><td class="l">${dh(u.criado_em)}</td><td class="l">${dh(u.ultimo_login)}</td></tr>`));
+  document.querySelectorAll("[data-pg]").forEach(b => b.onclick = async () => { b.disabled = true; await enviar("api/admin.php", { acao: "confirmar_pagamento", id: +b.dataset.pg }); carregar(); });
+  document.querySelectorAll("[data-demo]").forEach(b => b.onclick = async () => { b.disabled = true; await enviar("api/admin.php", { acao: "liberar_demo", id: +b.dataset.demo, minutos: CONFIG.DEMO_MINUTOS }); carregar(); });
+}
+$("c-ok").onclick = async () => { try { const r = await enviar("api/admin.php", { acao: "conceder", email: $("c-email").value, dias: +$("c-dias").value, vitalicio: $("c-vit").checked }); $("c-msg").textContent = "Liberado até " + dh(r.assinatura_ate).slice(0, 10); carregar(); } catch (e) { $("c-msg").textContent = e.message; } };
+exigirLogin().then(s => { if (s.papel !== "admin") { location.href = "painel.html"; throw new Error("nao-admin"); } return carregar(); })
+  .catch(e => { if (!["login", "nao-admin"].includes(e.message)) $("sub").textContent = e.message; });
+</script>
+</body>
+</html>

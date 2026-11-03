@@ -9,7 +9,7 @@ function cabecalho(ativo) {
   const link = (id, href, txt) => `<a class="${ativo === id ? "ativo" : ""}" href="${href}">${txt}</a>`;
   document.body.insertAdjacentHTML("afterbegin", `<header>
     <img src="assets/logo.svg" alt="Tchê Scout"><a class="marca" href="index.html">Tchê <span>Scout</span></a>
-    <nav>${link("home", "index.html", "Início")}${link("ranking", "ranking.html", "Ranking")}${link("jogadores", "jogadores.html", "Jogadores")}
+    <nav>${link("home", "index.html", "Início")}${link("ranking", "ranking.html", "Ranking")}${link("jogadores", "jogadores.html", "Jogadores")}${link("apoie", "apoie.html", "Apoie")}
     <a href="${CONFIG.URL_FGF}" target="_blank" rel="noopener">Módulo FGF ↗</a><span id="auth-nav" class="auth-nav"></span></nav></header>`);
   document.body.insertAdjacentHTML("beforeend", `<footer>Estatísticas de scout — não é conteúdo de apostas. Dados: súmulas oficiais da FGF e FootyStats.
     Projeto independente, sem vínculo com federações ou clubes.<br>

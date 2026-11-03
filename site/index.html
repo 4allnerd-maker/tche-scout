@@ -78,17 +78,24 @@
   </section>
 
   <h2 class="sec c" id="planos">Planos</h2>
-  <section class="planos">
+  <p class="sub c">Pagamento por <b>Pix</b>, adiantado. Sem cartão de crédito, sem assinatura recorrente: pagou, liberou; quando o prazo acabar, você avisa e renova se quiser.</p>
+  <section class="planos tres">
     <article class="plano">
       <h3>Gratuito</h3><p class="preco">R$ 0</p>
-      <ul><li>Módulo FGF completo</li><li>Conta gratuita com vitrine do módulo Premium</li><li>Top 25 do ranking e a Série A</li></ul>
+      <ul><li>Módulo FGF completo</li><li>Conta com vitrine do módulo Premium</li><li>Top 25 do ranking e a Série A</li><li>Pedido de <b>demonstração completa</b> de <span class="demo-min"></span> minutos</li></ul>
       <p><a class="botao sec" href="entrar.html?cadastro=1">Criar conta grátis</a></p>
     </article>
+    <article class="plano">
+      <h3>Mensal</h3><p class="preco"><span id="preco-mensal"></span><small>/ 30 dias</small></p>
+      <ul><li>Acesso completo por 30 dias após a confirmação do Pix</li><li>Ranking completo de todas as ligas</li><li>Ficha estilo videogame de todos os atletas</li><li>Índices, papel no time e classes A–D</li></ul>
+      <p><a class="botao" href="entrar.html?cadastro=1&plano=mensal">Assinar com Pix</a></p>
+    </article>
     <article class="plano destaque">
-      <span class="tag ouro">Recomendado</span>
-      <h3>Premium</h3><p class="preco"><span id="preco"></span><small id="periodo"></small></p>
-      <ul><li>Tudo do plano gratuito</li><li>Ranking completo de todas as ligas</li><li>Ficha estilo videogame de todos os atletas</li><li>Índices, papel no time e classes A–D</li><li>Atualizações de dados</li></ul>
-      <p><a class="botao" id="btn-assinar" href="entrar.html?cadastro=1">Quero ser Premium</a></p>
+      <span class="tag ouro" id="selo-anual"></span>
+      <h3>Anual</h3><p class="preco"><span id="preco-anual"></span><small>/ 365 dias</small></p>
+      <p class="aviso" id="equiv-anual"></p>
+      <ul><li>Tudo do plano mensal</li><li>Um único Pix por ano, com grande desconto</li><li>Sem se preocupar com renovação todo mês</li></ul>
+      <p><a class="botao" href="entrar.html?cadastro=1&plano=anual">Assinar o anual com Pix</a></p>
     </article>
   </section>
 
@@ -97,7 +104,8 @@
     <details><summary>De onde vêm os dados?</summary><p>Do módulo FGF, direto das súmulas oficiais da Federação Gaúcha de Futebol; do módulo Premium, de estatísticas de scout do FootyStats. Tudo é reprocessado e padronizado pelo Tchê Scout.</p></details>
     <details><summary>A nota é absoluta?</summary><p>Não. É uma posição relativa entre os atletas da mesma função que estão no banco de dados. Por isso a classe da competição acompanha o OVR.</p></details>
     <details><summary>Tem conteúdo de apostas?</summary><p>Não. É um projeto de análise de desempenho, sem odds nem apostas.</p></details>
-    <details><summary>Posso cancelar quando quiser?</summary><p>Sim. A assinatura não tem fidelidade; o acesso vale até o fim do período pago.</p></details>
+    <details><summary>Como funciona o pagamento?</summary><p>Por Pix, adiantado: você escolhe o plano, paga no app do seu banco e o acesso é liberado por 30 dias (mensal) ou 365 dias (anual) após a confirmação. Não há cartão nem cobrança automática; perto do fim do prazo o painel avisa para você renovar.</p></details>
+    <details><summary>Dá para testar antes de pagar?</summary><p>Sim. Ao criar a conta você já vê uma vitrine do módulo Premium e pode pedir uma demonstração completa de 30 minutos, liberada por nós.</p></details>
     <details><summary>Quem está por trás?</summary><p>João Paulo Pahim Moreira, o “Lucho Pahim”, analista de dados independente e scout.</p></details>
   </section>
 </main>
@@ -107,9 +115,11 @@
 <script>
 cabecalho("home");
 $("btn-fgf").href = CONFIG.URL_FGF;
-$("preco").textContent = CONFIG.PRECO; $("periodo").textContent = CONFIG.PERIODO;
-if (CONFIG.CHECKOUT_URL) $("btn-assinar").textContent = "Assinar o Premium";
-else $("btn-assinar").textContent = "Entrar na lista de espera";
+const P = CONFIG.PLANOS;
+$("preco-mensal").textContent = brl(P.mensal.valor); $("preco-anual").textContent = brl(P.anual.valor);
+$("selo-anual").textContent = "Economize " + brl(economiaAnual()) + " (" + descontoAnual() + "%)";
+$("equiv-anual").textContent = "Equivale a " + brl(P.anual.valor / 12) + " por mês — contra " + brl(P.mensal.valor) + " no mensal.";
+document.querySelectorAll(".demo-min").forEach(e => e.textContent = CONFIG.DEMO_MINUTOS);
 </script>
 </body>
 </html>

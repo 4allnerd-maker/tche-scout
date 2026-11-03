@@ -62,3 +62,8 @@ Podemos atualizar esta política. A data de revisão fica no topo da página.
 ## 10. Conta de usuário e assinatura
 
 Ao criar uma conta no módulo Premium, tratamos **nome, e-mail e senha** (armazenada apenas de forma criptografada, com hash) para identificá-lo e liberar o acesso, e **dados de assinatura** (plano e validade). Os pagamentos são processados por [ ] gateway de pagamento escolhido; dados de cartão não passam nem ficam guardados no Tchê Scout. Mantemos esses dados enquanto a conta existir e pelo prazo exigido por lei após o cancelamento. Você pode pedir a exclusão da conta em luchopahim@tchescout.com.br.
+
+
+## 11. Formulário de apoio e contato
+
+O formulário da página "Apoie o projeto" coleta nome, e-mail, organização (opcional) e mensagem para responder ao seu contato. Os dados ficam guardados enquanto a conversa estiver ativa e são acessados apenas pelo responsável pelo projeto.

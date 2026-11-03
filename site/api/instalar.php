@@ -24,6 +24,8 @@ $db->exec(
         senha_hash VARCHAR(255) NOT NULL,
         papel ENUM(\'usuario\',\'admin\') NOT NULL DEFAULT \'usuario\',
         assinatura_ate DATE NULL,
+        demo_pedido_em DATETIME NULL,
+        demo_ate DATETIME NULL,
         aceite_em DATETIME NOT NULL,
         criado_em DATETIME NOT NULL,
         ultimo_login DATETIME NULL,
@@ -37,6 +39,33 @@ $db->exec(
         tipo VARCHAR(20) NOT NULL,
         criado_em DATETIME NOT NULL,
         KEY idx_busca (ip, tipo, criado_em)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
+);
+$db->exec(
+    'CREATE TABLE IF NOT EXISTS pagamentos (
+        id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        usuario_id INT UNSIGNED NOT NULL,
+        plano VARCHAR(10) NOT NULL,
+        valor DECIMAL(10,2) NOT NULL,
+        dias INT NOT NULL,
+        status ENUM(\'aguardando\',\'informado\',\'confirmado\') NOT NULL DEFAULT \'aguardando\',
+        criado_em DATETIME NOT NULL,
+        informado_em DATETIME NULL,
+        confirmado_em DATETIME NULL,
+        KEY idx_status (status, criado_em),
+        KEY idx_usuario (usuario_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
+);
+$db->exec(
+    'CREATE TABLE IF NOT EXISTS interesses (
+        id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        nome VARCHAR(80) NOT NULL,
+        email VARCHAR(120) NOT NULL,
+        tipo VARCHAR(20) NOT NULL,
+        organizacao VARCHAR(120) NOT NULL DEFAULT \'\',
+        mensagem TEXT NULL,
+        criado_em DATETIME NOT NULL,
+        KEY idx_criado (criado_em)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
 );
 echo "Tabelas prontas.\n";

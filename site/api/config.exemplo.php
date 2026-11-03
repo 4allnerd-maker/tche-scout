@@ -19,6 +19,13 @@ return [
     // Pasta FORA do site onde ficam os JSONs gerados por geral/importar.py (ranking.json, ligas.json, times.json, jogadores/...)
     'pasta_dados' => '/home/uXXXX/dados_tchescout',
 
+    // Pix (pagamento adiantado, sem cartão). Use uma chave aleatória ou o CNPJ para não expor CPF/telefone.
+    'pix_chave' => '',
+    'pix_nome' => 'TCHE SCOUT',     // nome do recebedor (até 25 letras, sem acento)
+    'pix_cidade' => 'PELOTAS',      // cidade (até 15 letras, sem acento)
+    'preco_mensal' => 150.00,       // 30 dias
+    'preco_anual' => 999.00,        // 365 dias
+
     // Limites do plano gratuito
     'gratis_ranking' => 25,
     'gratis_min_minutos' => 900,

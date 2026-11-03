@@ -136,3 +136,10 @@ main.estreito{max-width:480px}
 .texto table{margin:.6rem 0}.texto th,.texto td{border:1px solid var(--borda);text-align:left;white-space:normal;padding:.4rem .6rem}
 code{background:#0D1B14;border:1px solid var(--borda);border-radius:6px;padding:.05rem .4rem}
 @media(max-width:700px){.hero-l{grid-template-columns:1fr;text-align:center}.hero-logo{max-width:140px;margin:0 auto}.hero-l h1{font-size:1.8rem}}
+/* planos Pix, demo, checkout, admin */
+.modulos.quatro{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.planos.tres{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.faixa-demo{background:#F2C23022;border-bottom:1px solid #F2C23066;text-align:center;padding:.4rem;font-size:.9rem}
+.faixa-demo a{color:var(--ouro)}
+textarea{width:100%;background:#0D1B14;color:var(--txt);border:1px solid var(--borda);border-radius:8px;padding:.6rem;font:.8rem/1.4 ui-monospace,Consolas,monospace;resize:vertical}
+ol.aviso{padding-left:1.2rem;line-height:1.6}
