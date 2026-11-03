@@ -16,6 +16,8 @@
 .slot .f{width:100%;aspect-ratio:3/3.2;background:#16281F center/cover no-repeat;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#ffffff55;font-size:1.3rem}
 .slot .o{font-weight:800;font-size:1.05rem;line-height:1.1}
 .slot .n{font-size:.68rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 .15rem}
+.slot .c{position:relative}
+.slot .fn{position:absolute;top:3px;left:3px;background:var(--cor);color:#06150c;font-size:.6rem;font-weight:800;border-radius:4px;padding:0 .25rem;line-height:1.3}
 .slot.vazio .c{border-style:dashed;opacity:.8}
 .lista-pick{max-height:55vh;overflow:auto;margin:.5rem 0}
 .lista-pick div{display:grid;grid-template-columns:44px 1fr auto;gap:.5rem;padding:.4rem .5rem;border-bottom:1px solid var(--borda);cursor:pointer;align-items:center}
@@ -43,8 +45,9 @@
 <dialog id="pick" class="larga">
   <h3 id="pickTit" style="margin:.1rem 0"></h3>
   <p style="display:flex;gap:.5rem;flex-wrap:wrap;margin:.3rem 0">
-    <input id="pickBusca" type="search" placeholder="Buscar jogador…" style="flex:1;min-width:140px">
-    <label style="display:flex;align-items:center;gap:.3rem"><input type="checkbox" id="pickTodos"> todos os clubes da liga</label></p>
+    <select id="pickFunc" title="Função deste lugar em campo"></select><input id="pickBusca" type="search" placeholder="Buscar jogador…" style="flex:1;min-width:140px">
+    <label style="display:flex;align-items:center;gap:.3rem"><input type="checkbox" id="pickTodos"> todos os clubes da liga</label>
+    <label style="display:flex;align-items:center;gap:.3rem"><input type="checkbox" id="pickQualquer"> qualquer posição</label></p>
   <div class="lista-pick" id="pickLista"></div>
   <p style="display:flex;gap:.5rem;flex-wrap:wrap;justify-content:flex-end;margin:0">
     <button id="pkFoto">📷 Foto</button><button id="pkFicha">Ver ficha</button><button id="pkTira">Remover da formação</button><button id="pkFecha">Fechar</button></p>
@@ -57,19 +60,31 @@
 <script src="assets/card.js"></script>
 <script>
 cabecalho("formacao");
-/* Cada formação: linhas do goleiro ao ataque. */
-const FORMACOES = {
-  "4-3-3": [["Defensor", 4], ["Meia", 3], ["Atacante", 3]], "4-4-2": [["Defensor", 4], ["Meia", 4], ["Atacante", 2]],
-  "4-2-3-1": [["Defensor", 4], ["Meia", 2], ["Meia", 3], ["Atacante", 1]], "3-5-2": [["Defensor", 3], ["Meia", 5], ["Atacante", 2]],
-  "3-4-3": [["Defensor", 3], ["Meia", 4], ["Atacante", 3]], "4-5-1": [["Defensor", 4], ["Meia", 5], ["Atacante", 1]],
-  "5-3-2": [["Defensor", 5], ["Meia", 3], ["Atacante", 2]], "4-1-4-1": [["Defensor", 4], ["Meia", 1], ["Meia", 4], ["Atacante", 1]],
+/* Funções em campo: [nome, grupo do banco (a fonte só separa Goleiro/Defensor/Meia/Atacante), lado]. */
+const FUNCOES = {
+  GOL: ["Goleiro", "Goleiro", 0], ZAG: ["Zagueiro", "Defensor", 0], ZE: ["Zagueiro esquerdo", "Defensor", -1], ZD: ["Zagueiro direito", "Defensor", 1],
+  LE: ["Lateral esquerdo", "Defensor", -1], LD: ["Lateral direito", "Defensor", 1], ALE: ["Ala esquerdo", "Meia", -1], ALD: ["Ala direito", "Meia", 1],
+  VOL: ["Volante", "Meia", 0], MC: ["Meio-campista", "Meia", 0], MEI: ["Meia armador", "Meia", 0], ME: ["Meia esquerda", "Meia", -1], MD: ["Meia direita", "Meia", 1],
+  PE: ["Ponta esquerda", "Atacante", -1], PD: ["Ponta direita", "Atacante", 1], SA: ["Segundo atacante", "Atacante", 0], CA: ["Centroavante", "Atacante", 0],
 };
-const ROTULO_POS = { Goleiro: "Goleiro", Defensor: "Defensor", Meia: "Meia", Atacante: "Atacante" };
+const GRUPOS_FUNC = { Goleiro: ["GOL"], Defensor: ["ZAG", "ZE", "ZD", "LE", "LD"], Meia: ["VOL", "MC", "MEI", "ME", "MD", "ALE", "ALD"], Atacante: ["PE", "PD", "SA", "CA"] };
+/* Cada formação: linhas do goleiro ao ataque, funções da esquerda para a direita. */
+const FORMACOES = {
+  "4-3-3": [["LE", "ZE", "ZD", "LD"], ["MC", "VOL", "MC"], ["PE", "CA", "PD"]],
+  "4-4-2": [["LE", "ZE", "ZD", "LD"], ["ME", "VOL", "MC", "MD"], ["CA", "CA"]],
+  "4-2-3-1": [["LE", "ZE", "ZD", "LD"], ["VOL", "VOL"], ["ME", "MEI", "MD"], ["CA"]],
+  "3-5-2": [["ZE", "ZAG", "ZD"], ["ALE", "MC", "VOL", "MC", "ALD"], ["CA", "CA"]],
+  "3-4-3": [["ZE", "ZAG", "ZD"], ["ALE", "VOL", "MC", "ALD"], ["PE", "CA", "PD"]],
+  "4-5-1": [["LE", "ZE", "ZD", "LD"], ["ME", "MC", "VOL", "MC", "MD"], ["CA"]],
+  "5-3-2": [["LE", "ZE", "ZAG", "ZD", "LD"], ["MC", "VOL", "MC"], ["CA", "CA"]],
+  "4-1-4-1": [["LE", "ZE", "ZD", "LD"], ["VOL"], ["ME", "MC", "MC", "MD"], ["CA"]],
+  "4-4-2 losango": [["LE", "ZE", "ZD", "LD"], ["VOL"], ["MC", "MC"], ["MEI"], ["CA", "CA"]],
+};
 let INDICE = [], DADOS = [], SLOTS = [], ESC = [], SEL = -1;   // SLOTS: {pos,x,y}; ESC: jogador ou null por slot
 
 function layout(nome) {
-  const linhas = [["Goleiro", 1], ...FORMACOES[nome]], n = linhas.length, out = [];
-  linhas.forEach(([pos, q], r) => { const y = 90 - r * (78 / (n - 1)); for (let i = 0; i < q; i++) out.push({ pos, x: 100 * (i + 1) / (q + 1), y }); });
+  const linhas = [["GOL"], ...FORMACOES[nome]], n = linhas.length, out = [];
+  linhas.forEach((fs, r) => { const y = 90 - r * (78 / (n - 1)); fs.forEach((f, i) => out.push({ f, pos: FUNCOES[f][1], x: 100 * (i + 1) / (fs.length + 1), y })); });
   return out;
 }
 const iniciais = j => (j.nome_curto || j.nome).split(" ").map(p => p[0]).slice(0, 2).join("").toUpperCase();
@@ -83,7 +98,7 @@ async function iniciar() {
   $("fLiga").onchange = carregaLiga; $("fClube").onchange = () => { ESC = SLOTS.map(() => null); auto(); };
   $("fForm").onchange = trocaFormacao; $("bAuto").onclick = auto; $("bLimpa").onclick = () => { ESC = SLOTS.map(() => null); desenha(); };
   $("bExporta").onclick = exporta; $("fCrit").onchange = auto;
-  $("pickBusca").oninput = lista; $("pickTodos").onchange = lista; $("pkFecha").onclick = () => $("pick").close();
+  $("pickBusca").oninput = lista; $("pickTodos").onchange = lista; $("pickQualquer").onchange = lista; $("pickFunc").onchange = mudaFuncao; $("pkFecha").onclick = () => $("pick").close();
   $("pkTira").onclick = () => { ESC[SEL] = null; $("pick").close(); desenha(); };
   $("pkFicha").onclick = () => { const j = ESC[SEL]; if (j) { $("pick").close(); abrirFicha(j, "aie"); } };
   $("pkFoto").onclick = () => { if (ESC[SEL]) $("pkArq").click(); };
@@ -113,17 +128,30 @@ function desenha() {
   const corP = j => COR_POS[j.posicao] || "#9FB3A6";
   $("campo").innerHTML = SLOTS.map((s, i) => { const j = ESC[i], f = j && fotoSalva(j.id);
     return j ? `<div class="slot" style="left:${s.x}%;top:${s.y}%;--cor:${corP(j)}" data-i="${i}"><div class="c"><div class="f" style="${f ? `background-image:url(${f})` : ""}">${f ? "" : esc(iniciais(j))}</div>
-      <div class="o" style="color:${corNota(j.ovr)}">${j.ovr ?? "—"}</div><div class="n" title="${esc(j.nome)}">${esc(j.nome_curto || j.nome)}</div></div></div>`
-      : `<div class="slot vazio" style="left:${s.x}%;top:${s.y}%;--cor:${COR_POS[s.pos]}" data-i="${i}"><div class="c"><div class="f">+</div><div class="n">${ROTULO_POS[s.pos]}</div></div></div>`; }).join("");
+      <span class="fn">${s.f}</span><div class="o" style="color:${corNota(j.ovr)}">${j.ovr ?? "—"}</div><div class="n" title="${esc(j.nome)}">${esc(j.nome_curto || j.nome)}</div></div></div>`
+      : `<div class="slot vazio" style="left:${s.x}%;top:${s.y}%;--cor:${COR_POS[s.pos]}" data-i="${i}"><div class="c"><div class="f">+<span class="fn">${s.f}</span></div><div class="n">${FUNCOES[s.f][0]}</div></div></div>`; }).join("");
   $("campo").querySelectorAll(".slot").forEach(el => el.onclick = () => abrePick(+el.dataset.i));
   const com = ESC.filter(j => j && j.ovr != null); $("resumo").textContent = `${ESC.filter(Boolean).length}/11 · OVR médio ${com.length ? Math.round(com.reduce((a, j) => a + j.ovr, 0) / com.length) : "—"}`;
 }
-function abrePick(i) { SEL = i; $("pickTit").textContent = `Escolher ${ROTULO_POS[SLOTS[i].pos].toLowerCase()}`; $("pickBusca").value = ""; $("pickTodos").checked = false; lista(); $("pick").showModal(); }
+function abrePick(i) {
+  SEL = i; $("pickBusca").value = ""; $("pickTodos").checked = false; $("pickQualquer").checked = false;
+  $("pickFunc").innerHTML = Object.entries(GRUPOS_FUNC).map(([g, fs]) => `<optgroup label="${g}">${fs.map(f => `<option value="${f}">${FUNCOES[f][0]} (${f})</option>`).join("")}</optgroup>`).join("");
+  $("pickFunc").value = SLOTS[i].f; titulo(); lista(); $("pick").showModal();
+}
+const titulo = () => { $("pickTit").textContent = `Escolher: ${FUNCOES[SLOTS[SEL].f][0]}`; };
+/* Muda a função do lugar (ex.: de zagueiro para lateral direito); laterais vão para o lado certo do campo. */
+function mudaFuncao() {
+  const s = SLOTS[SEL], f = $("pickFunc").value, lado = FUNCOES[f][2];
+  const outro = SLOTS.find(t => t !== s && t.y === s.y && t.f === f);
+  if (outro) { const x = outro.x; outro.x = s.x; s.x = x; outro.f = s.f; outro.pos = s.pos; } else if (lado) s.x = lado < 0 ? Math.min(s.x, 14) : Math.max(s.x, 86);
+  s.f = f; s.pos = FUNCOES[f][1];
+  titulo(); lista(); desenha();
+}
 function lista() {
   const s = SLOTS[SEL], q = $("pickBusca").value.trim().toLowerCase(), todos = $("pickTodos").checked, usados = new Set(ESC.filter((j, k) => j && k !== SEL).map(j => j.id));
-  const arr = DADOS.filter(j => j.posicao === s.pos && (todos || j.clube === clube()) && !usados.has(j.id) && (!q || j.nome.toLowerCase().includes(q) || (j.nome_curto || "").toLowerCase().includes(q)))
+  const arr = DADOS.filter(j => ($("pickQualquer").checked || j.posicao === s.pos) && (todos || j.clube === clube()) && !usados.has(j.id) && (!q || j.nome.toLowerCase().includes(q) || (j.nome_curto || "").toLowerCase().includes(q)))
     .sort((a, b) => (b.min || 0) - (a.min || 0)).slice(0, 80);
-  $("pickLista").innerHTML = arr.map(j => `<div data-id="${j.id}"><b style="color:${corNota(j.ovr)}">${j.ovr ?? "—"}</b><span>${esc(j.nome_curto || j.nome)}${todos ? ` <small>· ${esc(j.clube)}</small>` : ""}</span><small>${fmt(j.min)} min</small></div>`).join("") || "<p class='aviso'>Nenhum jogador encontrado.</p>";
+  $("pickLista").innerHTML = arr.map(j => `<div data-id="${j.id}"><b style="color:${corNota(j.ovr)}">${j.ovr ?? "—"}</b><span>${esc(j.nome_curto || j.nome)}${todos ? ` <small>· ${esc(j.clube)}</small>` : ""}${$("pickQualquer").checked ? ` <small>· ${j.posicao}</small>` : ""}</span><small>${fmt(j.min)} min</small></div>`).join("") || "<p class='aviso'>Nenhum jogador encontrado.</p>";
   $("pickLista").querySelectorAll("div").forEach(el => el.onclick = () => { ESC[SEL] = DADOS.find(j => j.id === el.dataset.id); $("pick").close(); desenha(); });
 }
 
@@ -144,12 +172,13 @@ async function exporta() {
   for (let i = 0; i < SLOTS.length; i++) {
     const s = SLOTS[i], j = ESC[i], cx = campoX + 40 + (campoW - 80) * s.x / 100, cy = campoY + 60 + (campoH - 120) * (s.y - 12) / 78, px = cx - cw / 2, py = cy - ch / 2, cor = j ? (COR_POS[j.posicao] || "#9FB3A6") : "#ffffff66";
     x.fillStyle = "#0D1B14ee"; rr(x, px, py, cw, ch, 16); x.fill(); x.strokeStyle = cor; x.lineWidth = 4; if (!j) x.setLineDash([10, 8]); rr(x, px, py, cw, ch, 16); x.stroke(); x.setLineDash([]);
-    if (!j) { texto(x, "+", cx, cy + 14, { tam: 56, cor: "#ffffff66", al: "center" }); continue; }
+    if (!j) { texto(x, "+", cx, cy + 14, { tam: 56, cor: "#ffffff66", al: "center" }); texto(x, s.f, cx, cy + 60, { tam: 24, peso: 700, cor: "#ffffff88", al: "center" }); continue; }
     const foto = await carregaImagem(fotoSalva(j.id));
     x.save(); rr(x, px + 8, py + 8, cw - 16, 134, 10); x.clip(); x.fillStyle = "#16281F"; x.fillRect(px, py, cw, 150);
     if (foto) { const k = Math.max((cw - 16) / foto.width, 134 / foto.height); x.drawImage(foto, cx - foto.width * k / 2, py + 8 - (foto.height * k - 134) * 0.3, foto.width * k, foto.height * k); }
     else texto(x, iniciais(j), cx, py + 92, { tam: 56, peso: 800, cor: "#ffffff55", al: "center" });
     x.restore();
+    x.fillStyle = cor; rr(x, px + 12, py + 12, 52, 28, 6); x.fill(); texto(x, s.f, px + 38, py + 33, { tam: 20, peso: 800, cor: "#06150c", al: "center" });
     texto(x, j.ovr ?? "—", cx, py + 190, { tam: 46, peso: 800, cor: corNota(j.ovr), al: "center" });
     texto(x, j.nome_curto || j.nome, cx, py + 220, { tam: 21, peso: 700, al: "center", max: cw - 12 });
   }
