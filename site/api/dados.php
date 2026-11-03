@@ -11,7 +11,7 @@ if (!$u) {
 }
 
 $f = (string) ($_GET['f'] ?? '');
-if (!preg_match('#^(ranking|ligas|times|jogadores/[a-z0-9]+(-[a-z0-9]+)*)$#', $f)) {
+if (!preg_match('#^(ranking|ligas|colunas|times|jogadores/[a-z0-9]+(-[a-z0-9]+)*)$#', $f)) {
     responder(400, ['erro' => 'Pedido inválido.']);
 }
 
@@ -25,7 +25,7 @@ if (!$pasta || !$caminho || strpos($caminho, $pasta . DIRECTORY_SEPARATOR) !== 0
 $premium = tem_premium($u);
 header('Cache-Control: private, max-age=300');
 
-if ($premium || $f === 'ligas') {
+if ($premium || $f === 'ligas' || $f === 'colunas') {
     header('Content-Type: application/json; charset=utf-8');
     readfile($caminho);
     exit;

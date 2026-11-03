@@ -31,7 +31,44 @@ const CLASSE_TXT = { A: "Série A e Copa do Brasil", B: "Série B", C: "Série C
 const corNota = n => n == null ? "#6F8577" : n >= 85 ? "#2ECC71" : n >= 70 ? "#9BE564" : n >= 55 ? "#F2C230" : n >= 40 ? "#FF9F43" : "#FF5468";
 const selo = c => `<span class="selo classe-${c}" title="Classe da competição: ${CLASSE_TXT[c] || ""}">${c}</span>`;
 
-function abrirFicha(j) {
+let COLS_DEF = null, ABA_FICHA = "aie";
+async function colunasDef() {
+  if (!COLS_DEF) { try { COLS_DEF = await dados("colunas"); } catch (e) { COLS_DEF = { vca: [], eta: [] }; } }
+  return COLS_DEF;
+}
+const fmtV = (v, tipo) => v == null ? "–" : tipo === "pct" ? Math.round(v) + "%" : tipo === "int" ? Math.round(v).toLocaleString("pt-BR") : v.toLocaleString("pt-BR", { maximumFractionDigits: 2 });
+function grupos(def) { const m = new Map(); def.forEach((c, i) => { if (!m.has(c.grupo)) m.set(c.grupo, []); m.get(c.grupo).push(i); }); return m; }
+
+function htmlVCA(j, def) {
+  if (!j.vca) return "<p class='aviso'>Sem dados brutos para este atleta.</p>";
+  return `<p class="aviso">VCA · dados brutos da temporada: totais e porcentagens, sem ajuste por minutos.</p><div class="cats">` + [...grupos(def.vca)].filter(([g, ids]) =>
+    ids.some(i => j.vca[i] != null) && !(g === "Goleiro" && j.posicao !== "Goleiro")).map(([g, ids]) =>
+    `<div class="cat"><div class="cat-topo"><span>${g.toUpperCase()}</span></div>` + ids.map(i => { const c = def.vca[i], v = j.vca[i];
+      return `<div class="at"><span>${c.rotulo}</span><em></em><b style="color:var(--txt)">${fmtV(v, c.tipo)}</b>${c.tipo === "pct" && v != null ? `<i><u style="width:${Math.min(100, v)}%;background:var(--verde)"></u></i>` : ""}</div>`; }).join("") + "</div>").join("") + "</div>";
+}
+function htmlETA(j, def) {
+  if (!j.eta) return "<p class='aviso'>Sem dados por 90 minutos para este atleta.</p>";
+  const sem = !j.eta_pct;
+  return `<p class="aviso">ETA · taxas por 90 minutos. ${sem ? "Atleta com menos de 450 minutos: sem comparação com a função." : "A barra mostra a posição entre os " + j.posicao.toLowerCase() + "s do banco (verde = melhor). ↓ = menos é melhor."}</p><div class="cats">` + [...grupos(def.eta)].filter(([g, ids]) =>
+    ids.some(i => j.eta[i] != null) && !(g === "Goleiro" && j.posicao !== "Goleiro")).map(([g, ids]) =>
+    `<div class="cat"><div class="cat-topo"><span>${g.toUpperCase()}</span></div>` + ids.map(i => { const c = def.eta[i], v = j.eta[i], p = j.eta_pct ? j.eta_pct[i] : null;
+      return `<div class="at"><span>${c.rotulo}${c.menos_melhor ? " ↓" : ""}</span><em>${fmtV(v, c.tipo)}</em><b style="color:${corNota(p)}">${p ?? ""}</b>${p != null ? `<i><u style="width:${p}%;background:${corNota(p)}"></u></i>` : ""}</div>`; }).join("") + "</div>").join("") + "</div>";
+}
+
+async function abrirFicha(j, aba) {
+  if (aba) ABA_FICHA = aba;
+  const def = await colunasDef();
+  montarFicha(j);
+  const corpo = $("fichaCorpo"), secao = corpo.querySelector(".fifa > section");
+  const aie = secao.innerHTML;
+  const abas = `<div class="abas abas-ficha"><button data-a="aie">AIE · Ficha</button><button data-a="vca">VCA · Dados brutos</button><button data-a="eta">ETA · Por 90</button></div>`;
+  const mostrar = a => { ABA_FICHA = a; secao.innerHTML = abas + (a === "vca" ? htmlVCA(j, def) : a === "eta" ? htmlETA(j, def) : aie);
+    secao.querySelectorAll(".abas-ficha button").forEach(b => { b.classList.toggle("ativo", b.dataset.a === a); b.onclick = () => mostrar(b.dataset.a); }); };
+  mostrar(ABA_FICHA);
+  if (!$("ficha").open) $("ficha").showModal();
+}
+
+function montarFicha(j) {
   const cor = COR_POS[j.posicao] || "#9FB3A6", n = j.notas, cats = n ? n.categorias : {}, at = n ? n.atributos : {};
   const cats_exibir = j.posicao === "Goleiro" ? ["goleiro", "passe", "agressividade"] : [...ORDEM_CATS, "agressividade"];
   const val = (a) => { const v = j.valores?.[a]; if (v == null) return "–"; return a.endsWith("_pct") ? Math.round(v) + "%" : v.toLocaleString("pt-BR", { maximumFractionDigits: 2 }); };
@@ -68,5 +105,4 @@ function abrirFicha(j) {
       ${n ? `<p class="aviso">Notas de 30 a 99: posição do jogador entre os de mesma função (${j.posicao.toLowerCase()}s) em todas as ligas do banco, com 450+ minutos. O OVR é a média das categorias com pesos por função.
         ↓ = quanto menor, melhor. <b>Este OVR foi obtido numa competição de classe ${j.classe} (${CLASSE_TXT[j.classe]}); em competições de classe mais alta, a mesma nota pode ser menor.</b></p>` : ""}
     </section></div>`;
-  $("ficha").showModal();
 }

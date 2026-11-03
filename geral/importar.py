@@ -24,6 +24,7 @@ from pathlib import Path
 
 import pandas as pd
 
+import colunas
 import skills
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -175,6 +176,7 @@ def jogadores(df: pd.DataFrame, liga_id: str, nome_liga: str, aviso: list[str], 
             reg[campo] = limpa(r.get(col))
         reg["tem_avancadas"] = reg["xg"] is not None
         reg["_m"] = skills.metricas(r, reg["min"] or 0)
+        reg["_vca"], reg["_eta"] = colunas.montar(r, reg["min"] or 0)
         min_ = reg["min"] or 0
         for campo in ("gols", "assist", "xg", "xa", "chutes", "desarmes", "passes_chave"):
             v = reg.get(campo)
@@ -391,11 +393,13 @@ def main() -> int:
     for chave, jg in por_liga.items():
         papel_no_time(jg, liga_json[chave]["times"])
     todos = [j for jg in por_liga.values() for j in jg]
+    colunas.finalizar(todos)  # visões VCA (brutos) e ETA (por 90) + posição ETA
     skills.avalia(todos)  # notas, OVR, índices e rankings: calculados com todas as ligas juntas
     for chave, jg in por_liga.items():
         if jg:
             (OUT_DIR / "jogadores" / f"{chave}.json").write_text(json.dumps(jg, ensure_ascii=False, separators=(",", ":")),
                                                                   encoding="utf-8")
+    (OUT_DIR / "colunas.json").write_text(json.dumps(colunas.descricao(), ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     avaliados = [j for j in todos if j["ovr"] is not None]
     (OUT_DIR / "ranking.json").write_text(json.dumps(
         {"min_minutos": skills.MIN_MINUTOS, "categorias": {k: v[0] for k, v in skills.CATEGORIAS.items()},

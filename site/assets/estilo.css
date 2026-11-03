@@ -143,3 +143,8 @@ code{background:#0D1B14;border:1px solid var(--borda);border-radius:6px;padding:
 .faixa-demo a{color:var(--ouro)}
 textarea{width:100%;background:#0D1B14;color:var(--txt);border:1px solid var(--borda);border-radius:8px;padding:.6rem;font:.8rem/1.4 ui-monospace,Consolas,monospace;resize:vertical}
 ol.aviso{padding-left:1.2rem;line-height:1.6}
+
+/* abas da ficha (AIE/VCA/ETA) */
+.abas-ficha{margin-bottom:.8rem}
+.abas-ficha button{font-size:.85rem}
+.cat-topo span{font-weight:800;letter-spacing:.06em;font-size:.82rem}
