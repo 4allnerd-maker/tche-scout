@@ -1,6 +1,9 @@
 /* Configurações editáveis do site (textos comerciais e links). Nada secreto aqui: este arquivo é público.
    Os preços que valem de verdade (cobrança) ficam no servidor: api/ (config_tchescout.php). Mantenha os dois iguais. */
 const CONFIG = {
+  // MODO CRIAÇÃO: true = tudo aberto, sem login, lendo os dados direto da pasta site/dados (não usa o servidor PHP).
+  // Antes de PUBLICAR com cobrança, volte para false (e suba os dados para a pasta privada: veja geral/HOSPEDAGEM.md).
+  ACESSO_ABERTO: true,
   PLANOS: {
     mensal: { nome: "Mensal", valor: 150, dias: 30 },
     anual: { nome: "Anual", valor: 999, dias: 365 },

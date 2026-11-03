@@ -61,9 +61,10 @@ async function abrirFicha(j, aba) {
   montarFicha(j);
   const corpo = $("fichaCorpo"), secao = corpo.querySelector(".fifa > section");
   const aie = secao.innerHTML;
-  const abas = `<div class="abas abas-ficha"><button data-a="aie">AIE · Ficha</button><button data-a="vca">VCA · Dados brutos</button><button data-a="eta">ETA · Por 90</button></div>`;
+  const abas = `<div class="abas abas-ficha"><button data-a="aie">AIE · Ficha</button><button data-a="vca">VCA · Dados brutos</button><button data-a="eta">ETA · Por 90</button><button class="card-btn" title="Gera uma imagem do atleta na visão aberta, com espaço para a foto">🖼 Gerar card</button></div>`;
   const mostrar = a => { ABA_FICHA = a; secao.innerHTML = abas + (a === "vca" ? htmlVCA(j, def) : a === "eta" ? htmlETA(j, def) : aie);
-    secao.querySelectorAll(".abas-ficha button").forEach(b => { b.classList.toggle("ativo", b.dataset.a === a); b.onclick = () => mostrar(b.dataset.a); }); };
+    secao.querySelectorAll(".abas-ficha button[data-a]").forEach(b => { b.classList.toggle("ativo", b.dataset.a === a); b.onclick = () => mostrar(b.dataset.a); });
+    secao.querySelector(".card-btn").onclick = () => abrirCard(j, a); };
   mostrar(ABA_FICHA);
   if (!$("ficha").open) $("ficha").showModal();
 }

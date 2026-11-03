@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Formação · Tchê Scout</title>
+<link rel="icon" href="assets/logo.svg">
+<link rel="stylesheet" href="assets/estilo.css">
+<style>
+.campo{position:relative;width:min(100%,560px);aspect-ratio:4/5;margin:0 auto;border-radius:14px;border:2px solid #2d5a3f;
+  background:repeating-linear-gradient(180deg,#14402a 0 10%,#175033 10% 20%);overflow:hidden}
+.campo::before{content:"";position:absolute;inset:3%;border:2px solid #ffffff44;border-radius:4px}
+.campo::after{content:"";position:absolute;left:3%;right:3%;top:50%;border-top:2px solid #ffffff44}
+.slot{position:absolute;transform:translate(-50%,-50%);width:19%;min-width:64px;text-align:center;cursor:pointer;z-index:2}
+.slot .c{border-radius:10px;border:2px solid var(--cor,#9FB3A6);background:#0D1B14ee;padding:.2rem .1rem .25rem;overflow:hidden}
+.slot .f{width:100%;aspect-ratio:3/3.2;background:#16281F center/cover no-repeat;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#ffffff55;font-size:1.3rem}
+.slot .o{font-weight:800;font-size:1.05rem;line-height:1.1}
+.slot .n{font-size:.68rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 .15rem}
+.slot.vazio .c{border-style:dashed;opacity:.8}
+.lista-pick{max-height:55vh;overflow:auto;margin:.5rem 0}
+.lista-pick div{display:grid;grid-template-columns:44px 1fr auto;gap:.5rem;padding:.4rem .5rem;border-bottom:1px solid var(--borda);cursor:pointer;align-items:center}
+.lista-pick div:hover{background:#16281F}
+.lista-pick b{font-size:1.1rem}
+</style>
+</head>
+<body>
+<main>
+  <h1>Formação</h1>
+  <p class="sub">Escolha o time, a formação e os 11 jogadores. Cada jogador aparece com o card e o OVR; depois é só exportar a imagem.</p>
+  <section class="filtros">
+    <div><label for="fLiga">Liga / temporada</label><select id="fLiga"></select></div>
+    <div><label for="fClube">Time</label><select id="fClube"></select></div>
+    <div><label for="fForm">Formação</label><select id="fForm"></select></div>
+    <div><label for="fCrit">Escalar automático por</label><select id="fCrit"><option value="min">Minutos jogados</option><option value="ovr">Maior OVR</option></select></div>
+  </section>
+  <p style="display:flex;gap:.5rem;flex-wrap:wrap;margin:0 0 .8rem">
+    <button id="bAuto" class="primario">⚡ Escalar automático</button><button id="bLimpa">Limpar</button><button id="bExporta">⬇ Exportar PNG</button>
+    <span class="tag" id="resumo"></span></p>
+  <div class="campo" id="campo"></div>
+  <p class="aviso">Clique num jogador para trocar, colocar a foto ou abrir a ficha. Por enquanto só há dados de 2026; escalações de outras temporadas (ex.: campeões de 2024) entram quando a API for ligada.</p>
+</main>
+<dialog id="ficha" class="larga"><div id="fichaCorpo"></div><p style="text-align:right;margin:.5rem 0 0"><button onclick="$('ficha').close()">Fechar</button></p></dialog>
+<dialog id="pick" class="larga">
+  <h3 id="pickTit" style="margin:.1rem 0"></h3>
+  <p style="display:flex;gap:.5rem;flex-wrap:wrap;margin:.3rem 0">
+    <input id="pickBusca" type="search" placeholder="Buscar jogador…" style="flex:1;min-width:140px">
+    <label style="display:flex;align-items:center;gap:.3rem"><input type="checkbox" id="pickTodos"> todos os clubes da liga</label></p>
+  <div class="lista-pick" id="pickLista"></div>
+  <p style="display:flex;gap:.5rem;flex-wrap:wrap;justify-content:flex-end;margin:0">
+    <button id="pkFoto">📷 Foto</button><button id="pkFicha">Ver ficha</button><button id="pkTira">Remover da formação</button><button id="pkFecha">Fechar</button></p>
+  <input type="file" id="pkArq" accept="image/*" hidden>
+</dialog>
+<script src="assets/config.js"></script>
+<script src="assets/comum.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/ficha.js"></script>
+<script src="assets/card.js"></script>
+<script>
+cabecalho("formacao");
+/* Cada formação: linhas do goleiro ao ataque. */
+const FORMACOES = {
+  "4-3-3": [["Defensor", 4], ["Meia", 3], ["Atacante", 3]], "4-4-2": [["Defensor", 4], ["Meia", 4], ["Atacante", 2]],
+  "4-2-3-1": [["Defensor", 4], ["Meia", 2], ["Meia", 3], ["Atacante", 1]], "3-5-2": [["Defensor", 3], ["Meia", 5], ["Atacante", 2]],
+  "3-4-3": [["Defensor", 3], ["Meia", 4], ["Atacante", 3]], "4-5-1": [["Defensor", 4], ["Meia", 5], ["Atacante", 1]],
+  "5-3-2": [["Defensor", 5], ["Meia", 3], ["Atacante", 2]], "4-1-4-1": [["Defensor", 4], ["Meia", 1], ["Meia", 4], ["Atacante", 1]],
+};
+const ROTULO_POS = { Goleiro: "Goleiro", Defensor: "Defensor", Meia: "Meia", Atacante: "Atacante" };
+let INDICE = [], DADOS = [], SLOTS = [], ESC = [], SEL = -1;   // SLOTS: {pos,x,y}; ESC: jogador ou null por slot
+
+function layout(nome) {
+  const linhas = [["Goleiro", 1], ...FORMACOES[nome]], n = linhas.length, out = [];
+  linhas.forEach(([pos, q], r) => { const y = 90 - r * (78 / (n - 1)); for (let i = 0; i < q; i++) out.push({ pos, x: 100 * (i + 1) / (q + 1), y }); });
+  return out;
+}
+const iniciais = j => (j.nome_curto || j.nome).split(" ").map(p => p[0]).slice(0, 2).join("").toUpperCase();
+const clube = () => $("fClube").value;
+
+async function iniciar() {
+  try { await exigirLogin(); INDICE = (await dados("ligas")).ligas.filter(l => l.jogadores > 0); }
+  catch (e) { if (e.message !== "login") document.querySelector(".sub").textContent = e.message || "Não foi possível carregar os dados."; return; }
+  $("fLiga").innerHTML = INDICE.map(l => `<option value="${l.chave}">${esc(l.nome)} ${l.temporada}</option>`).join("");
+  $("fForm").innerHTML = Object.keys(FORMACOES).map(f => `<option>${f}</option>`).join("");
+  $("fLiga").onchange = carregaLiga; $("fClube").onchange = () => { ESC = SLOTS.map(() => null); auto(); };
+  $("fForm").onchange = trocaFormacao; $("bAuto").onclick = auto; $("bLimpa").onclick = () => { ESC = SLOTS.map(() => null); desenha(); };
+  $("bExporta").onclick = exporta; $("fCrit").onchange = auto;
+  $("pickBusca").oninput = lista; $("pickTodos").onchange = lista; $("pkFecha").onclick = () => $("pick").close();
+  $("pkTira").onclick = () => { ESC[SEL] = null; $("pick").close(); desenha(); };
+  $("pkFicha").onclick = () => { const j = ESC[SEL]; if (j) { $("pick").close(); abrirFicha(j, "aie"); } };
+  $("pkFoto").onclick = () => { if (ESC[SEL]) $("pkArq").click(); };
+  $("pkArq").onchange = async e => { const f = e.target.files[0]; e.target.value = ""; const j = ESC[SEL]; if (!f || !j) return; const url = await lerFoto(f); if (url) { salvaFoto(j.id, url); desenha(); } };
+  await carregaLiga();
+}
+async function carregaLiga() {
+  const l = INDICE.find(x => x.chave === $("fLiga").value);
+  try { DADOS = await dados(`jogadores/${l.chave}`); } catch (e) { DADOS = []; }
+  const clubes = [...new Set(DADOS.map(j => j.clube).filter(Boolean))].sort((a, b) => a.localeCompare(b, "pt"));
+  $("fClube").innerHTML = clubes.map(c => `<option>${esc(c)}</option>`).join("");
+  SLOTS = layout($("fForm").value); ESC = SLOTS.map(() => null); auto();
+}
+function trocaFormacao() {
+  const antigos = ESC.filter(Boolean); SLOTS = layout($("fForm").value); ESC = SLOTS.map(() => null);
+  SLOTS.forEach((s, i) => { const k = antigos.findIndex(j => j.posicao === s.pos); if (k >= 0) ESC[i] = antigos.splice(k, 1)[0]; });
+  desenha();
+}
+function auto() {
+  const crit = $("fCrit").value, usados = new Set(ESC.filter(Boolean).map(j => j.id));
+  const pool = DADOS.filter(j => j.clube === clube()).sort((a, b) => crit === "ovr" ? (b.ovr ?? 0) - (a.ovr ?? 0) : (b.min || 0) - (a.min || 0));
+  ESC = SLOTS.map(() => null);
+  SLOTS.forEach((s, i) => { const j = pool.find(p => p.posicao === s.pos && !usados.has(p.id)); if (j) { ESC[i] = j; usados.add(j.id); } });
+  desenha();
+}
+function desenha() {
+  const corP = j => COR_POS[j.posicao] || "#9FB3A6";
+  $("campo").innerHTML = SLOTS.map((s, i) => { const j = ESC[i], f = j && fotoSalva(j.id);
+    return j ? `<div class="slot" style="left:${s.x}%;top:${s.y}%;--cor:${corP(j)}" data-i="${i}"><div class="c"><div class="f" style="${f ? `background-image:url(${f})` : ""}">${f ? "" : esc(iniciais(j))}</div>
+      <div class="o" style="color:${corNota(j.ovr)}">${j.ovr ?? "—"}</div><div class="n" title="${esc(j.nome)}">${esc(j.nome_curto || j.nome)}</div></div></div>`
+      : `<div class="slot vazio" style="left:${s.x}%;top:${s.y}%;--cor:${COR_POS[s.pos]}" data-i="${i}"><div class="c"><div class="f">+</div><div class="n">${ROTULO_POS[s.pos]}</div></div></div>`; }).join("");
+  $("campo").querySelectorAll(".slot").forEach(el => el.onclick = () => abrePick(+el.dataset.i));
+  const com = ESC.filter(j => j && j.ovr != null); $("resumo").textContent = `${ESC.filter(Boolean).length}/11 · OVR médio ${com.length ? Math.round(com.reduce((a, j) => a + j.ovr, 0) / com.length) : "—"}`;
+}
+function abrePick(i) { SEL = i; $("pickTit").textContent = `Escolher ${ROTULO_POS[SLOTS[i].pos].toLowerCase()}`; $("pickBusca").value = ""; $("pickTodos").checked = false; lista(); $("pick").showModal(); }
+function lista() {
+  const s = SLOTS[SEL], q = $("pickBusca").value.trim().toLowerCase(), todos = $("pickTodos").checked, usados = new Set(ESC.filter((j, k) => j && k !== SEL).map(j => j.id));
+  const arr = DADOS.filter(j => j.posicao === s.pos && (todos || j.clube === clube()) && !usados.has(j.id) && (!q || j.nome.toLowerCase().includes(q) || (j.nome_curto || "").toLowerCase().includes(q)))
+    .sort((a, b) => (b.min || 0) - (a.min || 0)).slice(0, 80);
+  $("pickLista").innerHTML = arr.map(j => `<div data-id="${j.id}"><b style="color:${corNota(j.ovr)}">${j.ovr ?? "—"}</b><span>${esc(j.nome_curto || j.nome)}${todos ? ` <small>· ${esc(j.clube)}</small>` : ""}</span><small>${fmt(j.min)} min</small></div>`).join("") || "<p class='aviso'>Nenhum jogador encontrado.</p>";
+  $("pickLista").querySelectorAll("div").forEach(el => el.onclick = () => { ESC[SEL] = DADOS.find(j => j.id === el.dataset.id); $("pick").close(); desenha(); });
+}
+
+/* ---------- exportação em PNG (1080×1350) ---------- */
+async function exporta() {
+  const W = 1080, H = 1350, c = document.createElement("canvas"); c.width = W; c.height = H; const x = c.getContext("2d");
+  x.fillStyle = "#08110C"; x.fillRect(0, 0, W, H);
+  const campoY = 190, campoH = H - campoY - 70, campoX = 40, campoW = W - 80;
+  for (let k = 0; k < 10; k++) { x.fillStyle = k % 2 ? "#175033" : "#14402a"; x.fillRect(campoX, campoY + k * campoH / 10, campoW, campoH / 10); }
+  x.strokeStyle = "#ffffff44"; x.lineWidth = 3; x.strokeRect(campoX + 30, campoY + 30, campoW - 60, campoH - 60);
+  x.beginPath(); x.moveTo(campoX + 30, campoY + campoH / 2); x.lineTo(campoX + campoW - 30, campoY + campoH / 2); x.stroke();
+  x.beginPath(); x.arc(campoX + campoW / 2, campoY + campoH / 2, 80, 0, 7); x.stroke();
+  const com = ESC.filter(j => j && j.ovr != null), media = com.length ? Math.round(com.reduce((a, j) => a + j.ovr, 0) / com.length) : "—";
+  texto(x, clube(), 50, 84, { tam: 62, peso: 800, max: 760 });
+  texto(x, `Formação ${$("fForm").value} · ${INDICE.find(l => l.chave === $("fLiga").value)?.nome} ${INDICE.find(l => l.chave === $("fLiga").value)?.temporada}`, 50, 132, { tam: 28, cor: "#9FB3A6", max: 760 });
+  texto(x, media, W - 50, 112, { tam: 100, peso: 800, cor: corNota(media), al: "right" }); texto(x, "OVR MÉDIO", W - 50, 150, { tam: 24, peso: 700, cor: "#9FB3A6", al: "right" });
+  const cw = 176, ch = 232;
+  for (let i = 0; i < SLOTS.length; i++) {
+    const s = SLOTS[i], j = ESC[i], cx = campoX + 40 + (campoW - 80) * s.x / 100, cy = campoY + 60 + (campoH - 120) * (s.y - 12) / 78, px = cx - cw / 2, py = cy - ch / 2, cor = j ? (COR_POS[j.posicao] || "#9FB3A6") : "#ffffff66";
+    x.fillStyle = "#0D1B14ee"; rr(x, px, py, cw, ch, 16); x.fill(); x.strokeStyle = cor; x.lineWidth = 4; if (!j) x.setLineDash([10, 8]); rr(x, px, py, cw, ch, 16); x.stroke(); x.setLineDash([]);
+    if (!j) { texto(x, "+", cx, cy + 14, { tam: 56, cor: "#ffffff66", al: "center" }); continue; }
+    const foto = await carregaImagem(fotoSalva(j.id));
+    x.save(); rr(x, px + 8, py + 8, cw - 16, 134, 10); x.clip(); x.fillStyle = "#16281F"; x.fillRect(px, py, cw, 150);
+    if (foto) { const k = Math.max((cw - 16) / foto.width, 134 / foto.height); x.drawImage(foto, cx - foto.width * k / 2, py + 8 - (foto.height * k - 134) * 0.3, foto.width * k, foto.height * k); }
+    else texto(x, iniciais(j), cx, py + 92, { tam: 56, peso: 800, cor: "#ffffff55", al: "center" });
+    x.restore();
+    texto(x, j.ovr ?? "—", cx, py + 190, { tam: 46, peso: 800, cor: corNota(j.ovr), al: "center" });
+    texto(x, j.nome_curto || j.nome, cx, py + 220, { tam: 21, peso: 700, al: "center", max: cw - 12 });
+  }
+  texto(x, "TCHÊ SCOUT · tchescout.com.br", W / 2, H - 28, { tam: 24, peso: 700, cor: "#4F6B5B", al: "center" });
+  const a = document.createElement("a"); a.download = `tchescout-formacao-${clube().toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-")}.png`; a.href = c.toDataURL("image/png"); a.click();
+}
+iniciar();
+</script>
+</body>
+</html>

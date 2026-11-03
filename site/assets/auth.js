@@ -1,10 +1,11 @@
 /* Login, sessão e acesso aos dados. A SEGURANÇA de verdade está no servidor (pasta api/): este arquivo só cuida da tela.
    No localhost existe um modo de teste (?dev=admin|premium|gratis|demo|pedida|visitante) que NÃO funciona no site publicado. */
 const DEV = ["localhost", "127.0.0.1"].includes(location.hostname);
+const OFFLINE = DEV || CONFIG.ACESSO_ABERTO;   // sem servidor: dados da pasta site/dados e respostas simuladas
 
 function usuarioDev() {
-  const p = new URLSearchParams(location.search).get("dev"); if (p) localStorage.setItem("dev", p);
-  const v = localStorage.getItem("dev") || "admin";
+  const p = new URLSearchParams(location.search).get("dev"); if (p && !CONFIG.ACESSO_ABERTO) localStorage.setItem("dev", p);
+  const v = p || (CONFIG.ACESSO_ABERTO ? "admin" : localStorage.getItem("dev")) || "admin";
   if (v === "visitante") return { logado: false };
   const demo = v === "demo";
   return { logado: true, nome: "Teste " + v, email: v + "@teste.local", papel: v === "admin" ? "admin" : "usuario",
@@ -14,7 +15,7 @@ function usuarioDev() {
 }
 
 async function sessao() {
-  if (DEV) return usuarioDev();
+  if (OFFLINE) return usuarioDev();
   try { const r = await fetch("api/eu.php", { credentials: "same-origin" }); return await r.json(); }
   catch (e) { return { logado: false }; }
 }
@@ -36,7 +37,7 @@ function mockDev(url, corpo) {
 }
 
 async function enviar(url, corpo) {
-  if (DEV && url.startsWith("api/")) return mockDev(url, corpo || {});
+  if (OFFLINE && url.startsWith("api/")) return mockDev(url, corpo || {});
   const r = await fetch(url, { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify(corpo || {}) });
   const j = await r.json().catch(() => ({ erro: "Resposta inválida do servidor." }));
   if (!r.ok) throw new Error(j.erro || "Não foi possível concluir. Tente novamente.");
@@ -63,7 +64,7 @@ function limitarDev(f, d) {
 }
 
 async function dados(f) {
-  if (DEV) { const d = await getJSON(`dados/${f}.json`); const r = limitarDev(f, d); return r.lista ? Object.assign(r.lista, { limitado: true, total: r.total }) : r; }
+  if (OFFLINE) { const d = await getJSON(`dados/${f}.json`); const r = limitarDev(f, d); return r.lista ? Object.assign(r.lista, { limitado: true, total: r.total }) : r; }
   const r = await fetch(`api/dados.php?f=${encodeURIComponent(f)}`, { credentials: "same-origin" });
   if (r.status === 401) { irParaLogin(); throw new Error("login"); }
   const j = await r.json().catch(() => ({}));
@@ -77,11 +78,12 @@ function bannerPremium(msg) {
 
 async function atualizaNav() {
   const s = await sessao(), el = document.getElementById("auth-nav"); if (!el) return s;
+  if (CONFIG.ACESSO_ABERTO) { el.innerHTML = `<span class="tag" title="Sem login: tudo liberado para criar e testar">modo criação · acesso aberto</span>`; return s; }
   el.innerHTML = s.logado
     ? `${s.papel === "admin" ? '<a href="admin.html">Admin</a>' : ""}<a href="painel.html">Painel</a><a href="#" id="sair">Sair</a>`
     : `<a href="entrar.html">Entrar</a><a class="cta" href="entrar.html?cadastro=1">Criar conta</a>`;
   const sair = document.getElementById("sair");
-  if (sair) sair.onclick = async e => { e.preventDefault(); if (!DEV) { try { await enviar("api/logout.php"); } catch (x) { /* segue */ } } else localStorage.setItem("dev", "visitante"); location.href = "index.html"; };
+  if (sair) sair.onclick = async e => { e.preventDefault(); if (!OFFLINE) { try { await enviar("api/logout.php"); } catch (x) { /* segue */ } } else if (!CONFIG.ACESSO_ABERTO) localStorage.setItem("dev", "visitante"); location.href = "index.html"; };
   if (s.logado && s.demo_ate) {   // contagem regressiva da demonstração
     const fim = new Date(String(s.demo_ate).replace(" ", "T")).getTime();
     const faixa = document.createElement("div"); faixa.className = "faixa-demo"; document.body.prepend(faixa);
