@@ -10460,16 +10460,8 @@
     "ano": 2026,
     "fase_id": 4517,
     "fase_nome": "Final",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "01/11/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Passo Fundo (3)",
-    "visitante": "(2) Brasil SAF",
-    "placar_mandante": 0,
-    "placar_visitante": 0,
-    "hora": "16:00",
-    "estadio": "RazaoInfo Vermelhão da Serra - Passo Fundo"
+    "sumula_id": "60285",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/60285.pdf"
   },
   "brasildefarroupilhaxgremio-gauchaofeminino-01-11-2026": {
     "slug": "brasildefarroupilhaxgremio-gauchaofeminino-01-11-2026",
@@ -10560,16 +10552,8 @@
     "ano": 2026,
     "fase_id": 4515,
     "fase_nome": "Classificatória II",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "02/11/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Cruz Alta",
-    "visitante": "GA Farroupilha",
-    "placar_mandante": 0,
-    "placar_visitante": 1,
-    "hora": "15:00",
-    "estadio": "Jair Juarez Lemos - Taquara"
+    "sumula_id": "60279",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/60279.pdf"
   },
   "brasildefarroupilhaxgremio-gauchaofeminino-31-10-2026": {
     "slug": "brasildefarroupilhaxgremio-gauchaofeminino-31-10-2026",
@@ -10615,9 +10599,9 @@
     "sumula_id": null,
     "sumula_url": null,
     "data": "15/11/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "Futebol Com Vida",
-    "visitante": "Panambi",
+    "situacao": "SEM_DADOS",
+    "mandante": null,
+    "visitante": null,
     "placar_mandante": null,
     "placar_visitante": null,
     "hora": "15:00",
@@ -10637,11 +10621,11 @@
     "data": "08/11/2026",
     "situacao": "A_REALIZAR",
     "mandante": "GA Farroupilha",
-    "visitante": "Real Sc",
+    "visitante": "Real SC",
     "placar_mandante": null,
     "placar_visitante": null,
     "hora": "15:00",
-    "estadio": "A Definir - A Definir"
+    "estadio": "Bento Freitas - Pelotas"
   },
   "realscxgafarroupilha-segundadivisao-14-11-2026": {
     "slug": "realscxgafarroupilha-segundadivisao-14-11-2026",
@@ -10656,7 +10640,7 @@
     "sumula_url": null,
     "data": "14/11/2026",
     "situacao": "A_REALIZAR",
-    "mandante": "Real Sc",
+    "mandante": "Real SC",
     "visitante": "GA Farroupilha",
     "placar_mandante": null,
     "placar_visitante": null,
@@ -10682,5 +10666,25 @@
     "placar_visitante": null,
     "hora": "15:00",
     "estadio": "João Marimon Jr. - Panambi"
+  },
+  "futebolcomvidaxserpanambi-segundadivisao-14-11-2026": {
+    "slug": "futebolcomvidaxserpanambi-segundadivisao-14-11-2026",
+    "jogo_url": "https://fgf.com.br/jogo/futebolcomvidaxserpanambi-segundadivisao-14-11-2026",
+    "categoria": "profissional",
+    "competicao_id": 25,
+    "competicao_nome": "Gauchão Série B",
+    "ano": 2026,
+    "fase_id": 4541,
+    "fase_nome": "Semifinal",
+    "sumula_id": null,
+    "sumula_url": null,
+    "data": "14/11/2026",
+    "situacao": "A_REALIZAR",
+    "mandante": "Futebol Com Vida",
+    "visitante": "Panambi",
+    "placar_mandante": null,
+    "placar_visitante": null,
+    "hora": "15:00",
+    "estadio": "CT Futvida - Viamao"
   }
 }
