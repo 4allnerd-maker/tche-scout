@@ -9350,16 +9350,8 @@
     "ano": 2026,
     "fase_id": 4401,
     "fase_nome": "1ª Fase",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "07/11/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Aimoré",
-    "visitante": "As Mina de Candiota",
-    "placar_mandante": 6,
-    "placar_visitante": 1,
-    "hora": "15:00",
-    "estadio": "Cristo Rei - Sao Leopoldo"
+    "sumula_id": "59039",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/59039.pdf"
   },
   "aimorexinternacional-gauchaofemininosub17-17-10-2026": {
     "slug": "aimorexinternacional-gauchaofemininosub17-17-10-2026",
@@ -9610,16 +9602,8 @@
     "ano": 2026,
     "fase_id": 4401,
     "fase_nome": "1ª Fase",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "07/11/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Juventude",
-    "visitante": "Internacional",
-    "placar_mandante": 2,
-    "placar_visitante": 6,
-    "hora": "15:00",
-    "estadio": "Santa Lucia - Caxias do Sul"
+    "sumula_id": "59040",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/59040.pdf"
   },
   "juventudexnovohamburgo-gauchaofemininosub17-": {
     "slug": "juventudexnovohamburgo-gauchaofemininosub17-",
