@@ -10603,11 +10603,11 @@
     "sumula_id": null,
     "sumula_url": null,
     "data": "08/11/2026",
-    "situacao": "A_REALIZAR",
+    "situacao": "SEM_SUMULA",
     "mandante": "GA Farroupilha",
     "visitante": "Real SC",
-    "placar_mandante": null,
-    "placar_visitante": null,
+    "placar_mandante": 1,
+    "placar_visitante": 3,
     "hora": "15:00",
     "estadio": "Bento Freitas - Pelotas"
   },
@@ -10640,16 +10640,8 @@
     "ano": 2026,
     "fase_id": 4541,
     "fase_nome": "Semifinal",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "08/11/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "Panambi",
-    "visitante": "Futebol Com Vida",
-    "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "15:00",
-    "estadio": "João Marimon Jr. - Panambi"
+    "sumula_id": "60503",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/60503.pdf"
   },
   "futebolcomvidaxserpanambi-segundadivisao-14-11-2026": {
     "slug": "futebolcomvidaxserpanambi-segundadivisao-14-11-2026",
