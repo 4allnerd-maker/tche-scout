@@ -9386,16 +9386,8 @@
     "ano": 2026,
     "fase_id": 4401,
     "fase_nome": "1ª Fase",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "07/11/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "APAFUT",
-    "visitante": "ADERGS",
-    "placar_mandante": 2,
-    "placar_visitante": 5,
-    "hora": "15:00",
-    "estadio": "Estádio Municipal de Caxias do Sul - Caxias do Sul"
+    "sumula_id": "59038",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/59038.pdf"
   },
   "apafutxaimore-gauchaofemininosub17-11-10-2026": {
     "slug": "apafutxaimore-gauchaofemininosub17-11-10-2026",
@@ -9658,16 +9650,8 @@
     "ano": 2026,
     "fase_id": 4401,
     "fase_nome": "1ª Fase",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "07/11/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Novo Hamburgo",
-    "visitante": "Mar Azul",
-    "placar_mandante": 1,
-    "placar_visitante": 1,
-    "hora": "15:00",
-    "estadio": "Estádio do Vale - Novo Hamburgo"
+    "sumula_id": "59041",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/59041.pdf"
   },
   "aimorexecflamengodesaopedro-gauchaofemininosub15-18-04-2026": {
     "slug": "aimorexecflamengodesaopedro-gauchaofemininosub15-18-04-2026",
@@ -10600,16 +10584,8 @@
     "ano": 2026,
     "fase_id": 4541,
     "fase_nome": "Semifinal",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "08/11/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "GA Farroupilha",
-    "visitante": "Real SC",
-    "placar_mandante": 1,
-    "placar_visitante": 3,
-    "hora": "15:00",
-    "estadio": "Bento Freitas - Pelotas"
+    "sumula_id": "60502",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/60502.pdf"
   },
   "realscxgafarroupilha-segundadivisao-14-11-2026": {
     "slug": "realscxgafarroupilha-segundadivisao-14-11-2026",
