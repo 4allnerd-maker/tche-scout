@@ -10644,16 +10644,8 @@
     "ano": 2026,
     "fase_id": 4567,
     "fase_nome": "Semifinal",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "14/11/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Internacional",
-    "visitante": "Aimoré",
-    "placar_mandante": 7,
-    "placar_visitante": 0,
-    "hora": "15:00",
-    "estadio": "SESC Protásio Alves - Porto Alegre"
+    "sumula_id": "60683",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/60683.pdf"
   },
   "futebolcomvidaxrealsc-segundadivisao-21-11-2026": {
     "slug": "futebolcomvidaxrealsc-segundadivisao-21-11-2026",
