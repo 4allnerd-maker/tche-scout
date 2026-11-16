@@ -10632,16 +10632,8 @@
     "ano": 2026,
     "fase_id": 4567,
     "fase_nome": "Semifinal",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "14/11/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Grêmio",
-    "visitante": "ADERGS",
-    "placar_mandante": 6,
-    "placar_visitante": 1,
-    "hora": "15:00",
-    "estadio": "RGM SPORTS - Gravatai"
+    "sumula_id": "60684",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/60684.pdf"
   },
   "internacionalxaimore-gauchaofemininosub17-14-11-2026": {
     "slug": "internacionalxaimore-gauchaofemininosub17-14-11-2026",
