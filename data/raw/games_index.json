@@ -10544,16 +10544,8 @@
     "ano": 2026,
     "fase_id": 4516,
     "fase_nome": "Semifinal",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "18/11/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "Juventude",
-    "visitante": "Internacional",
-    "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "15:00",
-    "estadio": "CFAC Juventude - Caxias do Sul"
+    "sumula_id": "60281",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/60281.pdf"
   },
   "futebolcomvidaxserpanambi-segundadivisao-15-11-2026": {
     "slug": "futebolcomvidaxserpanambi-segundadivisao-15-11-2026",
@@ -10756,16 +10748,8 @@
     "ano": 2026,
     "fase_id": 4591,
     "fase_nome": "Final e Disputa de 3º lugar",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "18/11/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "Grêmio",
-    "visitante": "Internacional",
-    "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "15:00",
-    "estadio": "CT Hélio Dourado - Eldorado do Sul"
+    "sumula_id": "60893",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/60893.pdf"
   },
   "internacionalxgremio-gauchaofemininosub17-21-11-2026": {
     "slug": "internacionalxgremio-gauchaofemininosub17-21-11-2026",
