@@ -10651,11 +10651,11 @@
     "sumula_id": null,
     "sumula_url": null,
     "data": "21/11/2026",
-    "situacao": "A_REALIZAR",
+    "situacao": "SEM_SUMULA",
     "mandante": "Futebol Com Vida",
     "visitante": "Real SC",
-    "placar_mandante": null,
-    "placar_visitante": null,
+    "placar_mandante": 1,
+    "placar_visitante": 0,
     "hora": "15:00",
     "estadio": "CT Futvida - Viamao"
   },
@@ -10691,11 +10691,11 @@
     "sumula_id": null,
     "sumula_url": null,
     "data": "21/11/2026",
-    "situacao": "A_REALIZAR",
+    "situacao": "SEM_SUMULA",
     "mandante": "ADERGS (3)",
     "visitante": "(4) Aimoré",
-    "placar_mandante": null,
-    "placar_visitante": null,
+    "placar_mandante": 0,
+    "placar_visitante": 0,
     "hora": "15:00",
     "estadio": "Campo Atlético Tapejarense - Tapejara"
   },
@@ -10760,15 +10760,7 @@
     "ano": 2026,
     "fase_id": 4591,
     "fase_nome": "Final e Disputa de 3º lugar",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "21/11/2026",
-    "situacao": "A_REALIZAR",
-    "mandante": "Internacional",
-    "visitante": "Grêmio",
-    "placar_mandante": null,
-    "placar_visitante": null,
-    "hora": "15:00",
-    "estadio": "SESC Protásio Alves - Porto Alegre"
+    "sumula_id": "60894",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/60894.pdf"
   }
 }
