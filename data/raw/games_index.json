@@ -10460,16 +10460,8 @@
     "ano": 2026,
     "fase_id": 4516,
     "fase_nome": "Semifinal",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "22/11/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Grêmio",
-    "visitante": "Brasil de Farroupilha",
-    "placar_mandante": 5,
-    "placar_visitante": 1,
-    "hora": "15:00",
-    "estadio": "Francisco Novelletto - Porto Alegre"
+    "sumula_id": "60282",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/60282.pdf"
   },
   "internacionalxjuventude-gauchaofeminino-22-11-2026": {
     "slug": "internacionalxjuventude-gauchaofeminino-22-11-2026",
@@ -10480,16 +10472,8 @@
     "ano": 2026,
     "fase_id": 4516,
     "fase_nome": "Semifinal",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "22/11/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Internacional (3)",
-    "visitante": "(2) Juventude",
-    "placar_mandante": 1,
-    "placar_visitante": 0,
-    "hora": "15:00",
-    "estadio": "SESC Protásio Alves - Porto Alegre"
+    "sumula_id": "60283",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/60283.pdf"
   },
   "juventudexinternacional-gauchaofeminino-01-11-2026": {
     "slug": "juventudexinternacional-gauchaofeminino-01-11-2026",
@@ -10648,16 +10632,8 @@
     "ano": 2026,
     "fase_id": 4590,
     "fase_nome": "Final",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "21/11/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "Futebol Com Vida",
-    "visitante": "Real SC",
-    "placar_mandante": 1,
-    "placar_visitante": 0,
-    "hora": "15:00",
-    "estadio": "CT Futvida - Viamao"
+    "sumula_id": "60890",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/60890.pdf"
   },
   "realscxfutebolcomvida-segundadivisao-28-11-2026": {
     "slug": "realscxfutebolcomvida-segundadivisao-28-11-2026",
@@ -10688,16 +10664,8 @@
     "ano": 2026,
     "fase_id": 4591,
     "fase_nome": "Final e Disputa de 3º lugar",
-    "sumula_id": null,
-    "sumula_url": null,
-    "data": "21/11/2026",
-    "situacao": "SEM_SUMULA",
-    "mandante": "ADERGS (3)",
-    "visitante": "(4) Aimoré",
-    "placar_mandante": 0,
-    "placar_visitante": 0,
-    "hora": "15:00",
-    "estadio": "Campo Atlético Tapejarense - Tapejara"
+    "sumula_id": "60892",
+    "sumula_url": "https://conteudo.cbf.com.br/federacoes/16/sumulas/2026/60892.pdf"
   },
   "gremioxinternacional-gauchaofemininosub17-01-01-1900": {
     "slug": "gremioxinternacional-gauchaofemininosub17-01-01-1900",
